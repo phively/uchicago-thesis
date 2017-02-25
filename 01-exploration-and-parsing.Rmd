@@ -96,8 +96,10 @@ summary(len_title)
 
 ### How is Body distributed for questions and answers?
 ```{r}
+# Id numbers of questions and answers
 qa <- posts %>% filter(Name %in% c("Question", "Answer")) %>% select(Id) %>% unlist()
 
+# Word count of question and answer posts
 len_qa <- data.frame(stringsAsFactors = FALSE,
   Id = qa,
   words_qa = str_count({posts %>% filter(Id %in% qa)}$Body,
@@ -105,31 +107,37 @@ len_qa <- data.frame(stringsAsFactors = FALSE,
 )
 summary(len_qa %>% select(words_qa))
 
+# Histogram of word count (log10)
 len_qa %>% ggplot(aes(x = words_qa)) + geom_histogram(binwidth = .05, alpha = .5) +
   scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000, 100000)) +
   geom_vline(xintercept = mean(len_qa$words_qa), color = "blue", linetype = "dotted")
 
+# Q-Q plot (log10)
 len_qa$words_qa %>% log10() %>% qqnorm()
 len_qa$words_qa %>% log10() %>% qqline()
 ```
 
 ### If we combine answers with the same ParentId with their question, how does the word count change?
 ```{r}
+# Merged dataset; for each answer, paste Body into the Body of the question with matching Id
 merged <- bind_rows(
   posts %>% filter(Name == "Question") %>% select(Id, Body), # Questions
   posts %>% filter(Name == "Answer") %>% select(Id = ParentId, Body) # Answers
-) %>% group_by(Id) %>% summarise_each(funs(paste(., collapse = " #### ")))
+) %>% group_by(Id) %>% summarise_each(funs(paste(., collapse = " ")))
 
+# Word count of question posts with answers merged in
 len_qa_merge <- data.frame(stringsAsFactors = FALSE,
   Id = merged$Id,
   words_qa_merge = str_count(merged$Body, "[[:alpha:]]+")
 )
 summary(len_qa_merge %>% select(words_qa_merge))
 
+# Histogram of word count (log10)
 len_qa_merge %>% ggplot(aes(x = words_qa_merge)) + geom_histogram(binwidth = .05, alpha = .5) +
   scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000, 100000)) +
   geom_vline(xintercept = mean(len_qa_merge$words_qa_merge), color = "blue", linetype = "dotted")
 
+# Q-Q plot (log10)
 len_qa_merge$words_qa_merge %>% log10() %>% qqnorm()
 len_qa_merge$words_qa_merge %>% log10() %>% qqline()
 ```

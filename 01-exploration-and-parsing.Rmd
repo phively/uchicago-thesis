@@ -9,7 +9,7 @@ Data was extracted from the December 15, 2016 stats.stackexchange.com [Posts tab
 
 # Libraries used
 
-```{r, warning=F, message=F, error=F}
+```{r, warning=F, message=F, error=F, comment=F}
 library(xml2)
 library(dplyr)
 library(lubridate)
@@ -57,46 +57,99 @@ posts <- data.frame(stringsAsFactors = FALSE,
 ```
 
 # Data exploration
+
+## Summary stats
+
+### How many posts?
 ```{r}
-# How many posts?
 nrow(posts)
+```
 
-# What are the types of posts?
+### What are the types of posts?
+```{r}
 posts %>% select(Name) %>% summary()
+```
 
-# How many comments per post?
-posts %>% select(CommentCount) %>% sum()
+### How many comments per post?
+```{r}
+posts %>% select(CommentCount) %>% summary()
+```
 
-# How many answers per question?
-posts %>% select(AnswerCount) %>% summary()
+### How many answers per question?
+```{r}
+posts %>% filter(Name == "Question") %>% select(AnswerCount) %>% summary()
+```
 
-# How is Body distributed for questions and answers?
-len <- data.frame(
-  words = str_count({posts %>% filter(Name %in% c("Question", "Answer"))}$Body,
+### When were posts made?
+```{r}
+posts %>% group_by(Name, CreationDate = round_date(CreationDate, unit = "month")) %>% summarise(Posts = length(Name)) %>%
+  ggplot(aes(x = CreationDate, y = Posts, color = Name)) + geom_line() + labs(title = "Count of posts by month")
+```
+
+## Distributions
+
+### How is Title distributed for questions?
+```{r}
+len_title <- data.frame(words_title = str_count({posts %>% filter(Name %in% c("Question"))}$Title, "[[:alpha:]]+"))
+summary(len_title)
+```
+
+### How is Body distributed for questions and answers?
+```{r}
+qa <- posts %>% filter(Name %in% c("Question", "Answer")) %>% select(Id) %>% unlist()
+
+len_qa <- data.frame(stringsAsFactors = FALSE,
+  Id = qa,
+  words_qa = str_count({posts %>% filter(Id %in% qa)}$Body,
                     "[[:alpha:]]+")
 )
-summary(len)
+summary(len_qa %>% select(words_qa))
 
-len %>% ggplot(aes(x = words)) + geom_histogram(binwidth = .05, alpha = .5) +
+len_qa %>% ggplot(aes(x = words_qa)) + geom_histogram(binwidth = .05, alpha = .5) +
   scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000, 100000)) +
-  geom_vline(xintercept = mean(len %>% unlist()), color = "blue", linetype = "dotted")
+  geom_vline(xintercept = mean(len_qa$words_qa), color = "blue", linetype = "dotted")
 
-len %>% log10() %>% unlist() %>% qqnorm()
-len %>% log10() %>% unlist() %>% qqline()
+len_qa$words_qa %>% log10() %>% qqnorm()
+len_qa$words_qa %>% log10() %>% qqline()
+```
 
-# If we combine answers with the same ParentId with their question, how does the word count change?
+### If we combine answers with the same ParentId with their question, how does the word count change?
+```{r}
 merged <- bind_rows(
   posts %>% filter(Name == "Question") %>% select(Id, Body), # Questions
   posts %>% filter(Name == "Answer") %>% select(Id = ParentId, Body) # Answers
 ) %>% group_by(Id) %>% summarise_each(funs(paste(., collapse = " #### ")))
 
-lenm <- data.frame(words = str_count(merged$Body, "[[:alpha:]]+"))
-summary(lenm)
+len_qa_merge <- data.frame(stringsAsFactors = FALSE,
+  Id = merged$Id,
+  words_qa_merge = str_count(merged$Body, "[[:alpha:]]+")
+)
+summary(len_qa_merge %>% select(words_qa_merge))
 
-lenm %>% ggplot(aes(x = words)) + geom_histogram(binwidth = .05, alpha = .5) +
+len_qa_merge %>% ggplot(aes(x = words_qa_merge)) + geom_histogram(binwidth = .05, alpha = .5) +
   scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000, 100000)) +
-  geom_vline(xintercept = mean(lenm %>% unlist()), color = "blue", linetype = "dotted")
+  geom_vline(xintercept = mean(len_qa_merge$words_qa_merge), color = "blue", linetype = "dotted")
 
-lenm %>% log10() %>% unlist() %>% qqnorm()
-lenm %>% log10() %>% unlist() %>% qqline()
+len_qa_merge$words_qa_merge %>% log10() %>% qqnorm()
+len_qa_merge$words_qa_merge %>% log10() %>% qqline()
 ```
+
+## Least and most "wordy" posts
+
+### Shortest posts
+```{r}
+left_join(
+  which(len_qa$words_qa %in% {len_qa$words_qa %>% sort() %>% head()}) %>% len_qa[., ],
+  posts %>% select(Id, Body)
+)
+```
+
+### Longest posts
+```{r}
+left_join(
+  which(len_qa$words_qa %in% {len_qa$words_qa %>% sort() %>% tail()}) %>% len_qa[., ],
+  posts %>% select(Id, Body)
+)
+```
+
+

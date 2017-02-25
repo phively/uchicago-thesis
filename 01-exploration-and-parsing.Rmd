@@ -1,0 +1,83 @@
+---
+title: "Exploration"
+output: html_notebook
+---
+
+# Data description
+
+Data was extracted from the December 15, 2016 stats.stackexchange.com [Posts table dump](https://archive.org/details/stackexchange).
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F}
+library(xml2)
+library(dplyr)
+library(lubridate)
+library(stringr)
+library(ggplot2)
+library(knitr)
+```
+
+# Load the data
+
+```{r}
+# Grab the XML file
+xml <- unzip("data/Posts.zip") %>% read_xml() # unz() crashes on me
+file.remove("Posts.xml")
+
+# Load post types dictionary
+PostTypes <- read.csv("data/PostTypes.csv") %>%
+  mutate(Id = as.character(Id))
+
+# Function to grab xml fields
+getXmlField <- function(part) {xml_children(xml) %>% xml_attr(part)}
+
+# Data frame to store posts data
+posts <- data.frame(stringsAsFactors = FALSE,
+  Id = getXmlField("Id"),
+  PostTypeId = getXmlField("PostTypeId"),
+  AcceptedAnswerId = getXmlField("AcceptedAnswerId"),
+  CreationDate = getXmlField("CreationDate") %>% ymd_hms(),
+  Score = getXmlField("Score") %>% as.numeric(),
+  ViewCount = getXmlField("ViewCount") %>% as.numeric(),
+  Body = getXmlField("Body"),
+#  OwnerUserId = getXmlField("OwnerUserId"),
+#  LastActivityDate = getXmlField("LastActivityDate"),
+  Title = getXmlField("Title"),
+  Tags = getXmlField("Tags"),
+  AnswerCount = getXmlField("AnswerCount") %>% as.numeric(),
+  CommentCount = getXmlField("CommentCount") %>% as.numeric(),
+#  FavoriteCount = getXmlField("FavoriteCount"),
+#  LastEditorUserId = getXmlField("LastEditorUserId"),
+#  LastEditDate = getXmlField("LastEditDate"),
+#  CommunityOwnedDate = getXmlField("CommunityOwnedDate"),
+  ParentId = getXmlField("ParentId")#,
+#  ClosedDate = getXmlField("ClosedDate")
+) %>% left_join(PostTypes, by = c("PostTypeId" = "Id"))
+```
+
+# Data exploration
+```{r}
+# How many posts?
+nrow(posts)
+
+# What are the types of posts?
+posts %>% select(Name) %>% summary()
+
+# How many comments per post?
+posts %>% select(CommentCount) %>% sum()
+
+# How many answers per question?
+posts %>% select(AnswerCount) %>% summary()
+
+# How is Body distributed?
+len <- data.frame(words = str_count(posts$Body, "[[:alpha:]]+"))
+summary(len)
+
+len %>% filter(words > 0) %>% ggplot(aes(x = words)) + geom_histogram(binwidth = .05, alpha = .5) +
+  scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000, 100000)) +
+  geom_vline(xintercept = mean(len %>% unlist()), color = "blue", linetype = "dotted")
+
+len %>% filter(words > 0) %>% log10() %>% unlist() %>% qqnorm()
+len %>% filter(words > 0) %>% log10() %>% unlist() %>% qqline()
+```

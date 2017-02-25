@@ -70,14 +70,33 @@ posts %>% select(CommentCount) %>% sum()
 # How many answers per question?
 posts %>% select(AnswerCount) %>% summary()
 
-# How is Body distributed?
-len <- data.frame(words = str_count(posts$Body, "[[:alpha:]]+"))
+# How is Body distributed for questions and answers?
+len <- data.frame(
+  words = str_count({posts %>% filter(Name %in% c("Question", "Answer"))}$Body,
+                    "[[:alpha:]]+")
+)
 summary(len)
 
-len %>% filter(words > 0) %>% ggplot(aes(x = words)) + geom_histogram(binwidth = .05, alpha = .5) +
+len %>% ggplot(aes(x = words)) + geom_histogram(binwidth = .05, alpha = .5) +
   scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000, 100000)) +
   geom_vline(xintercept = mean(len %>% unlist()), color = "blue", linetype = "dotted")
 
-len %>% filter(words > 0) %>% log10() %>% unlist() %>% qqnorm()
-len %>% filter(words > 0) %>% log10() %>% unlist() %>% qqline()
+len %>% log10() %>% unlist() %>% qqnorm()
+len %>% log10() %>% unlist() %>% qqline()
+
+# If we combine answers with the same ParentId with their question, how does the word count change?
+merged <- bind_rows(
+  posts %>% filter(Name == "Question") %>% select(Id, Body), # Questions
+  posts %>% filter(Name == "Answer") %>% select(Id = ParentId, Body) # Answers
+) %>% group_by(Id) %>% summarise_each(funs(paste(., collapse = " #### ")))
+
+lenm <- data.frame(words = str_count(merged$Body, "[[:alpha:]]+"))
+summary(lenm)
+
+lenm %>% ggplot(aes(x = words)) + geom_histogram(binwidth = .05, alpha = .5) +
+  scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000, 100000)) +
+  geom_vline(xintercept = mean(lenm %>% unlist()), color = "blue", linetype = "dotted")
+
+lenm %>% log10() %>% unlist() %>% qqnorm()
+lenm %>% log10() %>% unlist() %>% qqline()
 ```

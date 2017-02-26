@@ -15,7 +15,6 @@ library(dplyr)
 library(lubridate)
 library(stringr)
 library(ggplot2)
-library(knitr)
 ```
 
 # Load the data
@@ -160,4 +159,4 @@ left_join(
 )
 ```
 
-
+Note that things like \<p\> and 1L are counted as words due to the use of `[[:alpha:]]+`; we'll fix this when creating the corpus.

@@ -1,0 +1,101 @@
+---
+title: "Vocabulary experimentation"
+output: html_notebook
+---
+
+# Goals
+
+  * Determine what should qualify as a "word" in this dataset
+  * Find a clean method of removing HTML; even non-greedy regular expressions are dangerous, e.g. "If \$\\sigma^2 < \\infty\$ ..." could match a grep() result if not very careful.
+  * Word counts and size of vocabulary -- what's a reasonable threshold?
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(dplyr)
+library(xml2)
+library(tm)
+```
+
+# Reconstruct the merged datafile with title
+
+```{r}
+merged <- bind_rows(
+  posts %>% filter(Name == "Question") %>%
+    mutate(Body = paste(Title, Body, sep = " ")) %>% # Concatenate Title to left of Body
+    select(Id, Body), # Questions
+  posts %>% filter(Name == "Answer") %>% select(Id = ParentId, Body) # Answers
+) %>% group_by(Id) %>% summarise_each(funs(paste(., collapse = " ")))
+```
+
+# Strip HTML and newlines from the merged data file
+
+```{r}
+merged <- data.frame(stringsAsFactors = FALSE,
+  Id = merged$Id, # Id is unchanged
+  Body = merged$Body %>%
+    lapply(FUN = read_html) %>% lapply(FUN = xml_text) %>% # Read Body as an html file and extract text
+    gsub("\\n", " ", .) %>% # Replace newline \n with space
+    gsub("http[^[:space:]]*", " ", .) # Remove URLs starting with http and ending with a space
+)
+```
+
+# Create corpus
+
+## Cleanup functions
+
+  * Deleting punctuation leads to e.g. unintendedconsequences; replace with space instead
+  * Curly apostrophes and quotes are not handled well
+
+```{r}
+# Replace punctuation with a space
+# (http://stackoverflow.com/questions/25105702/how-to-give-space-between-2-words-after-removing-punctuation-and-numbers-text-mi)
+replacePunctuation <- content_transformer(function(x) {gsub("[[:punct:]]", " ", x)})
+
+# Replace arbitrary characters with a space
+replaceAsSpace <- content_transformer(function(x, pattern) {gsub(pattern, " ", x)})
+```
+
+## Corpus construction
+
+```{r}
+# Construct corpus
+corpus <- Corpus(VectorSource(merged$Body)) %>% # Read in the merged posts
+  tm_map(content_transformer(tolower)) %>% # Lower case
+  tm_map(removeNumbers) %>% # Strip numbers
+  tm_map(replaceAsSpace, "(“|”|‘|’)") %>% # Remove curly apostrophes and quotes
+  tm_map(removeWords, stopwords("english")) %>% # Strip standard stopwords
+  tm_map(replacePunctuation) %>% # Strip punctuation
+  tm_map(stripWhitespace) # Remove extra whitespace
+
+# View corpus[[k]] element
+writeLines(as.character(corpus[[1]]))
+```
+
+# Term matrix
+
+```{r}
+term_matrix <- DocumentTermMatrix(corpus)
+```
+
+## Word counts
+
+### Term matrix summary
+```{r}
+print(term_matrix)
+```
+
+### Number of terms appearing at least 20 times
+```{r}
+findFreqTerms(term_matrix, lowfreq = 20) %>% length()
+```
+
+### Number of terms appearing at least 10 times
+```{r}
+findFreqTerms(term_matrix, lowfreq = 10) %>% length()
+```
+
+### Top terms
+```{r}
+findFreqTerms(term_matrix, lowfreq = 25000)
+```

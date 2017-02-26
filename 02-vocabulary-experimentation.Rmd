@@ -63,7 +63,7 @@ replaceAsSpace <- content_transformer(function(x, pattern) {gsub(pattern, " ", x
 corpus <- Corpus(VectorSource(merged$Body)) %>% # Read in the merged posts
   tm_map(content_transformer(tolower)) %>% # Lower case
   tm_map(removeNumbers) %>% # Strip numbers
-  tm_map(replaceAsSpace, "(“|”|‘|’)") %>% # Remove curly apostrophes and quotes
+  tm_map(replaceAsSpace, "(“|”|‘|’|`|′)") %>% # Remove assorted symbols
   tm_map(removeWords, stopwords("english")) %>% # Strip standard stopwords
   tm_map(replacePunctuation) %>% # Strip punctuation
   tm_map(stripWhitespace) # Remove extra whitespace
@@ -97,5 +97,5 @@ findFreqTerms(term_matrix, lowfreq = 10) %>% length()
 
 ### Top terms
 ```{r}
-findFreqTerms(term_matrix, lowfreq = 25000)
+findFreqTerms(term_matrix, lowfreq = 30000)
 ```

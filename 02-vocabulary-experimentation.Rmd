@@ -85,6 +85,11 @@ term_matrix <- DocumentTermMatrix(corpus)
 print(term_matrix)
 ```
 
+### Number of terms appearing at least 40 times
+```{r}
+findFreqTerms(term_matrix, lowfreq = 40) %>% length()
+```
+
 ### Number of terms appearing at least 20 times
 ```{r}
 findFreqTerms(term_matrix, lowfreq = 20) %>% length()
@@ -99,3 +104,5 @@ findFreqTerms(term_matrix, lowfreq = 10) %>% length()
 ```{r}
 findFreqTerms(term_matrix, lowfreq = 30000)
 ```
+
+Note e.g. also, can, get; I'll want to remove additional stopwords.

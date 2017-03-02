@@ -75,10 +75,27 @@ posts <- data.frame(stringsAsFactors = FALSE,
   CommunityOwnedDate = getXmlField("CommunityOwnedDate") %>% ymd_hms(),
   ParentId = getXmlField("ParentId") %>% as.numeric(),
   ClosedDate = getXmlField("ClosedDate") %>% ymd_hms()
-) %>% left_join(PostTypes, by = c("PostTypeId" = "Id"))
+) %>%
+  left_join(PostTypes, by = c("PostTypeId" = "Id")) %>% # Join post type names
+  filter(Name %in% c("Question", "Answer")) # Drop posts that are not questions or answers
 ```
 
 # Parse all \<code\>
 
 ```{r}
+# Add a Code column to store things between code tags
+posts <- posts %>% mutate(
+  Code = Body %>%
+    lapply(FUN = read_html) %>% # For each post in Body, read as an html file
+    lapply(FUN = xml_find_all, xpath = ".//code") %>% # Find each <code></code> block in html file
+    lapply(paste, collapse = ' ') # Collapse all found <code> blocks with a whitespace separator
+)
 ```
+
+# Parse all single \$
+
+Pending
+
+# Parse all double \$\$
+
+Pending

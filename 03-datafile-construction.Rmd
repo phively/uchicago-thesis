@@ -1,0 +1,84 @@
+---
+title: "Data creation and parsing"
+output: html_notebook
+---
+
+# Goals
+
+  * Create reusable syntax splitting code and LaTeX syntax from Body
+  * Create a final datafile that can be cleaned normally
+
+# Notes
+
+## HTML parsing
+
+  * Previously, we learned that programming languages in Body really throw off things like word counts
+  * Most StackExchange users place code inside \<code\>\<\\code\> sections
+  * HTML code can be removed by an XML parser like xml2
+  
+## TeX parsing
+
+  * StackExchange appears to use the MathJax library; ideally LaTeX extraction would be done using its parser
+  * LaTeX code is delimited by \$ (inline) or \$\$ (display)
+  * Via trial and error, as of 2017-03-01 MathJax appears to parse *any* text between non-escaped (via backslash) \$ as an inline equation
+  
+## Suggested process
+
+  1) Extract everything inside \<code\> sections as-is with an XML or HTML parser
+  2) Extract everything between non-escaped \$ as-is with a regular expression
+  3) Extract everything between non-escaped \$\$ as-is with a regular expression
+  4) Strip HTML tags with an XML or HTML parser
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(xml2)
+library(dplyr)
+library(lubridate)
+library(stringr)
+library(ggplot2)
+```
+
+# Load the raw data
+
+This code is recycled from [01-exploration-and-parsing.Rmd](https://github.com/phively/uchicago-thesis/blob/master/01-exploration-and-parsing.Rmd).
+
+```{r}
+# Grab the XML file
+xml <- unzip("data/Posts.zip") %>% read_xml() # unz() crashes on me
+file.remove("Posts.xml")
+
+# Load post types dictionary
+PostTypes <- read.csv("data/PostTypes.csv")
+
+# Function to grab xml fields
+getXmlField <- function(part) {xml_children(xml) %>% xml_attr(part)}
+
+# Data frame to store posts data
+posts <- data.frame(stringsAsFactors = FALSE,
+  Id = getXmlField("Id") %>% as.numeric(),
+  PostTypeId = getXmlField("PostTypeId") %>% as.numeric(),
+  AcceptedAnswerId = getXmlField("AcceptedAnswerId") %>% as.numeric(),
+  CreationDate = getXmlField("CreationDate") %>% ymd_hms(),
+  Score = getXmlField("Score") %>% as.numeric(),
+  ViewCount = getXmlField("ViewCount") %>% as.numeric(),
+  Body = getXmlField("Body"),
+  OwnerUserId = getXmlField("OwnerUserId") %>% as.numeric(),
+  LastActivityDate = getXmlField("LastActivityDate") %>% ymd_hms(),
+  Title = getXmlField("Title"),
+  Tags = getXmlField("Tags"),
+  AnswerCount = getXmlField("AnswerCount") %>% as.numeric(),
+  CommentCount = getXmlField("CommentCount") %>% as.numeric(),
+  FavoriteCount = getXmlField("FavoriteCount") %>% as.numeric(),
+  LastEditorUserId = getXmlField("LastEditorUserId") %>% as.numeric(),
+  LastEditDate = getXmlField("LastEditDate") %>% ymd_hms(),
+  CommunityOwnedDate = getXmlField("CommunityOwnedDate") %>% ymd_hms(),
+  ParentId = getXmlField("ParentId") %>% as.numeric(),
+  ClosedDate = getXmlField("ClosedDate") %>% ymd_hms()
+) %>% left_join(PostTypes, by = c("PostTypeId" = "Id"))
+```
+
+# Parse all \<code\>
+
+```{r}
+```

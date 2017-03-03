@@ -85,17 +85,27 @@ posts <- data.frame(stringsAsFactors = FALSE,
 ```{r}
 # Add a Code column to store things between code tags
 posts <- posts %>% mutate(
-  Code = Body %>%
+  # Collapse all found <code> blocks with a whitespace separator
+  Code = posts$Body %>%
     lapply(FUN = read_html) %>% # For each post in Body, read as an html file
     lapply(FUN = xml_find_all, xpath = ".//code") %>% # Find each <code></code> block in html file
-    lapply(paste, collapse = ' ') # Collapse all found <code> blocks with a whitespace separator
+    lapply(paste, collapse = ' '), # Collapse all found <code> blocks with a whitespace separator
+  # Iterate through each Body removing the identified code
+  Body = Body %>%
+    gsub(pattern = '<code>.*?</code>', replacement = '', x = .) # .*? enforces a non-greedy match
 )
 ```
 
 # Parse all single \$
 
-Pending
+```{r}
+# Add an Inline column to store inline LaTeX
+
+```
 
 # Parse all double \$\$
 
-Pending
+```{r}
+# Add a Display column to store display LaTeX
+
+```

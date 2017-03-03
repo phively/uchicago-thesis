@@ -1,0 +1,32 @@
+"x"
+"1" "<p>What R packages should I install for seasonality analysis?</p>
+"
+"2" "<p>I have a data set that I'd expect to follow a Poisson distribution, but it is overdispersed by about 3-fold. At the present, I'm modelling this overdispersion using something like the following code in R.</p>
+
+<pre></pre>
+
+<p>Visually, this seems to fit my empirical data very well. If I'm happy with the fit, is there any reason that I should be doing something more complex, like using a <a href=\"http://en.wikipedia.org/wiki/Overdispersion#Poisson\">negative binomial distribution, as described here</a>? (If so, any pointers or links on doing so would be much appreciated).</p>
+
+<p>Oh, and I'm aware that this creates a slightly jagged distribution (due to the multiplication by three), but that shouldn't matter for my application.</p>
+
+<hr>
+
+<p><strong>Update:</strong>  For the sake of anyone else who searches and finds this question, here's a simple R function to model an overdispersed poisson using a negative binomial distribution. Set d to the desired mean/variance ratio:</p>
+
+<pre></pre>
+
+<p>(via the R mailing list: <a href=\"https://stat.ethz.ch/pipermail/r-help/2002-June/022425.html\">https://stat.ethz.ch/pipermail/r-help/2002-June/022425.html</a>)</p>
+"
+"3" "<p>There is an old saying: \"Correlation does not mean causation\". When I teach, I tend to use the following standard examples to illustrate this point:</p>
+
+<ol>
+<li>number of storks and birth rate in Denmark;</li>
+<li>number of priests in America and alcoholism;</li>
+<li>in the start of the 20th century it was noted that there was a strong correlation between 'Number of radios' and 'Number of people in Insane Asylums'</li>
+<li>and my favorite: <a href=\"http://en.wikipedia.org/wiki/File%3aPiratesVsTemp%28en%29.svg\">pirates cause global warming</a>.</li>
+</ol>
+
+<p>However, I do not have any references for these examples and whilst amusing, they are obviously false.</p>
+
+<p>Does anyone have any other good examples?</p>
+"

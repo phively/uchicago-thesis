@@ -1,0 +1,32 @@
+---
+title: "First LDA"
+output: html_notebook
+---
+
+# Goals
+
+  * Create a suitable corpus from the dataset
+  * See how a simple topic model performs as a baseline for comparing other methods
+  
+# Corpus cleaning  
+
+  * Perform standard cleaning, e.g. punctuation and number removal, uniform case, etc.
+  * Identify a suitable set of stopwords for use throughout
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(dplyr)
+library(stringr)
+library(tm)
+```
+
+# Load the data
+
+This section parses the zipped `posts.csv` created by [03-datafile-construction.Rmd](https://github.com/phively/uchicago-thesis/blob/master/03-datafile-construction.Rmd)
+
+Source code: [read-PostsData-zip.R](https://github.com/phively/uchicago-thesis/blob/master/R/read-PostsData-zip.R)
+
+```{r}
+source("R/read-PostsData-zip.R")
+```

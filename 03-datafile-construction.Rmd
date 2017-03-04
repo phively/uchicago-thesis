@@ -141,7 +141,9 @@ posts <- posts %>% mutate(
     lapply(FUN = xml_text) %>% # Extract any text between valid <tags></tags>
     unlist() %>%
     # Remove URLs starting with http and ending with a space
-    str_replace_all("http[^[:space:]]*", " ")
+    str_replace_all('http[^[:space:]]*', ' ') %>%
+    # Remove newlines
+    str_replace_all('[\r\n]' , ' ')
 )
 ```
 

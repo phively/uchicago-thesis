@@ -87,7 +87,7 @@ posts <- data.frame(stringsAsFactors = FALSE,
 posts <- posts %>% mutate(
   # Iterate through each Body removing the identified code
   CleanBody = Body %>%
-    str_replace_all(pattern = '<code>.*?</code>', replacement = ''), # .*? enforces a non-greedy match
+    gsub(pattern = '<code>.*?</code>', replacement = '', x = .), # .*? enforces a non-greedy match
   # Collapse all found <code> blocks with a whitespace separator
   Code = Body %>%
     lapply(FUN = read_html) %>% # For each post in Body, read as an html file
@@ -149,9 +149,7 @@ posts <- posts %>% mutate(
 
 ```{r}
 # Posts identified as interesting
-ids <- c(35, 73, 78, 85, 90, 101, 118)
-
 posts %>%
-  filter(Id %in% ids) %>%
+  filter(Id %in% c(35, 73, 78, 85, 90, 101, 118)) %>%
   select(Body, CleanBody, Code, DisplayLaTeX, InlineLaTeX)
 ```

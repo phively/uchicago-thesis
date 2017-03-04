@@ -27,6 +27,23 @@ This section parses the zipped `posts.csv` created by [03-datafile-construction.
 
 Source code: [read-PostsData-zip.R](https://github.com/phively/uchicago-thesis/blob/master/R/read-PostsData-zip.R)
 
-```{r}
+```{r, message=F}
 source("R/read-PostsData-zip.R")
 ```
+
+# Text cleaning
+
+```{r}
+merged <- merged %>% mutate(
+  # Convert everything to lower-case
+  CleanBody = str_to_lower(CleanBody),
+  # Replace numbers with space
+  CleanBody = str_replace_all(CleanBody, "[[:digit:]]", " "),
+  # Replace punctuation with space
+  CleanBody = str_replace_all(CleanBody, "[[:punct:]]", " "),
+  # Replace multiple whitespaces with a single space
+  CleanBody = str_replace_all(CleanBody, "\\s+", " ")
+)
+```
+
+# Corpus creation

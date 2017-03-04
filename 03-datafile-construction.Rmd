@@ -52,7 +52,7 @@ file.remove("Posts.xml")
 PostTypes <- read.csv("data/PostTypes.csv")
 
 # Function to grab xml fields
-getXmlField <- function(part) {xml_children(xml) %>% xml_attr(part)}
+getXmlField <- function(part) {xml_children(xml) %>% xml_attr(part, default = "")}
 
 # Data frame to store posts data
 posts <- data.frame(stringsAsFactors = FALSE,
@@ -77,7 +77,8 @@ posts <- data.frame(stringsAsFactors = FALSE,
   ClosedDate = getXmlField("ClosedDate") %>% ymd_hms()
 ) %>%
   left_join(PostTypes, by = c("PostTypeId" = "Id")) %>% # Join post type names
-  filter(Name %in% c("Question", "Answer")) # Drop posts that are not questions or answers
+  filter(Name %in% c("Question", "Answer")) %>% # Drop posts that are not questions or answers
+  mutate(CleanBody = paste(Title, Body, sep = " ")) # Concatenate Title to left of Body
 ```
 
 # Parse all \<code\>
@@ -85,15 +86,15 @@ posts <- data.frame(stringsAsFactors = FALSE,
 ```{r}
 # Add a Code column to store things between code tags
 posts <- posts %>% mutate(
-  # Iterate through each Body removing the identified code
-  CleanBody = Body %>%
-    gsub(pattern = '<code>.*?</code>', replacement = '', x = .), # .*? enforces a non-greedy match
   # Collapse all found <code> blocks with a whitespace separator
   Code = Body %>%
     lapply(FUN = read_html) %>% # For each post in Body, read as an html file
     lapply(FUN = xml_find_all, xpath = ".//code") %>% # Find each <code></code> block in html file
-    lapply(paste, collapse = ' ') %>% # Collapse all found <code> blocks with a whitespace separator
-    unlist()
+    lapply(paste, collapse = " ") %>% # Collapse all found <code> blocks with a whitespace separator
+    unlist(),
+  # Iterate through each Body removing the identified code
+  CleanBody = CleanBody %>%
+    gsub(pattern = "<code>.*?</code>", replacement = "", x = .) # .*? enforces a non-greedy match
 )
 ```
 
@@ -104,12 +105,12 @@ posts <- posts %>% mutate(
 posts <- posts %>% mutate(
   # Collapse all found $$ ... $$ with a whitespace separator
   DisplayLaTeX = CleanBody %>%
-    str_extract_all('\\$\\$.*?\\$\\$') %>% # Find each $$ ... $$ block in Body
-    lapply(paste, collapse = ' ') %>% # Collapse all found $$ blocks with a whitespace separator
+    str_extract_all("\\$\\$.*?\\$\\$") %>% # Find each $$ ... $$ block in Body
+    lapply(paste, collapse = " ") %>% # Collapse all found $$ blocks with a whitespace separator
     unlist(),
   # Iterate through each Body removing the identified LaTeX
   CleanBody = CleanBody %>%
-    str_replace_all(pattern = '\\$\\$.*?\\$\\$', replacement = '') # .*? enforces a non-greedy match
+    str_replace_all(pattern = "\\$\\$.*?\\$\\$", replacement = "") # .*? enforces a non-greedy match
 )
 ```
 
@@ -123,12 +124,12 @@ posts <- posts %>% mutate(
   # Collapse all found $ ... $ with a whitespace separator
   # Need to exclude \$ as an open or close
   InlineLaTeX = CleanBody %>%
-    str_extract_all('(?<!\\\\)\\$.*?(?<!\\\\)\\$') %>% # (?<!x) is a negative lookbehind for x
-    lapply(paste, collapse = ' ') %>% # Collapse the $ blocks with a whitespace separator
+    str_extract_all("(?<!\\\\)\\$.*?(?<!\\\\)\\$") %>% # (?<!x) is a negative lookbehind for x
+    lapply(paste, collapse = " ") %>% # Collapse the $ blocks with a whitespace separator
     unlist(),
   # Iterate through Body and remove the matches
   CleanBody = CleanBody %>%
-    str_replace_all(pattern = '(?<!\\\\)\\$.*?(?<!\\\\)\\$', replacement = '')
+    str_replace_all(pattern = "(?<!\\\\)\\$.*?(?<!\\\\)\\$", replacement = "")
 )
 ```
 
@@ -141,9 +142,9 @@ posts <- posts %>% mutate(
     lapply(FUN = xml_text) %>% # Extract any text between valid <tags></tags>
     unlist() %>%
     # Remove URLs starting with http and ending with a space
-    str_replace_all('http[^[:space:]]*', ' ') %>%
+    str_replace_all("http[^[:space:]]*", " ") %>%
     # Remove newlines
-    str_replace_all('[\r\n]' , ' ')
+    str_replace_all("[\r\n]" , " ")
 )
 ```
 
@@ -152,6 +153,14 @@ posts <- posts %>% mutate(
 ```{r}
 # Posts identified as interesting
 posts %>%
-  filter(Id %in% c(35, 73, 78, 85, 90, 101, 118)) %>%
+  filter(Id %in% c(35, 73, 78, 85, 90, 101, 118, 227)) %>%
   select(Body, CleanBody, Code, DisplayLaTeX, InlineLaTeX)
+```
+
+Everything looks good, so write the file to disk.
+
+# Save datafile to disk
+
+```{r}
+posts %>% write.csv(file = "data/posts.csv", row.names = FALSE)
 ```

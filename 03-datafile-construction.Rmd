@@ -25,9 +25,9 @@ output: html_notebook
 ## Suggested process
 
   1) Extract everything inside \<code\> sections as-is with an XML or HTML parser
-  2) Extract everything between non-escaped \$ as-is with a regular expression
-  3) Extract everything between non-escaped \$\$ as-is with a regular expression
-  4) Strip HTML tags with an XML or HTML parser
+  2) Extract everything between non-escaped \$\$ as-is with a regular expression
+  3) Extract everything between non-escaped \$ as-is with a regular expression
+  4) Strip remaining HTML tags with an XML or HTML parser
 
 # Libraries used
 
@@ -85,27 +85,49 @@ posts <- data.frame(stringsAsFactors = FALSE,
 ```{r}
 # Add a Code column to store things between code tags
 posts <- posts %>% mutate(
+  # Iterate through each Body removing the identified code
+  CleanBody = Body %>%
+    str_replace_all(pattern = '<code>.*?</code>', replacement = ''), # .*? enforces a non-greedy match
   # Collapse all found <code> blocks with a whitespace separator
   Code = posts$Body %>%
     lapply(FUN = read_html) %>% # For each post in Body, read as an html file
     lapply(FUN = xml_find_all, xpath = ".//code") %>% # Find each <code></code> block in html file
-    lapply(paste, collapse = ' '), # Collapse all found <code> blocks with a whitespace separator
-  # Iterate through each Body removing the identified code
-  Body = Body %>%
-    gsub(pattern = '<code>.*?</code>', replacement = '', x = .) # .*? enforces a non-greedy match
+    lapply(paste, collapse = ' ') %>% # Collapse all found <code> blocks with a whitespace separator
+    unlist()
 )
-```
-
-# Parse all single \$
-
-```{r}
-# Add an Inline column to store inline LaTeX
-
 ```
 
 # Parse all double \$\$
 
 ```{r}
 # Add a Display column to store display LaTeX
+posts <- posts %>% mutate(
+  # Collapse all found $$ ... $$ with a whitespace separator
+  DisplayLaTeX = posts$CleanBody %>%
+    str_extract_all('\\$\\$.*?\\$\\$') %>% # Find each $$ ... $$ block in Body
+    lapply(paste, collapse = ' ') %>% # Collapse all found $$ blocks with a whitespace separator
+    unlist(),
+  # Iterate through each Body removing the identified LaTeX
+  CleanBody = CleanBody %>%
+    str_replace_all(pattern = '\\$\\$.*?\\$\\$', replacement = '') # .*? enforces a non-greedy match
+)
+```
 
+# Parse all single \$
+
+Be careful not to include \\\$ as a valid inline open or close.
+
+```{r}
+# Add an Inline column to store inline LaTeX
+posts <- posts %>% mutate(
+  # Collapse all found $ ... $ with a whitespace separator
+  # Need to exclude \$ as an open or close
+  InlineLaTeX = posts$CleanBody %>%
+    str_extract_all('(?<!\\\\)\\$.*?(?<!\\\\)\\$') %>% # (?<!x) is a negative lookbehind for x
+    lapply(paste, collapse = ' ') %>% # Collapse the $ blocks with a whitespace separator
+    unlist(),
+  # Iterate through Body and remove the matches
+  CleanBody = CleanBody %>%
+    str_replace_all(pattern = '(?<!\\\\)\\$.*?(?<!\\\\)\\$', replacement = '')
+)
 ```

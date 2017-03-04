@@ -89,7 +89,7 @@ posts <- posts %>% mutate(
   CleanBody = Body %>%
     str_replace_all(pattern = '<code>.*?</code>', replacement = ''), # .*? enforces a non-greedy match
   # Collapse all found <code> blocks with a whitespace separator
-  Code = posts$Body %>%
+  Code = Body %>%
     lapply(FUN = read_html) %>% # For each post in Body, read as an html file
     lapply(FUN = xml_find_all, xpath = ".//code") %>% # Find each <code></code> block in html file
     lapply(paste, collapse = ' ') %>% # Collapse all found <code> blocks with a whitespace separator
@@ -103,7 +103,7 @@ posts <- posts %>% mutate(
 # Add a Display column to store display LaTeX
 posts <- posts %>% mutate(
   # Collapse all found $$ ... $$ with a whitespace separator
-  DisplayLaTeX = posts$CleanBody %>%
+  DisplayLaTeX = CleanBody %>%
     str_extract_all('\\$\\$.*?\\$\\$') %>% # Find each $$ ... $$ block in Body
     lapply(paste, collapse = ' ') %>% # Collapse all found $$ blocks with a whitespace separator
     unlist(),
@@ -122,7 +122,7 @@ Be careful not to include \\\$ as a valid inline open or close.
 posts <- posts %>% mutate(
   # Collapse all found $ ... $ with a whitespace separator
   # Need to exclude \$ as an open or close
-  InlineLaTeX = posts$CleanBody %>%
+  InlineLaTeX = CleanBody %>%
     str_extract_all('(?<!\\\\)\\$.*?(?<!\\\\)\\$') %>% # (?<!x) is a negative lookbehind for x
     lapply(paste, collapse = ' ') %>% # Collapse the $ blocks with a whitespace separator
     unlist(),
@@ -130,4 +130,28 @@ posts <- posts %>% mutate(
   CleanBody = CleanBody %>%
     str_replace_all(pattern = '(?<!\\\\)\\$.*?(?<!\\\\)\\$', replacement = '')
 )
+```
+
+# Strip remaining HTML tags
+
+```{r}
+posts <- posts %>% mutate(
+  CleanBody = CleanBody %>%
+    lapply(FUN = read_html) %>% # Read CleanBody as an html file
+    lapply(FUN = xml_text) %>% # Extract any text between valid <tags></tags>
+    unlist() %>%
+    # Remove URLs starting with http and ending with a space
+    str_replace_all("http[^[:space:]]*", " ")
+)
+```
+
+# Look at a few examples
+
+```{r}
+# Posts identified as interesting
+ids <- c(35, 73, 78, 85, 90, 101, 118)
+
+posts %>%
+  filter(Id %in% ids) %>%
+  select(Body, CleanBody, Code, DisplayLaTeX, InlineLaTeX)
 ```

@@ -17,8 +17,11 @@ output: html_notebook
 
 ```{r, warning=F, message=F, error=F, comment=F}
 library(dplyr)
+library(ggplot2)
 library(stringr)
 library(tm)
+library(slam)
+library(topicmodels)
 ```
 
 # Load the data
@@ -33,17 +36,84 @@ source("R/read-PostsData-zip.R")
 
 # Text cleaning
 
+See R's predefined text patterns.
+
+```{r}
+see_pattern <- function(pattern) {
+  as.raw(1:(2^8 - 1)) %>% rawToChar() %>% str_replace_all(., paste("[^", pattern, "]"), "") %>% trimws() %>% print()
+}
+
+see_pattern("[:punct:]")
+```
+
+Note that [:punct:] includes apostrophes which could be problematic for identifying stopwords in later steps. Try a custom string instead.
+
+```{r}
+see_pattern("^[:letter:][:space:]'")
+```
+
 ```{r}
 merged <- merged %>% mutate(
   # Convert everything to lower-case
   CleanBody = str_to_lower(CleanBody),
-  # Replace numbers with space
-  CleanBody = str_replace_all(CleanBody, "[[:digit:]]", " "),
-  # Replace punctuation with space
-  CleanBody = str_replace_all(CleanBody, "[[:punct:]]", " "),
+  # Replace everything except letters, spaces, and apostrophes with space
+  CleanBody = str_replace_all(CleanBody, "[^[:letter:][:space:]']", " "),
   # Replace multiple whitespaces with a single space
   CleanBody = str_replace_all(CleanBody, "\\s+", " ")
 )
 ```
 
 # Corpus creation
+
+The tm package includes a few standard English stopwords which I'll use to get things started.
+
+```{r}
+corpus <- Corpus(VectorSource(merged$CleanBody)) %>% # Read in the merged posts
+  tm_map(removeWords, stopwords("english")) %>% # Strip standard stopwords
+  tm_map(removePunctuation) # Strip any remaining apostrophes
+```
+
+Next, construct the document-term matrix.
+
+```{r}
+term_matrix <- DocumentTermMatrix(corpus)
+```
+
+Some summary statistics.
+
+```{r}
+# Term matrix statistics
+print(term_matrix)
+
+# Number of terms appearing at least x times
+findFreqTerms(term_matrix, lowfreq = 15) %>% length()
+findFreqTerms(term_matrix, lowfreq = 20) %>% length()
+findFreqTerms(term_matrix, lowfreq = 25) %>% length()
+findFreqTerms(term_matrix, lowfreq = 30) %>% length()
+```
+
+`r {findFreqTerms(term_matrix, lowfreq = 30) %>% length()}` words appear 30 or more times. The most frequently occurring words are as follows.
+
+```{r}
+# Word counts with slam::col_sums
+wordcounts <- col_sums(term_matrix)
+# Print the top 50 words
+wordcounts %>% sort(decreasing = TRUE) %>% head(100) %>%
+  data.frame(word = names(.), count = ., row.names = NULL, stringsAsFactors = FALSE)
+```
+
+# Topic modeling
+
+Begin by removing sparse terms to get a reasonable vocabulary size.
+
+```{r}
+sparse <- removeSparseTerms(term_matrix, .99)
+```
+
+Try 3 topics just to see what they look like.
+
+```{r}
+topic <- LDA(sparse, k = 3, method = "VEM", control = list(seed = 61570))
+```
+
+

@@ -92,7 +92,7 @@ findFreqTerms(term_matrix, lowfreq = 25) %>% length()
 findFreqTerms(term_matrix, lowfreq = 30) %>% length()
 ```
 
-`r {findFreqTerms(term_matrix, lowfreq = 30) %>% length()}` words appear 30 or more times. The most frequently occurring words are as follows.
+Over 12,000 words appear 30 or more times. The most frequently occurring words are as follows.
 
 ```{r}
 # Word counts with slam::col_sums
@@ -104,16 +104,71 @@ wordcounts %>% sort(decreasing = TRUE) %>% head(100) %>%
 
 # Topic modeling
 
-Begin by removing sparse terms to get a reasonable vocabulary size.
+From the above list, it looks like I could remove some more stopwords -- can, like, get, and so on. Using a list of stopwords defined in [MySQL 5.7](https://dev.mysql.com/doc/refman/5.7/en/fulltext-stopwords.html) to update the corpus:
 
 ```{r}
-sparse <- removeSparseTerms(term_matrix, .99)
+mysql_stopwords <- read.csv("data/MySQL stopwords.txt", header = FALSE, stringsAsFactors = FALSE)[, 1]
+
+# Count of additional stopwords
+length(mysql_stopwords)
+```
+```{r}
+corpus <- corpus %>%
+  tm_map(removeWords, mysql_stopwords) # Remove custom stopwords
 ```
 
-Try 3 topics just to see what they look like.
+Updating the term matrix:
 
 ```{r}
-topic <- LDA(sparse, k = 3, method = "VEM", control = list(seed = 61570))
+term_matrix <- DocumentTermMatrix(corpus)
+```
+```{r}
+# Term matrix statistics
+print(term_matrix)
+
+findFreqTerms(term_matrix, lowfreq = 30) %>% length()
 ```
 
+Prune sparse terms that appear less than 30 times from the term matrix.
 
+```{r}
+# Identify which vocabulary terms should be kept
+sparse_vocab <- {col_sums(term_matrix) >= 30} %>% unname()
+# Identify which columns j of the matrix correspond to these terms
+sparse_ind <- {term_matrix$j %in% {1:length(term_matrix$dimnames$Terms)}[sparse_vocab]} %>% unname()
+# Map between old and new column numbers
+sparse_jmap_old <- 1:length(sparse_vocab)
+sparse_jmap_new <- {cumsum(sparse_vocab) * sparse_vocab} %>% unname()
+
+# Create sparse matrix keeping the elements that meet the above criteria
+sparse <- term_matrix
+sparse$i <- sparse$i[sparse_ind]
+sparse$j <- sparse$j[sparse_ind]
+sparse$j <- sparse_jmap_new[sparse$j]
+sparse$v <- sparse$v[sparse_ind]
+sparse$ncol <- sum(sparse_vocab)
+sparse$dimnames$Terms <- sparse$dimnames$Terms[sparse_vocab]
+
+# Cleanup
+remove(sparse_vocab, sparse_ind, sparse_jmap_old, sparse_jmap_new)
+```
+
+Check that the new top vocabulary does not still contain stopwords.
+
+```{r}
+# New top vocabulary
+col_sums(sparse) %>% sort(decreasing = TRUE) %>% head(100) %>%
+  data.frame(word = names(.), count = ., row.names = NULL, stringsAsFactors = FALSE)
+```
+
+Looks good. Try fitting a 15-topic model.
+
+```{r}
+topic <- LDA(sparse, k = 15, method = "VEM", control = list(seed = 61570, verbose = 1))
+```
+
+The top 20 terms for each topic follow.
+
+```{r rows.print=20}
+terms(topic, 20) %>% data.frame(stringsAsFactors = FALSE)
+```

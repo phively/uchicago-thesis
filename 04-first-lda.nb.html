@@ -190,6 +190,14 @@ $(document).ready(function () {
 <h1>Libraries used</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmxpYnJhcnkoZ2dwbG90MilcbmxpYnJhcnkoc3RyaW5ncilcbmxpYnJhcnkodG0pXG5saWJyYXJ5KHNsYW0pXG5saWJyYXJ5KHRvcGljbW9kZWxzKVxuYGBgIn0= -->
+<pre class="r"><code>library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tm)
+library(slam)
+library(topicmodels)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -199,6 +207,9 @@ $(document).ready(function () {
 <p>Source code: <a href="https://github.com/phively/uchicago-thesis/blob/master/R/read-PostsData-zip.R">read-PostsData-zip.R</a></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKFwiUi9yZWFkLVBvc3RzRGF0YS16aXAuUlwiKVxuYGBgIn0= -->
+<pre class="r"><code>source(&quot;R/read-PostsData-zip.R&quot;)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -231,6 +242,16 @@ see_pattern(&quot;[:punct:]&quot;)</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVyZ2VkIDwtIG1lcmdlZCAlPiUgbXV0YXRlKFxuICAjIENvbnZlcnQgZXZlcnl0aGluZyB0byBsb3dlci1jYXNlXG4gIENsZWFuQm9keSA9IHN0cl90b19sb3dlcihDbGVhbkJvZHkpLFxuICAjIFJlcGxhY2UgZXZlcnl0aGluZyBleGNlcHQgbGV0dGVycywgc3BhY2VzLCBhbmQgYXBvc3Ryb3BoZXMgd2l0aCBzcGFjZVxuICBDbGVhbkJvZHkgPSBzdHJfcmVwbGFjZV9hbGwoQ2xlYW5Cb2R5LCBcIlteWzpsZXR0ZXI6XVs6c3BhY2U6XSddXCIsIFwiIFwiKSxcbiAgIyBSZXBsYWNlIG11bHRpcGxlIHdoaXRlc3BhY2VzIHdpdGggYSBzaW5nbGUgc3BhY2VcbiAgQ2xlYW5Cb2R5ID0gc3RyX3JlcGxhY2VfYWxsKENsZWFuQm9keSwgXCJcXFxccytcIiwgXCIgXCIpXG4pXG5gYGAifQ== -->
+<pre class="r"><code>merged &lt;- merged %&gt;% mutate(
+  # Convert everything to lower-case
+  CleanBody = str_to_lower(CleanBody),
+  # Replace everything except letters, spaces, and apostrophes with space
+  CleanBody = str_replace_all(CleanBody, &quot;[^[:letter:][:space:]']&quot;, &quot; &quot;),
+  # Replace multiple whitespaces with a single space
+  CleanBody = str_replace_all(CleanBody, &quot;\\s+&quot;, &quot; &quot;)
+)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -239,14 +260,18 @@ see_pattern(&quot;[:punct:]&quot;)</code></pre>
 <p>The tm package includes a few standard English stopwords which I’ll use to get things started.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29ycHVzIDwtIENvcnB1cyhWZWN0b3JTb3VyY2UobWVyZ2VkJENsZWFuQm9keSkpICU+JSAjIFJlYWQgaW4gdGhlIG1lcmdlZCBwb3N0c1xuICB0bV9tYXAocmVtb3ZlV29yZHMsIHN0b3B3b3JkcyhcImVuZ2xpc2hcIikpICU+JSAjIFN0cmlwIHN0YW5kYXJkIHN0b3B3b3Jkc1xuICB0bV9tYXAocmVtb3ZlUHVuY3R1YXRpb24pICMgU3RyaXAgYW55IHJlbWFpbmluZyBhcG9zdHJvcGhlc1xuYGBgIn0= -->
+<pre class="r"><code>corpus &lt;- Corpus(VectorSource(merged$CleanBody)) %&gt;% # Read in the merged posts
+  tm_map(removeWords, stopwords(&quot;english&quot;)) %&gt;% # Strip standard stopwords
+  tm_map(removePunctuation) # Strip any remaining apostrophes</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Next, construct the document-term matrix.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGVybV9tYXRyaXggPC0gRG9jdW1lbnRUZXJtTWF0cml4KGNvcnB1cylcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r term_matrix &lt;- DocumentTermMatrix(corpus)</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVybV9tYXRyaXggPC0gRG9jdW1lbnRUZXJtTWF0cml4KGNvcnB1cylcbmBgYCJ9 -->
+<pre class="r"><code>term_matrix &lt;- DocumentTermMatrix(corpus)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -257,9 +282,9 @@ see_pattern(&quot;[:punct:]&quot;)</code></pre>
 <pre class="r"><code># Term matrix statistics
 print(term_matrix)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiPDxEb2N1bWVudFRlcm1NYXRyaXggKGRvY3VtZW50czogOTIzMzUsIHRlcm1zOiAxMDcyNjMpPj5cbk5vbi0vc3BhcnNlIGVudHJpZXM6IDg1MTkyMjkvOTg5NTYwOTg3NlxuU3BhcnNpdHkgICAgICAgICAgIDogMTAwJVxuTWF4aW1hbCB0ZXJtIGxlbmd0aDogOTE5XG5XZWlnaHRpbmcgICAgICAgICAgOiB0ZXJtIGZyZXF1ZW5jeSAodGYpXG4ifQ== -->
-<pre><code>&lt;&lt;DocumentTermMatrix (documents: 92335, terms: 107263)&gt;&gt;
-Non-/sparse entries: 8519229/9895609876
+<!-- rnb-output-begin eyJkYXRhIjoiPDxEb2N1bWVudFRlcm1NYXRyaXggKGRvY3VtZW50czogOTIzMzUsIHRlcm1zOiA5NzEwMik+PlxuTm9uLS9zcGFyc2UgZW50cmllczogODUwMTM0NC84OTU3NDExODI2XG5TcGFyc2l0eSAgICAgICAgICAgOiAxMDAlXG5NYXhpbWFsIHRlcm0gbGVuZ3RoOiA5MTlcbldlaWdodGluZyAgICAgICAgICA6IHRlcm0gZnJlcXVlbmN5ICh0ZilcbiJ9 -->
+<pre><code>&lt;&lt;DocumentTermMatrix (documents: 92335, terms: 97102)&gt;&gt;
+Non-/sparse entries: 8501344/8957411826
 Sparsity           : 100%
 Maximal term length: 919
 Weighting          : term frequency (tf)</code></pre>
@@ -268,30 +293,30 @@ Weighting          : term frequency (tf)</code></pre>
 <pre class="r"><code># Number of terms appearing at least x times
 findFreqTerms(term_matrix, lowfreq = 15) %&gt;% length()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE3NjI3XG4ifQ== -->
-<pre><code>[1] 17627</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE3MzAzXG4ifQ== -->
+<pre><code>[1] 17303</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmluZEZyZXFUZXJtcyh0ZXJtX21hdHJpeCwgbG93ZnJlcSA9IDIwKSAlPiUgbGVuZ3RoKClcbmBgYCJ9 -->
 <pre class="r"><code>findFreqTerms(term_matrix, lowfreq = 20) %&gt;% length()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1MjA2XG4ifQ== -->
-<pre><code>[1] 15206</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1MDI2XG4ifQ== -->
+<pre><code>[1] 15026</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmluZEZyZXFUZXJtcyh0ZXJtX21hdHJpeCwgbG93ZnJlcSA9IDI1KSAlPiUgbGVuZ3RoKClcbmBgYCJ9 -->
 <pre class="r"><code>findFreqTerms(term_matrix, lowfreq = 25) %&gt;% length()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEzNjAyXG4ifQ== -->
-<pre><code>[1] 13602</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEzNDUwXG4ifQ== -->
+<pre><code>[1] 13450</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmluZEZyZXFUZXJtcyh0ZXJtX21hdHJpeCwgbG93ZnJlcSA9IDMwKSAlPiUgbGVuZ3RoKClcbmBgYCJ9 -->
 <pre class="r"><code>findFreqTerms(term_matrix, lowfreq = 30) %&gt;% length()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEyNTA2XG4ifQ== -->
-<pre><code>[1] 12506</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEyMzcyXG4ifQ== -->
+<pre><code>[1] 12372</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>12506 words appear 30 or more times. The most frequently occurring words are as follows.</p>
+<p>Over 12,000 words appear 30 or more times. The most frequently occurring words are as follows.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBXb3JkIGNvdW50cyB3aXRoIHNsYW06OmNvbF9zdW1zXG53b3JkY291bnRzIDwtIGNvbF9zdW1zKHRlcm1fbWF0cml4KVxuIyBQcmludCB0aGUgdG9wIDUwIHdvcmRzXG53b3JkY291bnRzICU+JSBzb3J0KGRlY3JlYXNpbmcgPSBUUlVFKSAlPiUgaGVhZCgxMDApICU+JVxuICBkYXRhLmZyYW1lKHdvcmQgPSBuYW1lcyguKSwgY291bnQgPSAuLCByb3cubmFtZXMgPSBOVUxMLCBzdHJpbmdzQXNGYWN0b3JzID0gRkFMU0UpXG5gYGAifQ== -->
@@ -301,10 +326,10 @@ wordcounts &lt;- col_sums(term_matrix)
 wordcounts %&gt;% sort(decreasing = TRUE) %&gt;% head(100) %&gt;%
   data.frame(word = names(.), count = ., row.names = NULL, stringsAsFactors = FALSE)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibmNvbCI6MiwibnJvdyI6MTAwfSwicmRmIjoiSDRzSUFBQUFBQUFBQmwxV1RXZ2tSUlR1bmVudStZbTdSdllvZ2NXamtQZ0RleEhFUkJidkNrS08xdlRVekpTcHJtcXJ1dFBKNHVJZTNQT0s0TVdEZVBMbjVHRVZWeEJaRUR6cHdjbm1kMDNJWm1PaTRyTHJLb2lYeE9wKzlhbzdDV1MrZW45ZnZmZjZWWFcvZG1uKytlNTgxL084aHRmMHpXL1RMUDJHK1RuaitWNm53Q1hQYTU0dkhUeHYwdnozcmNIdms1VFlkVE1pd2k2RFdQWXBSNzBVRk4xVHFsTlVaeHJWai9XWlRoWHJaU21UamlMVFRBd3hMbWZjMGFXNXRNdXVva05GdGE2aU9vdEVNZExqVkxzZFdZemJ0TkdJTnM0V2NCMHVFcDVWVVRHdGFpa3Q2S1pKbkRpQ1RwOE5CbFJSZ1RYNWhHdE1ydjJXNGFzVjFCNWtJcXJKb2NqaUhsVldhdEdsT3JPZkUwY2FLaUw2TXNieU5YVWRIRmJMbkN6YjVVU2laSS8wR0djcHF2eUl1Rjc3QzBMbXVINHpjNCtqVllSeFd0c0dJNElCVTg0dDVFeFFnbG43Z2xJY2hUWVJoQzlycGs5MFcwU3VkZVZNb0RXZ1NrbEhZMFlCYVlJaFc2VFlJMy9BQkJxYXNTdXhOWkk1WFhTOWErdlVkSWdvUjZIWWNPUTZvMTFZa0k2WVdIRHBFRE55Uzhob3hpampLV1lYVXZOY0kwZFJkU3dVVXNVRVI3RmRQR0RENHpvVjF6YjJZN0pRR2N3OHVlRWFTb21waHBvcVZvMmRacGRkU0NLWkc0RXVEcHJyNWtRa2xhS2MxRStNT1RCVnQ4MSt1ZXZRaEdralRhajVjWlNkZ2VSYzV0VVpDM3FrZWdxbVpGSFZJYkNEelFGemd4RFRkT1RxNkNaRUVhT2hTcnUrWnpoTDdVU2FNMW83ZHpsMXA5bVBzMmlFbEQyYXBpN25zR3lBbXlhU21BRWx6amNZS3BrbCtQVHlrVW5HUmZxMFBrR0tSTGp1VmJlUDZjaWdlSlMxL3ZranlwSFI1MUxpcExUZ3pHTW1IUzJMMG11WEU2Y0RSMnRHTVRXWEdZdmNrSFRNTXNwNE5TVWQxeXVzaFp1RTBUMU0xWExCN1hubmludDJybms4YjlDYmEzendiSUd6eHpzWFN2ejN4bnNsL3ZOTVV1TGY3OCtXK09pYmp3RmJreVgrOWU0dTRBWFFQNXdEL1lNUDN5angvazNndTY5dkFVNkIvT2ZyVjB2ODQ3OWRpeDdnQ3NpL2Z3SDcvWmFCLytFdGl6Y2c3dkFsa0E4T3dQL2dCNGcvVUpESHIrZGgvLzFOc085L0IvYjlMeUYrUHdUNW5zM3ozaFhJYjI4YjVMMmZ3TDczUGNUdlBRWDUzRTJBLys3a1NkemRBUHZ1dEpXdC8yNEFQRHR2Zzd4ekdmYmZtUVg5OWlldzcvWTB5SGV1Z2YzT0ZZdlBnWDdySnNoYnIxcWNBYjZ0S1pBM0g0RzhPYmJ5Rk1nYjMwTDh4alVyUnhaRDhGdC9DUHV2UDBBRSsvcFhGcGV0M3dzV253WmNzLzVySDRIZjJqdFdmdG5hWDdSNjIrZlZJN0N2L2dMMjFTMnJYd1MvMVlzV0o4RisrMnVMMXlIdTlwUGd2L0taeGF1Z1g3a0VjZU5EOEIvL0NQcnhwMWErYnUzV2YyejdQMDZzUEcveEZZdFBnUC9QbjVkK3B6NVVBbUZPbHZiZ0k2WGg3aHRadlJzaW1aazc4R1JVUjhsOEJpUFBGcEdXdTMrYVB1SkVJejBxdThVMzBNeWdPTk5HT2pvVjBwSkpjY2VZb0VieEFSV2NDajZqVGlrZXowU1JTWDg2R21WaVlmcGlzVUZwaHIremR0MnZyUnV3WmVQWVVnWHVMU2FHekgxN0JaejAzQzF6emxSY0ZqeVRxTnByeG1qMVRDcFRkM2wxSThsUlU5Ym1IZjBQUVJ2aWZTNEtBQUE9In0= -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibmNvbCI6MiwibnJvdyI6MTAwfSwicmRmIjoiSDRzSUFBQUFBQUFBQmwxVzNXc2RSUlRmM0x0N3YySnJRQkRSQnl1K0ZSb2xvQWkrcEZxZmZPdFRFQVRuN3AyOWQ3eXpNN2N6dTlsRWJSc1E5UThRSHd0OTFBZWhDTVV2eEtDSVBoVk5lcE0wSVRGTlk2SzJ4V3I5ZUd1ZDNUTno5aVlYN3Y3T09YTys1OHpzbmo0MU05V2FhWG1lVi9HcXZubFdEZWxYekdQTTg3MW1qbk9lVjMyb1VQQzhDZlB2MkFXL1F4Smk2V3BJaENXRFdIWW9kM0lwcUZOUHFFNmNPTlZPL0VDSDZVU3hkcG93aVM1U3pVVFgyV1dNbzdza2s1WnNLZHBWVk92U3FqbExGQ050VGpWR1pMRUwwM0NMYm8yenZxTnJzNFNuYUJVVW5GT0xLUlpXMHlRZW9JTm1oMFVSVlZTNG1uekN0VXV1Y2NiNEd5bW9FYVVpSE9GcklvM2JWRm11VHVkR1Bmc1pRYWMxUlVSSHhxNThUYkdEM1pMTXlMd2x4d2RLdGttYmNaWTRrUjhTN0xYZkZ6Sno5T3NwYmtjOU4rTjBKSXl6Q0NLbVVLM0dtYURFWmUwTFN0MG8xSW85MXdkNkxVTHNQUkdFejJ1R0hhWktTWFJqUnNHNUNicHNscm9lK1JFVGJxRWFZNG4xbnN6b0xQYXVvUlBUSWFMUWhXTGRIblpHbzFtUTlKam9ZN3JFak55YzgyakdLT1dKeTY1R3piNkdXTE9RS2lZNGYyWC9HdmtHR3ovWXFYZ2tzQitUZnJsZ1JnaEhzaXNsTmsxVHhjcGgxZXdOWnpJZVNxVW9KeU1UMDNMamhsME5CcExobkFUbXdPQkt6Y1RMc0VQanBvMTBRTTBEdFp1UjVGeG01UmtMMnFUY0JWT2tLT3NRcm9QVmlHRlRZcHIwc0k3V2dDaGlKRlJwN0h2cVpzblBLSjdleGtDYTh6cHlCdU0wN0RtWGJab2ttSE90cUEzbmlRek1nQkxVRGJwS3BnTzNlMW5QSklPV1BoMmRJRVZDUjdmTDI4ZDBKTXAzZGFTOWZvOXk5QWpuSERlR1Mra0dwNmxsWG5yWnVIRXpmb201d0ZpSU0rSnpHbUdqalRoTWVUa2xUZXlWcTRXYmhKMXBIVVpQRy9Kb2Z0R2U5S3ZiQnIyVGxROW1jcHkrdi9kamdmOTl1bERnMzg4QWYvZjlwd3Y4NjZ2WEFPc1hDL3p6blFuQUp5NFZlT2ZVWW9GL2ZBTjQrMXZRdnoxditXUEhDcnoxYWhGMyttWUYrSnRqMHdYK3ZnNStmL3NFK0Y5VHdQMUZzTi8vRFB6dHZ3VDJlL3VRNTk0UEh1QjV3RjhlQnZudUJ2QzdYNFArN3BmZ1o3Y09mbTVjQVA3R2VkRGYyUVorNXdya3RmTWQ1TE56SFBTdm43SDRJcXhmZjhRaHhObCtGdXkzbjdSOEFQcGJaMEcrOVNiRTJacUd1amEvQVBubTh5RGZlQS9zTnM1Wi9qbmcxMjNlNjVIRktiQmZmd3J3MnIrZ2QyM1o4bzhEdi9hOXhZc2dYNHZCZm0wQy9LLytzMmdSOUZidld2bGwwRjg5YS9FRmk4ZEJmK1VPOENzZlcvNWRpNmZCejRxZGc1VkhMVjhGSFA0TWRzTk5pRE9jQTcyaDFSL2F2SzkrRG5wWEwxaitNZUNYUHdTNzVRWFFYN2IxTE4wQytkSVYwRis2YlBFakszL2I0am1yLzViRlY4RHYwc3VXdDNGK3V1VEI3OENYU2lETTBjb1B6NFNYZjYyNEMwaVdMNGRRcHVZU1BHalZWREtiZEpaSGNzc0Y4TjA1N0Q3a1JEdjNUdGpLUDRJbW8veFFHKzdlSVpPNkhPU1hqREdxNUY5UXdTSGpNWFZJOEdBcThrdzZKOEplS3ZvbnB2SUF4VEw4amxpNk0wSlhJR1Rsdm5VVjRHdE1kQmwrZkFXY3RQR2FPV29xTGdxZUhLanlGZEl5VWoyWnlBUnZzbFlvdVpNVXRYbjMvZ2VZZFN5UUx3b0FBQT09In0= -->
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["word"],"name":[1],"type":["chr"],"align":["left"]},{"label":["count"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"data","2":"163819"},{"1":"can","2":"152230"},{"1":"model","2":"130530"},{"1":"one","2":"97081"},{"1":"test","2":"82679"},{"1":"use","2":"80164"},{"1":"distribution","2":"76698"},{"1":"using","2":"73841"},{"1":"will","2":"71758"},{"1":"two","2":"70154"},{"1":"regression","2":"66577"},{"1":"variables","2":"64723"},{"1":"time","2":"60865"},{"1":"variable","2":"60318"},{"1":"like","2":"59625"},{"1":"values","2":"58028"},{"1":"mean","2":"55247"},{"1":"value","2":"55240"},{"1":"sample","2":"54943"},{"1":"different","2":"52602"},{"1":"also","2":"50089"},{"1":"question","2":"48641"},{"1":"function","2":"48540"},{"1":"number","2":"47609"},{"1":"example","2":"46903"},{"1":"want","2":"46640"},{"1":"random","2":"45973"},{"1":"set","2":"43163"},{"1":"get","2":"42703"},{"1":"way","2":"42480"},{"1":"probability","2":"42404"},{"1":"case","2":"41008"},{"1":"know","2":"40147"},{"1":"just","2":"39918"},{"1":"problem","2":"38635"},{"1":"see","2":"38504"},{"1":"first","2":"38431"},{"1":"linear","2":"37138"},{"1":"need","2":"35717"},{"1":"analysis","2":"34949"},{"1":"variance","2":"34949"},{"1":"models","2":"34498"},{"1":"error","2":"33133"},{"1":"used","2":"33042"},{"1":"given","2":"32808"},{"1":"find","2":"31217"},{"1":"may","2":"31210"},{"1":"however","2":"30976"},{"1":"standard","2":"30363"},{"1":"right","2":"29876"},{"1":"say","2":"28182"},{"1":"think","2":"28150"},{"1":"matrix","2":"27844"},{"1":"results","2":"27362"},{"1":"effect","2":"26950"},{"1":"now","2":"26809"},{"1":"normal","2":"26742"},{"1":"estimate","2":"26569"},{"1":"might","2":"26442"},{"1":"make","2":"25717"},{"1":"means","2":"25328"},{"1":"good","2":"25109"},{"1":"series","2":"24973"},{"1":"size","2":"24602"},{"1":"point","2":"24515"},{"1":"difference","2":"24511"},{"1":"correlation","2":"24509"},{"1":"since","2":"24277"},{"1":"answer","2":"24038"},{"1":"independent","2":"23786"},{"1":"following","2":"23722"},{"1":"based","2":"23487"},{"1":"non","2":"23161"},{"1":"many","2":"23039"},{"1":"fit","2":"22794"},{"1":"method","2":"22773"},{"1":"parameters","2":"22552"},{"1":"sum","2":"22523"},{"1":"possible","2":"22386"},{"1":"well","2":"22376"},{"1":"much","2":"21977"},{"1":"better","2":"21717"},{"1":"points","2":"21570"},{"1":"approach","2":"21214"},{"1":"group","2":"21055"},{"1":"whether","2":"20588"},{"1":"even","2":"20128"},{"1":"frac","2":"19971"},{"1":"best","2":"19729"},{"1":"information","2":"19358"},{"1":"help","2":"19251"},{"1":"look","2":"19102"},{"1":"samples","2":"19005"},{"1":"something","2":"18947"},{"1":"left","2":"18922"},{"1":"statistical","2":"18883"},{"1":"calculate","2":"18787"},{"1":"parameter","2":"18715"},{"1":"level","2":"18501"},{"1":"trying","2":"18086"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[100]},"pages":{}}}
+{"columns":[{"label":["word"],"name":[1],"type":["chr"],"align":["left"]},{"label":["count"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"data","2":"163964"},{"1":"can","2":"152235"},{"1":"model","2":"130669"},{"1":"one","2":"97144"},{"1":"test","2":"82781"},{"1":"use","2":"80179"},{"1":"distribution","2":"76758"},{"1":"using","2":"73850"},{"1":"will","2":"71761"},{"1":"two","2":"70171"},{"1":"regression","2":"66636"},{"1":"variables","2":"65046"},{"1":"time","2":"60955"},{"1":"variable","2":"60366"},{"1":"like","2":"59649"},{"1":"values","2":"58095"},{"1":"value","2":"55313"},{"1":"mean","2":"55306"},{"1":"sample","2":"54997"},{"1":"different","2":"52626"},{"1":"also","2":"50090"},{"1":"question","2":"48646"},{"1":"function","2":"48579"},{"1":"number","2":"47663"},{"1":"example","2":"46908"},{"1":"want","2":"46656"},{"1":"random","2":"46072"},{"1":"set","2":"43188"},{"1":"get","2":"42712"},{"1":"way","2":"42495"},{"1":"probability","2":"42462"},{"1":"case","2":"41019"},{"1":"know","2":"40174"},{"1":"just","2":"39932"},{"1":"problem","2":"38662"},{"1":"see","2":"38513"},{"1":"first","2":"38445"},{"1":"linear","2":"37203"},{"1":"need","2":"35723"},{"1":"models","2":"35353"},{"1":"variance","2":"35009"},{"1":"analysis","2":"35008"},{"1":"error","2":"33206"},{"1":"used","2":"33048"},{"1":"given","2":"32811"},{"1":"find","2":"31223"},{"1":"may","2":"31214"},{"1":"however","2":"30977"},{"1":"standard","2":"30443"},{"1":"right","2":"29934"},{"1":"say","2":"28188"},{"1":"think","2":"28154"},{"1":"matrix","2":"27872"},{"1":"results","2":"27375"},{"1":"effect","2":"27035"},{"1":"normal","2":"26825"},{"1":"now","2":"26813"},{"1":"estimate","2":"26584"},{"1":"might","2":"26445"},{"1":"make","2":"25724"},{"1":"means","2":"25372"},{"1":"good","2":"25217"},{"1":"series","2":"25015"},{"1":"size","2":"24642"},{"1":"correlation","2":"24535"},{"1":"difference","2":"24532"},{"1":"point","2":"24526"},{"1":"since","2":"24277"},{"1":"answer","2":"24053"},{"1":"independent","2":"23817"},{"1":"following","2":"23723"},{"1":"based","2":"23489"},{"1":"non","2":"23223"},{"1":"many","2":"23067"},{"1":"fit","2":"22856"},{"1":"method","2":"22803"},{"1":"parameters","2":"22632"},{"1":"sum","2":"22540"},{"1":"well","2":"22397"},{"1":"possible","2":"22390"},{"1":"much","2":"21987"},{"1":"better","2":"21779"},{"1":"points","2":"21628"},{"1":"approach","2":"21221"},{"1":"group","2":"21108"},{"1":"whether","2":"20589"},{"1":"even","2":"20130"},{"1":"frac","2":"19971"},{"1":"best","2":"19895"},{"1":"information","2":"19378"},{"1":"help","2":"19256"},{"1":"samples","2":"19156"},{"1":"look","2":"19110"},{"1":"something","2":"18958"},{"1":"statistical","2":"18939"},{"1":"left","2":"18931"},{"1":"calculate","2":"18793"},{"1":"parameter","2":"18735"},{"1":"level","2":"18541"},{"1":"effects","2":"18112"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[100]},"pages":{}}}
   </script>
 </div>
 <!-- rnb-frame-end -->
@@ -313,23 +338,111 @@ wordcounts %&gt;% sort(decreasing = TRUE) %&gt;% head(100) %&gt;%
 </div>
 <div id="topic-modeling" class="section level1">
 <h1>Topic modeling</h1>
-<p>Begin by removing sparse terms to get a reasonable vocabulary size.</p>
+<p>From the above list, it looks like I could remove some more stopwords – can, like, get, and so on. Using a list of stopwords defined in <a href="https://dev.mysql.com/doc/refman/5.7/en/fulltext-stopwords.html">MySQL 5.7</a> to update the corpus:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXlzcWxfc3RvcHdvcmRzIDwtIHJlYWQuY3N2KFwiZGF0YS9NeVNRTCBzdG9wd29yZHMudHh0XCIsIGhlYWRlciA9IEZBTFNFLCBzdHJpbmdzQXNGYWN0b3JzID0gRkFMU0UpWywgMV1cbiMgQ291bnQgb2YgYWRkaXRpb25hbCBzdG9wd29yZHNcbmxlbmd0aChteXNxbF9zdG9wd29yZHMpXG5gYGAifQ== -->
+<pre class="r"><code>mysql_stopwords &lt;- read.csv(&quot;data/MySQL stopwords.txt&quot;, header = FALSE, stringsAsFactors = FALSE)[, 1]
+# Count of additional stopwords
+length(mysql_stopwords)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDU0NFxuIn0= -->
+<pre><code>[1] 544</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Try 3 topics just to see what they look like.</p>
-<!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9waWMgPC0gTERBKHNwYXJzZSwgayA9IDMsIG1ldGhvZCA9IFwiVkVNXCIsIGNvbnRyb2wgPSBsaXN0KHNlZWQgPSA2MTU3MCkpXG5gYGAifQ== -->
-<pre class="r"><code>topic &lt;- LDA(sparse, k = 3, method = &quot;VEM&quot;, control = list(seed = 61570))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29ycHVzIDwtIGNvcnB1cyAlPiVcbiAgdG1fbWFwKHJlbW92ZVdvcmRzLCBteXNxbF9zdG9wd29yZHMpICMgUmVtb3ZlIGN1c3RvbSBzdG9wd29yZHNcbmBgYCJ9 -->
+<pre class="r"><code>corpus &lt;- corpus %&gt;%
+  tm_map(removeWords, mysql_stopwords) # Remove custom stopwords</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>Updating the term matrix:</p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVybV9tYXRyaXggPC0gRG9jdW1lbnRUZXJtTWF0cml4KGNvcnB1cylcbmBgYCJ9 -->
+<pre class="r"><code>term_matrix &lt;- DocumentTermMatrix(corpus)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUZXJtIG1hdHJpeCBzdGF0aXN0aWNzXG5wcmludCh0ZXJtX21hdHJpeClcbmBgYCJ9 -->
+<pre class="r"><code># Term matrix statistics
+print(term_matrix)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiPDxEb2N1bWVudFRlcm1NYXRyaXggKGRvY3VtZW50czogOTIzMzUsIHRlcm1zOiA5Njc0NSk+PlxuTm9uLS9zcGFyc2UgZW50cmllczogNjUxNjY2Ni84OTI2NDMyOTA5XG5TcGFyc2l0eSAgICAgICAgICAgOiAxMDAlXG5NYXhpbWFsIHRlcm0gbGVuZ3RoOiA5MTlcbldlaWdodGluZyAgICAgICAgICA6IHRlcm0gZnJlcXVlbmN5ICh0ZilcbiJ9 -->
+<pre><code>&lt;&lt;DocumentTermMatrix (documents: 92335, terms: 96745)&gt;&gt;
+Non-/sparse entries: 6516666/8926432909
+Sparsity           : 100%
+Maximal term length: 919
+Weighting          : term frequency (tf)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmluZEZyZXFUZXJtcyh0ZXJtX21hdHJpeCwgbG93ZnJlcSA9IDMwKSAlPiUgbGVuZ3RoKClcbmBgYCJ9 -->
+<pre class="r"><code>findFreqTerms(term_matrix, lowfreq = 30) %&gt;% length()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDEyMDM1XG4ifQ== -->
+<pre><code>[1] 12035</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Prune sparse terms that appear less than 30 times from the term matrix.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJZGVudGlmeSB3aGljaCB2b2NhYnVsYXJ5IHRlcm1zIHNob3VsZCBiZSBrZXB0XG5zcGFyc2Vfdm9jYWIgPC0ge2NvbF9zdW1zKHRlcm1fbWF0cml4KSA+PSAzMH0gJT4lIHVubmFtZSgpXG4jIElkZW50aWZ5IHdoaWNoIGNvbHVtbnMgaiBvZiB0aGUgbWF0cml4IGNvcnJlc3BvbmQgdG8gdGhlc2UgdGVybXNcbnNwYXJzZV9pbmQgPC0ge3Rlcm1fbWF0cml4JGogJWluJSB7MTpsZW5ndGgodGVybV9tYXRyaXgkZGltbmFtZXMkVGVybXMpfVtzcGFyc2Vfdm9jYWJdfSAlPiUgdW5uYW1lKClcbiMgTWFwIGJldHdlZW4gb2xkIGFuZCBuZXcgY29sdW1uIG51bWJlcnNcbnNwYXJzZV9qbWFwX29sZCA8LSAxOmxlbmd0aChzcGFyc2Vfdm9jYWIpXG5zcGFyc2Vfam1hcF9uZXcgPC0ge2N1bXN1bShzcGFyc2Vfdm9jYWIpICogc3BhcnNlX3ZvY2FifSAlPiUgdW5uYW1lKClcbiMgQ3JlYXRlIHNwYXJzZSBtYXRyaXgga2VlcGluZyB0aGUgZWxlbWVudHMgdGhhdCBtZWV0IHRoZSBhYm92ZSBjcml0ZXJpYVxuc3BhcnNlIDwtIHRlcm1fbWF0cml4XG5zcGFyc2UkaSA8LSBzcGFyc2UkaVtzcGFyc2VfaW5kXVxuc3BhcnNlJGogPC0gc3BhcnNlJGpbc3BhcnNlX2luZF1cbnNwYXJzZSRqIDwtIHNwYXJzZV9qbWFwX25ld1tzcGFyc2Ukal1cbnNwYXJzZSR2IDwtIHNwYXJzZSR2W3NwYXJzZV9pbmRdXG5zcGFyc2UkbmNvbCA8LSBzdW0oc3BhcnNlX3ZvY2FiKVxuc3BhcnNlJGRpbW5hbWVzJFRlcm1zIDwtIHNwYXJzZSRkaW1uYW1lcyRUZXJtc1tzcGFyc2Vfdm9jYWJdXG4jIENsZWFudXBcbnJlbW92ZShzcGFyc2Vfdm9jYWIsIHNwYXJzZV9pbmQsIHNwYXJzZV9qbWFwX29sZCwgc3BhcnNlX2ptYXBfbmV3KVxuYGBgIn0= -->
+<pre class="r"><code># Identify which vocabulary terms should be kept
+sparse_vocab &lt;- {col_sums(term_matrix) &gt;= 30} %&gt;% unname()
+# Identify which columns j of the matrix correspond to these terms
+sparse_ind &lt;- {term_matrix$j %in% {1:length(term_matrix$dimnames$Terms)}[sparse_vocab]} %&gt;% unname()
+# Map between old and new column numbers
+sparse_jmap_old &lt;- 1:length(sparse_vocab)
+sparse_jmap_new &lt;- {cumsum(sparse_vocab) * sparse_vocab} %&gt;% unname()
+# Create sparse matrix keeping the elements that meet the above criteria
+sparse &lt;- term_matrix
+sparse$i &lt;- sparse$i[sparse_ind]
+sparse$j &lt;- sparse$j[sparse_ind]
+sparse$j &lt;- sparse_jmap_new[sparse$j]
+sparse$v &lt;- sparse$v[sparse_ind]
+sparse$ncol &lt;- sum(sparse_vocab)
+sparse$dimnames$Terms &lt;- sparse$dimnames$Terms[sparse_vocab]
+# Cleanup
+remove(sparse_vocab, sparse_ind, sparse_jmap_old, sparse_jmap_new)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Check that the new top vocabulary does not still contain stopwords.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBOZXcgdG9wIHZvY2FidWxhcnlcbmNvbF9zdW1zKHNwYXJzZSkgJT4lIHNvcnQoZGVjcmVhc2luZyA9IFRSVUUpICU+JSBoZWFkKDEwMCkgJT4lXG4gIGRhdGEuZnJhbWUod29yZCA9IG5hbWVzKC4pLCBjb3VudCA9IC4sIHJvdy5uYW1lcyA9IE5VTEwsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGQUxTRSlcbmBgYCJ9 -->
+<pre class="r"><code># New top vocabulary
+col_sums(sparse) %&gt;% sort(decreasing = TRUE) %&gt;% head(100) %&gt;%
+  data.frame(word = names(.), count = ., row.names = NULL, stringsAsFactors = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibmNvbCI6MiwibnJvdyI6MTAwfSwicmRmIjoiSDRzSUFBQUFBQUFBQmwxV1RXemNSQlIyMTk3Zk5LVVNFaUFRUDJlazVoQ0p3Z0dKQXVYRXJhY0tnY1NzUGQ0ZDdkampqdTFOVWxHSXVIRGhBRndSVWdRSExoeTQ4QytrQ0E0Z0pXbVRVUEtIUUdsVkdnazFhc1NmT0xXTS9kNDhPMWxwL2MzN25UZnZ2WG4ydWJQbnAzdm5lNDdqTkJ6WE0wL1hMTDJHZVJ4elBLZGI0S3pqdVBlV0NvNXowdndERkhnQnl4aXVtNUVLdUxTQ2pLY1pybzhISXMyMDZPZVpVREh5ZXBvUE5FL1RpdE1kTXkxWVgvS1VYSWlJNDdwamhVaTN4a3ptcE5sS1daU1FySFBCU0dwYmRjSTg5bXQwSzg2alB0ZVcwaXdPVklTVW0zSWI5VVNpVlovMWhSVFpuSTNJWjZuZHBWMklKYmVHTFNsaXpzaHBtWXIwVVBDeFR3R3ltTW01VkZoNWsydXRyS2tYaXRobXQ1Tm1KamltQTNMTFRCNW5iUVFtZjduTUtBazhETG1mMFNHVmpwaXRScWRJaURHMkVYZ1JHM0VxRzJjeDVYeWdGTzJXY2kycWFxVGlvaldaOEpYV1hMSjZQUU5odHRlOE9tVXpVU0ttY013V001VHpDWE5Fbm5EeklJVm0zNlRXN3V5R2dnd2puZzBwcEY3Q05ETWNybE1xV0U0bEtEZWtwTFBFVklqNVE3dkJRS3M4b1NScjVsZkJoRVd1YW9kcFF6OVpWeE9tREpscFllRlRRajNKUXh0aTE3RDlYRmJaN1ZLVWRtL0p4M1F6MmxDbnlya1l4Q0kwdmlrWDdUSzlWRXFYVTBQMEtKS3E5VVd0OVh0U2pMZ1V3NnFJcmxRRG01SElkSXVvS1EvbkVwVU5lZFdJWHFaemt1YW1QTHBzUURvRjB3UHFJTjkwdUZYMVZSeUtvRlo3TDVFcW81cXBKRC9VSzIyb3FkMjFYY3lRNnQ0MWk4bGhaY2RWMzNUaHVMUW0vWVQ1STBhUk5KVU9LTk9kVERNUmk5aWUyWnRSZW1RVlUzTWhxQXBzekhYbHBBVjN5VkloODdQcVJ2WTV6YmlPNmJBaUh1dW1WWFpWZFh2RTJIcWNyQTg5YWtwcFprUXR2STZwVGxsTzY4NGZzcGlDYXB2YUNrbERwY3ZrUUdtUkRhTXFqeXpOdFZWM2RVNFpOcTN2bStsS0tUV1R0Q0s0amxLek9GSE04V2M5ZDllZ2MrYnV6ZFVTLzM0QzhNOXZYeTN4NE94aWliZS9BOXovSHZqN2MwRGZlZ1hzLzloWktIRnZFZmg3WDRMZTNnc2d2L21HVStMdjk4MlhlT01iMEx2UkJyM3J1MEJmZnh6b2E4OC9CdmlBUmJEZlBRMTZ2MTBDL1BWcndGK2VBdmtPK3QwSkVhZlBsTGo5TDhpM0h3WGMrZ0Z4QWVSYkVlaHZuWVQ0TnY5WlJBUzl6YitRZnduME41OEQzRGhBUEFkNkc1aXZqUWVSZGdGL3huMnZmZ1g2Vno4QStxZDUwRisvQmY3WFB3UCsrdXZJZnczeEpiQmJmeEhwaDRCZSt4VDAxejRDKzdYM2tQODJZb1Q4WjVEdWdQN3FiZUN2N2x0RS9qYmlDdkovUlB3RTlsMzlHUHlzZm9oOGp2b3ZJejZKOG1ta0gwYTcrNEcrOGgvWVhWbERlZ2x4QWZsdkluMGE4UExud0wvOFB0THZJRDJMK0RSaUEzRGxDOUJidVlqWUExdytRRVQ1OGx1SUY4QnUrUkdnbHpBZlMrODY4RHYwSWRTTVdYR1Q0Q09vVVJzeU5DUjlsWnRCZnRpcXE5WE1sTFdjTEN6bndYZHcxTDB2V1dyZFcyYXZtSTlUWWZGS01kU2RJeVp0bGNDRWNSckZCMXJ6aVBFeGZZUnhUeDRYa1FTbi9HRWVqMDRWVmVxVll2aE40anFvclJ1d1plTXV1bXJTRjBjOE1GODkxZXVoVHkrNUUrYkU1WUduRWwxOUJmUU1ONTNLVkViejA3dzZwT1dVWjNQdS9BK1pwODJlamdvQUFBPT0ifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["word"],"name":[1],"type":["chr"],"align":["left"]},{"label":["count"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"data","2":"163964"},{"1":"model","2":"130669"},{"1":"test","2":"82781"},{"1":"distribution","2":"76758"},{"1":"regression","2":"66636"},{"1":"variables","2":"65046"},{"1":"time","2":"60955"},{"1":"variable","2":"60366"},{"1":"values","2":"58095"},{"1":"sample","2":"54997"},{"1":"question","2":"48646"},{"1":"function","2":"48579"},{"1":"number","2":"47663"},{"1":"random","2":"46072"},{"1":"set","2":"43188"},{"1":"probability","2":"42462"},{"1":"case","2":"41019"},{"1":"problem","2":"38662"},{"1":"linear","2":"37203"},{"1":"models","2":"35353"},{"1":"variance","2":"35009"},{"1":"analysis","2":"35008"},{"1":"error","2":"33206"},{"1":"find","2":"31223"},{"1":"standard","2":"30443"},{"1":"matrix","2":"27872"},{"1":"results","2":"27375"},{"1":"effect","2":"27035"},{"1":"normal","2":"26825"},{"1":"estimate","2":"26584"},{"1":"make","2":"25724"},{"1":"means","2":"25372"},{"1":"good","2":"25217"},{"1":"series","2":"25015"},{"1":"size","2":"24642"},{"1":"correlation","2":"24535"},{"1":"difference","2":"24532"},{"1":"point","2":"24526"},{"1":"answer","2":"24053"},{"1":"independent","2":"23817"},{"1":"based","2":"23489"},{"1":"fit","2":"22856"},{"1":"method","2":"22803"},{"1":"parameters","2":"22632"},{"1":"sum","2":"22540"},{"1":"points","2":"21628"},{"1":"approach","2":"21221"},{"1":"group","2":"21108"},{"1":"frac","2":"19971"},{"1":"information","2":"19378"},{"1":"samples","2":"19156"},{"1":"statistical","2":"18939"},{"1":"left","2":"18931"},{"1":"calculate","2":"18793"},{"1":"parameter","2":"18735"},{"1":"level","2":"18541"},{"1":"effects","2":"18112"},{"1":"significant","2":"18062"},{"1":"correct","2":"17993"},{"1":"end","2":"17969"},{"1":"statistics","2":"17846"},{"1":"simple","2":"17661"},{"1":"likelihood","2":"17440"},{"1":"log","2":"17342"},{"1":"multiple","2":"17334"},{"1":"hypothesis","2":"17332"},{"1":"true","2":"17252"},{"1":"understand","2":"17206"},{"1":"large","2":"17186"},{"1":"code","2":"17075"},{"1":"confidence","2":"17053"},{"1":"plot","2":"17034"},{"1":"population","2":"16788"},{"1":"methods","2":"16752"},{"1":"dataset","2":"16605"},{"1":"tests","2":"16584"},{"1":"observations","2":"16503"},{"1":"package","2":"16476"},{"1":"order","2":"16369"},{"1":"training","2":"16290"},{"1":"work","2":"16278"},{"1":"small","2":"16193"},{"1":"average","2":"16132"},{"1":"result","2":"15980"},{"1":"factor","2":"15725"},{"1":"beta","2":"15670"},{"1":"interval","2":"15649"},{"1":"groups","2":"15601"},{"1":"give","2":"15481"},{"1":"distributions","2":"15365"},{"1":"learning","2":"15214"},{"1":"logistic","2":"15092"},{"1":"change","2":"14868"},{"1":"similar","2":"14816"},{"1":"algorithm","2":"14702"},{"1":"measure","2":"14606"},{"1":"run","2":"14563"},{"1":"process","2":"14396"},{"1":"times","2":"14299"},{"1":"terms","2":"14114"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[100]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Looks good. Try fitting a 15-topic model.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudG9waWMgPC0gTERBKHNwYXJzZSwgayA9IDE1LCBtZXRob2QgPSBcIlZFTVwiLCBjb250cm9sID0gbGlzdChzZWVkID0gNjE1NzAsIHZlcmJvc2UgPSAxKSlcbmBgYCJ9 -->
+<pre class="r"><code>topic &lt;- LDA(sparse, k = 15, method = &quot;VEM&quot;, control = list(seed = 61570, verbose = 1))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>The top 20 terms for each topic follow.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVybXModG9waWMsIDIwKSAlPiUgZGF0YS5mcmFtZShzdHJpbmdzQXNGYWN0b3JzID0gRkFMU0UpXG5gYGAifQ== -->
+<pre class="r"><code>terms(topic, 20) %&gt;% data.frame(stringsAsFactors = FALSE)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkZpcnN0IExEQSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgR29hbHMNCg0KICAqIENyZWF0ZSBhIHN1aXRhYmxlIGNvcnB1cyBmcm9tIHRoZSBkYXRhc2V0DQogICogU2VlIGhvdyBhIHNpbXBsZSB0b3BpYyBtb2RlbCBwZXJmb3JtcyBhcyBhIGJhc2VsaW5lIGZvciBjb21wYXJpbmcgb3RoZXIgbWV0aG9kcw0KICANCiMgQ29ycHVzIGNsZWFuaW5nICANCg0KICAqIFBlcmZvcm0gc3RhbmRhcmQgY2xlYW5pbmcsIGUuZy4gcHVuY3R1YXRpb24gYW5kIG51bWJlciByZW1vdmFsLCB1bmlmb3JtIGNhc2UsIGV0Yy4NCiAgKiBJZGVudGlmeSBhIHN1aXRhYmxlIHNldCBvZiBzdG9wd29yZHMgZm9yIHVzZSB0aHJvdWdob3V0DQoNCiMgTGlicmFyaWVzIHVzZWQNCg0KYGBge3IsIHdhcm5pbmc9RiwgbWVzc2FnZT1GLCBlcnJvcj1GLCBjb21tZW50PUZ9DQpsaWJyYXJ5KGRwbHlyKQ0KbGlicmFyeShnZ3Bsb3QyKQ0KbGlicmFyeShzdHJpbmdyKQ0KbGlicmFyeSh0bSkNCmxpYnJhcnkoc2xhbSkNCmxpYnJhcnkodG9waWNtb2RlbHMpDQpgYGANCg0KIyBMb2FkIHRoZSBkYXRhDQoNClRoaXMgc2VjdGlvbiBwYXJzZXMgdGhlIHppcHBlZCBgcG9zdHMuY3N2YCBjcmVhdGVkIGJ5IFswMy1kYXRhZmlsZS1jb25zdHJ1Y3Rpb24uUm1kXShodHRwczovL2dpdGh1Yi5jb20vcGhpdmVseS91Y2hpY2Fnby10aGVzaXMvYmxvYi9tYXN0ZXIvMDMtZGF0YWZpbGUtY29uc3RydWN0aW9uLlJtZCkNCg0KU291cmNlIGNvZGU6IFtyZWFkLVBvc3RzRGF0YS16aXAuUl0oaHR0cHM6Ly9naXRodWIuY29tL3BoaXZlbHkvdWNoaWNhZ28tdGhlc2lzL2Jsb2IvbWFzdGVyL1IvcmVhZC1Qb3N0c0RhdGEtemlwLlIpDQoNCmBgYHtyLCBtZXNzYWdlPUZ9DQpzb3VyY2UoIlIvcmVhZC1Qb3N0c0RhdGEtemlwLlIiKQ0KYGBgDQoNCiMgVGV4dCBjbGVhbmluZw0KDQpTZWUgUidzIHByZWRlZmluZWQgdGV4dCBwYXR0ZXJucy4NCg0KYGBge3J9DQpzZWVfcGF0dGVybiA8LSBmdW5jdGlvbihwYXR0ZXJuKSB7DQogIGFzLnJhdygxOigyXjggLSAxKSkgJT4lIHJhd1RvQ2hhcigpICU+JSBzdHJfcmVwbGFjZV9hbGwoLiwgcGFzdGUoIlteIiwgcGF0dGVybiwgIl0iKSwgIiIpICU+JSB0cmltd3MoKSAlPiUgcHJpbnQoKQ0KfQ0KDQpzZWVfcGF0dGVybigiWzpwdW5jdDpdIikNCmBgYA0KDQpOb3RlIHRoYXQgWzpwdW5jdDpdIGluY2x1ZGVzIGFwb3N0cm9waGVzIHdoaWNoIGNvdWxkIGJlIHByb2JsZW1hdGljIGZvciBpZGVudGlmeWluZyBzdG9wd29yZHMgaW4gbGF0ZXIgc3RlcHMuIFRyeSBhIGN1c3RvbSBzdHJpbmcgaW5zdGVhZC4NCg0KYGBge3J9DQpzZWVfcGF0dGVybigiXls6bGV0dGVyOl1bOnNwYWNlOl0nIikNCmBgYA0KDQpgYGB7cn0NCm1lcmdlZCA8LSBtZXJnZWQgJT4lIG11dGF0ZSgNCiAgIyBDb252ZXJ0IGV2ZXJ5dGhpbmcgdG8gbG93ZXItY2FzZQ0KICBDbGVhbkJvZHkgPSBzdHJfdG9fbG93ZXIoQ2xlYW5Cb2R5KSwNCiAgIyBSZXBsYWNlIGV2ZXJ5dGhpbmcgZXhjZXB0IGxldHRlcnMsIHNwYWNlcywgYW5kIGFwb3N0cm9waGVzIHdpdGggc3BhY2UNCiAgQ2xlYW5Cb2R5ID0gc3RyX3JlcGxhY2VfYWxsKENsZWFuQm9keSwgIlteWzpsZXR0ZXI6XVs6c3BhY2U6XSddIiwgIiAiKSwNCiAgIyBSZXBsYWNlIG11bHRpcGxlIHdoaXRlc3BhY2VzIHdpdGggYSBzaW5nbGUgc3BhY2UNCiAgQ2xlYW5Cb2R5ID0gc3RyX3JlcGxhY2VfYWxsKENsZWFuQm9keSwgIlxccysiLCAiICIpDQopDQpgYGANCg0KIyBDb3JwdXMgY3JlYXRpb24NCg0KVGhlIHRtIHBhY2thZ2UgaW5jbHVkZXMgYSBmZXcgc3RhbmRhcmQgRW5nbGlzaCBzdG9wd29yZHMgd2hpY2ggSSdsbCB1c2UgdG8gZ2V0IHRoaW5ncyBzdGFydGVkLg0KDQpgYGB7cn0NCmNvcnB1cyA8LSBDb3JwdXMoVmVjdG9yU291cmNlKG1lcmdlZCRDbGVhbkJvZHkpKSAlPiUgIyBSZWFkIGluIHRoZSBtZXJnZWQgcG9zdHMNCiAgdG1fbWFwKHJlbW92ZVdvcmRzLCBzdG9wd29yZHMoImVuZ2xpc2giKSkgJT4lICMgU3RyaXAgc3RhbmRhcmQgc3RvcHdvcmRzDQogIHRtX21hcChyZW1vdmVQdW5jdHVhdGlvbikgIyBTdHJpcCBhbnkgcmVtYWluaW5nIGFwb3N0cm9waGVzDQpgYGANCg0KTmV4dCwgY29uc3RydWN0IHRoZSBkb2N1bWVudC10ZXJtIG1hdHJpeC4NCg0KYGBge3J9DQp0ZXJtX21hdHJpeCA8LSBEb2N1bWVudFRlcm1NYXRyaXgoY29ycHVzKQ0KYGBgDQoNClNvbWUgc3VtbWFyeSBzdGF0aXN0aWNzLg0KDQpgYGB7cn0NCiMgVGVybSBtYXRyaXggc3RhdGlzdGljcw0KcHJpbnQodGVybV9tYXRyaXgpDQoNCiMgTnVtYmVyIG9mIHRlcm1zIGFwcGVhcmluZyBhdCBsZWFzdCB4IHRpbWVzDQpmaW5kRnJlcVRlcm1zKHRlcm1fbWF0cml4LCBsb3dmcmVxID0gMTUpICU+JSBsZW5ndGgoKQ0KZmluZEZyZXFUZXJtcyh0ZXJtX21hdHJpeCwgbG93ZnJlcSA9IDIwKSAlPiUgbGVuZ3RoKCkNCmZpbmRGcmVxVGVybXModGVybV9tYXRyaXgsIGxvd2ZyZXEgPSAyNSkgJT4lIGxlbmd0aCgpDQpmaW5kRnJlcVRlcm1zKHRlcm1fbWF0cml4LCBsb3dmcmVxID0gMzApICU+JSBsZW5ndGgoKQ0KYGBgDQoNCmByIHtmaW5kRnJlcVRlcm1zKHRlcm1fbWF0cml4LCBsb3dmcmVxID0gMzApICU+JSBsZW5ndGgoKX1gIHdvcmRzIGFwcGVhciAzMCBvciBtb3JlIHRpbWVzLiBUaGUgbW9zdCBmcmVxdWVudGx5IG9jY3VycmluZyB3b3JkcyBhcmUgYXMgZm9sbG93cy4NCg0KYGBge3J9DQojIFdvcmQgY291bnRzIHdpdGggc2xhbTo6Y29sX3N1bXMNCndvcmRjb3VudHMgPC0gY29sX3N1bXModGVybV9tYXRyaXgpDQojIFByaW50IHRoZSB0b3AgNTAgd29yZHMNCndvcmRjb3VudHMgJT4lIHNvcnQoZGVjcmVhc2luZyA9IFRSVUUpICU+JSBoZWFkKDEwMCkgJT4lDQogIGRhdGEuZnJhbWUod29yZCA9IG5hbWVzKC4pLCBjb3VudCA9IC4sIHJvdy5uYW1lcyA9IE5VTEwsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGQUxTRSkNCmBgYA0KDQojIFRvcGljIG1vZGVsaW5nDQoNCkJlZ2luIGJ5IHJlbW92aW5nIHNwYXJzZSB0ZXJtcyB0byBnZXQgYSByZWFzb25hYmxlIHZvY2FidWxhcnkgc2l6ZS4NCg0KYGBge3J9DQpzcGFyc2UgPC0gcmVtb3ZlU3BhcnNlVGVybXModGVybV9tYXRyaXgsIC45OSkNCmBgYA0KDQpUcnkgMyB0b3BpY3MganVzdCB0byBzZWUgd2hhdCB0aGV5IGxvb2sgbGlrZS4NCg0KYGBge3J9DQp0b3BpYyA8LSBMREEoc3BhcnNlLCBrID0gMywgbWV0aG9kID0gIlZFTSIsIGNvbnRyb2wgPSBsaXN0KHNlZWQgPSA2MTU3MCkpDQpgYGANCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkZpcnN0IExEQSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgR29hbHMNCg0KICAqIENyZWF0ZSBhIHN1aXRhYmxlIGNvcnB1cyBmcm9tIHRoZSBkYXRhc2V0DQogICogU2VlIGhvdyBhIHNpbXBsZSB0b3BpYyBtb2RlbCBwZXJmb3JtcyBhcyBhIGJhc2VsaW5lIGZvciBjb21wYXJpbmcgb3RoZXIgbWV0aG9kcw0KICANCiMgQ29ycHVzIGNsZWFuaW5nICANCg0KICAqIFBlcmZvcm0gc3RhbmRhcmQgY2xlYW5pbmcsIGUuZy4gcHVuY3R1YXRpb24gYW5kIG51bWJlciByZW1vdmFsLCB1bmlmb3JtIGNhc2UsIGV0Yy4NCiAgKiBJZGVudGlmeSBhIHN1aXRhYmxlIHNldCBvZiBzdG9wd29yZHMgZm9yIHVzZSB0aHJvdWdob3V0DQoNCiMgTGlicmFyaWVzIHVzZWQNCg0KYGBge3IsIHdhcm5pbmc9RiwgbWVzc2FnZT1GLCBlcnJvcj1GLCBjb21tZW50PUZ9DQpsaWJyYXJ5KGRwbHlyKQ0KbGlicmFyeShnZ3Bsb3QyKQ0KbGlicmFyeShzdHJpbmdyKQ0KbGlicmFyeSh0bSkNCmxpYnJhcnkoc2xhbSkNCmxpYnJhcnkodG9waWNtb2RlbHMpDQpgYGANCg0KIyBMb2FkIHRoZSBkYXRhDQoNClRoaXMgc2VjdGlvbiBwYXJzZXMgdGhlIHppcHBlZCBgcG9zdHMuY3N2YCBjcmVhdGVkIGJ5IFswMy1kYXRhZmlsZS1jb25zdHJ1Y3Rpb24uUm1kXShodHRwczovL2dpdGh1Yi5jb20vcGhpdmVseS91Y2hpY2Fnby10aGVzaXMvYmxvYi9tYXN0ZXIvMDMtZGF0YWZpbGUtY29uc3RydWN0aW9uLlJtZCkNCg0KU291cmNlIGNvZGU6IFtyZWFkLVBvc3RzRGF0YS16aXAuUl0oaHR0cHM6Ly9naXRodWIuY29tL3BoaXZlbHkvdWNoaWNhZ28tdGhlc2lzL2Jsb2IvbWFzdGVyL1IvcmVhZC1Qb3N0c0RhdGEtemlwLlIpDQoNCmBgYHtyLCBtZXNzYWdlPUZ9DQpzb3VyY2UoIlIvcmVhZC1Qb3N0c0RhdGEtemlwLlIiKQ0KYGBgDQoNCiMgVGV4dCBjbGVhbmluZw0KDQpTZWUgUidzIHByZWRlZmluZWQgdGV4dCBwYXR0ZXJucy4NCg0KYGBge3J9DQpzZWVfcGF0dGVybiA8LSBmdW5jdGlvbihwYXR0ZXJuKSB7DQogIGFzLnJhdygxOigyXjggLSAxKSkgJT4lIHJhd1RvQ2hhcigpICU+JSBzdHJfcmVwbGFjZV9hbGwoLiwgcGFzdGUoIlteIiwgcGF0dGVybiwgIl0iKSwgIiIpICU+JSB0cmltd3MoKSAlPiUgcHJpbnQoKQ0KfQ0KDQpzZWVfcGF0dGVybigiWzpwdW5jdDpdIikNCmBgYA0KDQpOb3RlIHRoYXQgWzpwdW5jdDpdIGluY2x1ZGVzIGFwb3N0cm9waGVzIHdoaWNoIGNvdWxkIGJlIHByb2JsZW1hdGljIGZvciBpZGVudGlmeWluZyBzdG9wd29yZHMgaW4gbGF0ZXIgc3RlcHMuIFRyeSBhIGN1c3RvbSBzdHJpbmcgaW5zdGVhZC4NCg0KYGBge3J9DQpzZWVfcGF0dGVybigiXls6bGV0dGVyOl1bOnNwYWNlOl0nIikNCmBgYA0KDQpgYGB7cn0NCm1lcmdlZCA8LSBtZXJnZWQgJT4lIG11dGF0ZSgNCiAgIyBDb252ZXJ0IGV2ZXJ5dGhpbmcgdG8gbG93ZXItY2FzZQ0KICBDbGVhbkJvZHkgPSBzdHJfdG9fbG93ZXIoQ2xlYW5Cb2R5KSwNCiAgIyBSZXBsYWNlIGV2ZXJ5dGhpbmcgZXhjZXB0IGxldHRlcnMsIHNwYWNlcywgYW5kIGFwb3N0cm9waGVzIHdpdGggc3BhY2UNCiAgQ2xlYW5Cb2R5ID0gc3RyX3JlcGxhY2VfYWxsKENsZWFuQm9keSwgIlteWzpsZXR0ZXI6XVs6c3BhY2U6XSddIiwgIiAiKSwNCiAgIyBSZXBsYWNlIG11bHRpcGxlIHdoaXRlc3BhY2VzIHdpdGggYSBzaW5nbGUgc3BhY2UNCiAgQ2xlYW5Cb2R5ID0gc3RyX3JlcGxhY2VfYWxsKENsZWFuQm9keSwgIlxccysiLCAiICIpDQopDQpgYGANCg0KIyBDb3JwdXMgY3JlYXRpb24NCg0KVGhlIHRtIHBhY2thZ2UgaW5jbHVkZXMgYSBmZXcgc3RhbmRhcmQgRW5nbGlzaCBzdG9wd29yZHMgd2hpY2ggSSdsbCB1c2UgdG8gZ2V0IHRoaW5ncyBzdGFydGVkLg0KDQpgYGB7cn0NCmNvcnB1cyA8LSBDb3JwdXMoVmVjdG9yU291cmNlKG1lcmdlZCRDbGVhbkJvZHkpKSAlPiUgIyBSZWFkIGluIHRoZSBtZXJnZWQgcG9zdHMNCiAgdG1fbWFwKHJlbW92ZVdvcmRzLCBzdG9wd29yZHMoImVuZ2xpc2giKSkgJT4lICMgU3RyaXAgc3RhbmRhcmQgc3RvcHdvcmRzDQogIHRtX21hcChyZW1vdmVQdW5jdHVhdGlvbikgIyBTdHJpcCBhbnkgcmVtYWluaW5nIGFwb3N0cm9waGVzDQpgYGANCg0KTmV4dCwgY29uc3RydWN0IHRoZSBkb2N1bWVudC10ZXJtIG1hdHJpeC4NCg0KYGBge3J9DQp0ZXJtX21hdHJpeCA8LSBEb2N1bWVudFRlcm1NYXRyaXgoY29ycHVzKQ0KYGBgDQoNClNvbWUgc3VtbWFyeSBzdGF0aXN0aWNzLg0KDQpgYGB7cn0NCiMgVGVybSBtYXRyaXggc3RhdGlzdGljcw0KcHJpbnQodGVybV9tYXRyaXgpDQoNCiMgTnVtYmVyIG9mIHRlcm1zIGFwcGVhcmluZyBhdCBsZWFzdCB4IHRpbWVzDQpmaW5kRnJlcVRlcm1zKHRlcm1fbWF0cml4LCBsb3dmcmVxID0gMTUpICU+JSBsZW5ndGgoKQ0KZmluZEZyZXFUZXJtcyh0ZXJtX21hdHJpeCwgbG93ZnJlcSA9IDIwKSAlPiUgbGVuZ3RoKCkNCmZpbmRGcmVxVGVybXModGVybV9tYXRyaXgsIGxvd2ZyZXEgPSAyNSkgJT4lIGxlbmd0aCgpDQpmaW5kRnJlcVRlcm1zKHRlcm1fbWF0cml4LCBsb3dmcmVxID0gMzApICU+JSBsZW5ndGgoKQ0KYGBgDQoNCk92ZXIgMTIsMDAwIHdvcmRzIGFwcGVhciAzMCBvciBtb3JlIHRpbWVzLiBUaGUgbW9zdCBmcmVxdWVudGx5IG9jY3VycmluZyB3b3JkcyBhcmUgYXMgZm9sbG93cy4NCg0KYGBge3J9DQojIFdvcmQgY291bnRzIHdpdGggc2xhbTo6Y29sX3N1bXMNCndvcmRjb3VudHMgPC0gY29sX3N1bXModGVybV9tYXRyaXgpDQojIFByaW50IHRoZSB0b3AgNTAgd29yZHMNCndvcmRjb3VudHMgJT4lIHNvcnQoZGVjcmVhc2luZyA9IFRSVUUpICU+JSBoZWFkKDEwMCkgJT4lDQogIGRhdGEuZnJhbWUod29yZCA9IG5hbWVzKC4pLCBjb3VudCA9IC4sIHJvdy5uYW1lcyA9IE5VTEwsIHN0cmluZ3NBc0ZhY3RvcnMgPSBGQUxTRSkNCmBgYA0KDQojIFRvcGljIG1vZGVsaW5nDQoNCkZyb20gdGhlIGFib3ZlIGxpc3QsIGl0IGxvb2tzIGxpa2UgSSBjb3VsZCByZW1vdmUgc29tZSBtb3JlIHN0b3B3b3JkcyAtLSBjYW4sIGxpa2UsIGdldCwgYW5kIHNvIG9uLiBVc2luZyBhIGxpc3Qgb2Ygc3RvcHdvcmRzIGRlZmluZWQgaW4gW015U1FMIDUuN10oaHR0cHM6Ly9kZXYubXlzcWwuY29tL2RvYy9yZWZtYW4vNS43L2VuL2Z1bGx0ZXh0LXN0b3B3b3Jkcy5odG1sKSB0byB1cGRhdGUgdGhlIGNvcnB1czoNCg0KYGBge3J9DQpteXNxbF9zdG9wd29yZHMgPC0gcmVhZC5jc3YoImRhdGEvTXlTUUwgc3RvcHdvcmRzLnR4dCIsIGhlYWRlciA9IEZBTFNFLCBzdHJpbmdzQXNGYWN0b3JzID0gRkFMU0UpWywgMV0NCg0KIyBDb3VudCBvZiBhZGRpdGlvbmFsIHN0b3B3b3Jkcw0KbGVuZ3RoKG15c3FsX3N0b3B3b3JkcykNCmBgYA0KYGBge3J9DQpjb3JwdXMgPC0gY29ycHVzICU+JQ0KICB0bV9tYXAocmVtb3ZlV29yZHMsIG15c3FsX3N0b3B3b3JkcykgIyBSZW1vdmUgY3VzdG9tIHN0b3B3b3Jkcw0KYGBgDQoNClVwZGF0aW5nIHRoZSB0ZXJtIG1hdHJpeDoNCg0KYGBge3J9DQp0ZXJtX21hdHJpeCA8LSBEb2N1bWVudFRlcm1NYXRyaXgoY29ycHVzKQ0KYGBgDQpgYGB7cn0NCiMgVGVybSBtYXRyaXggc3RhdGlzdGljcw0KcHJpbnQodGVybV9tYXRyaXgpDQoNCmZpbmRGcmVxVGVybXModGVybV9tYXRyaXgsIGxvd2ZyZXEgPSAzMCkgJT4lIGxlbmd0aCgpDQpgYGANCg0KUHJ1bmUgc3BhcnNlIHRlcm1zIHRoYXQgYXBwZWFyIGxlc3MgdGhhbiAzMCB0aW1lcyBmcm9tIHRoZSB0ZXJtIG1hdHJpeC4NCg0KYGBge3J9DQojIElkZW50aWZ5IHdoaWNoIHZvY2FidWxhcnkgdGVybXMgc2hvdWxkIGJlIGtlcHQNCnNwYXJzZV92b2NhYiA8LSB7Y29sX3N1bXModGVybV9tYXRyaXgpID49IDMwfSAlPiUgdW5uYW1lKCkNCiMgSWRlbnRpZnkgd2hpY2ggY29sdW1ucyBqIG9mIHRoZSBtYXRyaXggY29ycmVzcG9uZCB0byB0aGVzZSB0ZXJtcw0Kc3BhcnNlX2luZCA8LSB7dGVybV9tYXRyaXgkaiAlaW4lIHsxOmxlbmd0aCh0ZXJtX21hdHJpeCRkaW1uYW1lcyRUZXJtcyl9W3NwYXJzZV92b2NhYl19ICU+JSB1bm5hbWUoKQ0KIyBNYXAgYmV0d2VlbiBvbGQgYW5kIG5ldyBjb2x1bW4gbnVtYmVycw0Kc3BhcnNlX2ptYXBfb2xkIDwtIDE6bGVuZ3RoKHNwYXJzZV92b2NhYikNCnNwYXJzZV9qbWFwX25ldyA8LSB7Y3Vtc3VtKHNwYXJzZV92b2NhYikgKiBzcGFyc2Vfdm9jYWJ9ICU+JSB1bm5hbWUoKQ0KDQojIENyZWF0ZSBzcGFyc2UgbWF0cml4IGtlZXBpbmcgdGhlIGVsZW1lbnRzIHRoYXQgbWVldCB0aGUgYWJvdmUgY3JpdGVyaWENCnNwYXJzZSA8LSB0ZXJtX21hdHJpeA0Kc3BhcnNlJGkgPC0gc3BhcnNlJGlbc3BhcnNlX2luZF0NCnNwYXJzZSRqIDwtIHNwYXJzZSRqW3NwYXJzZV9pbmRdDQpzcGFyc2UkaiA8LSBzcGFyc2Vfam1hcF9uZXdbc3BhcnNlJGpdDQpzcGFyc2UkdiA8LSBzcGFyc2UkdltzcGFyc2VfaW5kXQ0Kc3BhcnNlJG5jb2wgPC0gc3VtKHNwYXJzZV92b2NhYikNCnNwYXJzZSRkaW1uYW1lcyRUZXJtcyA8LSBzcGFyc2UkZGltbmFtZXMkVGVybXNbc3BhcnNlX3ZvY2FiXQ0KDQojIENsZWFudXANCnJlbW92ZShzcGFyc2Vfdm9jYWIsIHNwYXJzZV9pbmQsIHNwYXJzZV9qbWFwX29sZCwgc3BhcnNlX2ptYXBfbmV3KQ0KYGBgDQoNCkNoZWNrIHRoYXQgdGhlIG5ldyB0b3Agdm9jYWJ1bGFyeSBkb2VzIG5vdCBzdGlsbCBjb250YWluIHN0b3B3b3Jkcy4NCg0KYGBge3J9DQojIE5ldyB0b3Agdm9jYWJ1bGFyeQ0KY29sX3N1bXMoc3BhcnNlKSAlPiUgc29ydChkZWNyZWFzaW5nID0gVFJVRSkgJT4lIGhlYWQoMTAwKSAlPiUNCiAgZGF0YS5mcmFtZSh3b3JkID0gbmFtZXMoLiksIGNvdW50ID0gLiwgcm93Lm5hbWVzID0gTlVMTCwgc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFKQ0KYGBgDQoNCkxvb2tzIGdvb2QuIFRyeSBmaXR0aW5nIGEgMTUtdG9waWMgbW9kZWwuDQoNCmBgYHtyfQ0KdG9waWMgPC0gTERBKHNwYXJzZSwgayA9IDE1LCBtZXRob2QgPSAiVkVNIiwgY29udHJvbCA9IGxpc3Qoc2VlZCA9IDYxNTcwLCB2ZXJib3NlID0gMSkpDQpgYGANCg0KVGhlIHRvcCAyMCB0ZXJtcyBmb3IgZWFjaCB0b3BpYyBmb2xsb3cuDQoNCmBgYHtyIHJvd3MucHJpbnQ9MjB9DQp0ZXJtcyh0b3BpYywgMjApICU+JSBkYXRhLmZyYW1lKHN0cmluZ3NBc0ZhY3RvcnMgPSBGQUxTRSkNCmBgYA==</div>
 
 
 

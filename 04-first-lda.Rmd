@@ -164,7 +164,7 @@ col_sums(sparse) %>% sort(decreasing = TRUE) %>% head(100) %>%
 Looks good. Try fitting a 15-topic model.
 
 ```{r}
-topic <- LDA(sparse, k = 15, method = "VEM", control = list(seed = 61570, verbose = 1))
+topic <- LDA(sparse, k = 15, method = "VEM", control = list(seed = 48029, verbose = 1))
 ```
 
 The top 20 terms for each topic follow.

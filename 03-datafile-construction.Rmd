@@ -98,27 +98,19 @@ posts <- posts %>% mutate(
 )
 ```
 
-# Parse all display LaTeX
+# Parse all double \$\$
 
 ```{r}
 # Add a Display column to store display LaTeX
 posts <- posts %>% mutate(
   # Collapse all found $$ ... $$ with a whitespace separator
   DisplayLaTeX = CleanBody %>%
-    # [:space:] matches newlines and carriage returns
-    # .*? enforces a non-greedy match
-    # Find each $$ ... $$ block in Body, as well as \\begin ... \\end, or \\begin{...} ... \\end{...}
-    str_extract_all(
-      "(\\$\\$[[:space:]]*?.*?[[:space:]]*?\\$\\$)|(\\\\begin(\\{.*?\\})?[[:space:]]*?.*?[[:space:]]*?\\\\end(\\{.*?\\})?)"
-    ) %>%
+    str_extract_all("\\$\\$.*?\\$\\$") %>% # Find each $$ ... $$ block in Body
     lapply(paste, collapse = " ") %>% # Collapse all found $$ blocks with a whitespace separator
     unlist(),
   # Iterate through each Body removing the identified LaTeX
   CleanBody = CleanBody %>%
-    str_replace_all(
-      "(\\$\\$[[:space:]]*?.*?[[:space:]]*?\\$\\$)|(\\\\begin(\\{.*?\\})?[[:space:]]*?.*?[[:space:]]*?\\\\end(\\{.*?\\})?)",
-      replacement = ""
-    )
+    str_replace_all(pattern = "\\$\\$.*?\\$\\$", replacement = "") # .*? enforces a non-greedy match
 )
 ```
 
@@ -161,7 +153,7 @@ posts <- posts %>% mutate(
 ```{r}
 # Posts identified as interesting
 posts %>%
-  filter(Id %in% c(35, 73, 78, 85, 90, 101, 118, 227, 4274, 5349)) %>%
+  filter(Id %in% c(35, 73, 78, 85, 90, 101, 118, 227)) %>%
   select(Body, CleanBody, Code, DisplayLaTeX, InlineLaTeX)
 ```
 

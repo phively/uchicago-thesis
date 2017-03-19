@@ -1,0 +1,110 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+now <- Sys.time()
+print(now)
+
+# "(\\$\\$([[:space:]]|.)*?\\$\\$)|(\\\\begin(\\{.*?\\})?([[:space:]]|.)*?\\\\end(\\{.*?\\})?)"
+# "(\\$\\$([[:space:]]|.)*?\\$\\$)"
+# "((?<!\\\\)\\$\\$([[:space:]]|.)*?(?<!\\\\)\\$\\$)|(\\\\begin(\\{.*?\\})?([[:space:]]|.)*?\\\\end(\\{.*?\\})?)"
+# "((?<!(\\\\|\\$))\\$\\$([[:space:]]|.)*?(?<!(\\\\|\\$))\\$\\$)|(\\\\begin(\\{.*?\\})?([[:space:]]|.)*?\\\\end(\\{.*?\\})?)"
+# "((?<!\\$)(?<!\\\\)\\$\\$(?!\\$)([[:space:]]|.)*?(?<!(\\\\|\\$))\\$\\$(?!\\$))|(\\\\begin(\\{.*?\\})?([[:space:]]|.)*?\\\\end(\\{.*?\\})?)"
+# "((?<!(\\$|\\\\))\\${2}(?!\\$)([[:space:]]|.)*?(?<!(\\$|\\\\))\\${2}(?!\\$))|(\\\\begin(\\{.*?\\})?([[:space:]]|.)*?\\\\end(\\{.*?\\})?)"
+# "((?<!(\\$|\\\\))\\${2}(?!\\$)(\n|.)*?(?<!(\\$|\\\\))\\${2}(?!\\$))|(\\\\begin(\\{.*?\\})?(\n|.)*?\\\\end(\\{.*?\\})?)"
+# "((?<!(\\$|\\\\))\\${2}(?!\\$)(\r|\n|.)*?(?<!(\\$|\\\\))\\${2}(?!\\$))|(\\\\begin(\\{.*?\\})?(\r|\n|.)*?\\\\end(\\{.*?\\})?)"
+# "((?<!(\\$|\\\\))\\${2}(?!\\$)(\r|\n|.)*?(?<!(\\$|\\\\))\\${2}(?!\\$))|(\\\\begin(\\{ali.*?\\})?(\r|\n|.)*?\\\\end(\\{ali.*?\\})?)"
+# "((?<!(\\$|\\\\))\\${2}(?!\\$)(\r|\n|.)*?(?<!(\\$|\\\\))\\${2}(?!\\$))|(\\\\begin(\\{ali.*?\\})(\r|\n|.)*?\\\\end(\\{ali.*?\\}))"
+
+# Match only even sets of \\: (?<!\\)((\\{4})+)?\$
+
+# "(?<!(\\\\|\\$))\\$(?!\\$)(\r|\n|.)*?(?<!(\\\\|\\$))\\$(?!\\$)"
+# "(?<!(\\\\|\\$))\\$(?!\\$)(\r|\n|.)*?\\$(!\\$)"
+# "(?<!(\\\\|\\$))\\$(?!\\$)(\r|\n|.)*?(?<!\\$)\\$"
+# "(?<!(\\\\|\\$))\\$(\r|\n|.)*?(?<!\\$)\\$"
+# "(?<!((\\\\{2})+?|\\$))\\$(?!\\$)(\r|\n|.)*?(?<!((\\\\{2})+?|\\$))\\$"
+
+# Add an Inline column to store inline LaTeX
+# (?<!x) is a negative lookbehind for x
+pattern <- "(?<!(\\\\|\\$))\\$(?!\\$)(\r|\n|.)*?(?<!\\$)\\$"
+# Iterate to make sure I get them all
+t <- posts
+for (i in 1:5) {
+t <- t %>% mutate(
+ # Collapse all found $ ... $ with a whitespace separator
+ # Be sure to ignore if there are consecutive non-escaped $$ (display math)
+ # Need to exclude \$ as an open or close
+ InlineLaTeX = CleanBody %>%
+   str_extract_all(pattern) %>%
+   lapply(paste, collapse = " ") %>% # Collapse the $ blocks with a whitespace separator
+   unlist(),
+ # Iterate through Body and remove the matches
+ CleanBody = CleanBody %>%
+   str_replace_all(pattern, replacement = "")
+)
+}
+
+# "(?<!\\\\)\\${2}(\r|\n|.)*?\\${2}"
+
+# .*? enforces a non-greedy match
+# Find each $$ ... $$ block in Body, as well as \\begin ... \\end, or \\begin{...} ... \\end{...}
+pattern <- paste(
+  "(?<!\\\\)\\${2}(\r|\n|.)*?\\${2}", # $$ delimiter
+  "(\\\\begin(\\{align.*?\\})(\r|\n|.)*?\\\\end(\\{align.*?\\}))", # \\begin{align}
+  "(\\\\begin(\\{array.*?\\})(\r|\n|.)*?\\\\end(\\{array.*?\\}))", # \\begin{array}
+  "(\\\\begin(\\{case.*?\\})(\r|\n|.)*?\\\\end(\\{case.*?\\}))", # \\begin{case}
+  "(\\\\begin(\\{eq.*?\\})(\r|\n|.)*?\\\\end(\\{eq.*?\\}))", # \\begin{eq.}
+  "(\\\\begin(\\{gat.*?\\})(\r|\n|.)*?\\\\end(\\{gat.*?\\}))", # \\begin{gather}
+  "(\\\\begin(\\{split.*?\\})(\r|\n|.)*?\\\\end(\\{split.*?\\}))", # \\begin{split}
+  "\\\\\\[.*?\\\\\\]",
+  sep = "|"
+)
+t <- t %>% mutate(
+  # Collapse all found $$ ... $$ with a whitespace separator
+  DisplayLaTeX = CleanBody %>%
+    str_extract_all(pattern) %>%
+    lapply(paste, collapse = " ") %>% # Collapse all found $$ blocks with a whitespace separator
+    unlist(),
+  # Iterate through each Body removing the identified LaTeX
+  CleanBody = CleanBody %>% str_replace_all(pattern, replacement = "")
+)
+
+
+
+t <- t %>% mutate(
+ CleanBody = CleanBody %>%
+   lapply(FUN = read_html) %>% # Read CleanBody as an html file
+   lapply(FUN = xml_text) %>% # Extract any text between valid <tags></tags>
+   unlist() %>%
+   # Remove URLs starting with http and ending with a space
+   str_replace_all("http[^[:space:]]*", " ") %>%
+   # Remove newlines
+   str_replace_all("[\r\n]" , " ")
+)
+
+print(Sys.time() - now)
+```
+
+```{r}
+x <- sapply(t %>% select(CleanBody), FUN = str_detect, "mathbb|mathbf")
+y <- sapply(t %>% select(Body), FUN = str_detect, "\\\\\\\\\\\\\\\\\\\\\\\\")
+t$Id[which(x)]
+```
+
+```{r}
+posts %>% filter(Id == 1882)
+```
+
+```{r, rows.print=20}
+t %>%
+  filter(Id %in% c(35, 73, 78, 85, 90, 101, 118, 227, 3665, 4274, 4621, 5165, 5349, 8760, 12862, 19241, 25086, 38990, 46857, 172646, 188505)) %>%
+  select(Body, CleanBody, Code, DisplayLaTeX, InlineLaTeX)
+
+# t %>% filter(Id ==  222128) %>% select(Body, CleanBody, DisplayLaTeX, InlineLaTeX)
+# t %>% filter(Id ==  205563) %>% select(Body)
+```
+
+
+

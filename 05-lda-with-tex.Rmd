@@ -178,3 +178,9 @@ The top 20 terms for each topic follow.
 ```{r rows.print=20}
 terms(topic, 20) %>% data.frame(stringsAsFactors = FALSE)
 ```
+
+Finally, model perplexity scores.
+
+```{r}
+perplexity(topic)
+```

@@ -28,22 +28,24 @@ print(now)
 
 # Add an Inline column to store inline LaTeX
 # (?<!x) is a negative lookbehind for x
-pattern <- "(?<!(\\\\|\\$))\\$(?!\\$)(\r|\n|.)*?(?<!\\$)\\$"
-# Iterate to make sure I get them all
+pattern <- "(?<!(\\\\|\\$))\\$(?!\\$)(\r|\n|.)*?(?<!(\\\\|\\$))\\$"
+# Temporary file during iterations
 t <- posts
-for (i in 1:5) {
-t <- t %>% mutate(
- # Collapse all found $ ... $ with a whitespace separator
- # Be sure to ignore if there are consecutive non-escaped $$ (display math)
- # Need to exclude \$ as an open or close
- InlineLaTeX = CleanBody %>%
-   str_extract_all(pattern) %>%
-   lapply(paste, collapse = " ") %>% # Collapse the $ blocks with a whitespace separator
-   unlist(),
- # Iterate through Body and remove the matches
- CleanBody = CleanBody %>%
-   str_replace_all(pattern, replacement = "")
-)
+t$InlineLaTeX <- ""
+# Iterate to make sure I get them all
+while ({str_detect(t$CleanBody, pattern) %>% sum()} > 0) {
+  t <- t %>% mutate(
+   # Collapse all found $ ... $ with a whitespace separator
+   # Be sure to ignore if there are consecutive non-escaped $$ (display math)
+   # Need to exclude \$ as an open or close
+   InlineLaTeX = paste(InlineLaTeX,
+     CleanBody %>%
+     str_extract(pattern),
+     sep = " "),
+   # Iterate through Body and remove the matches
+   CleanBody = CleanBody %>%
+     str_replace(pattern, replacement = " ")
+  )
 }
 
 # "(?<!\\\\)\\${2}(\r|\n|.)*?\\${2}"
@@ -68,7 +70,7 @@ t <- t %>% mutate(
     lapply(paste, collapse = " ") %>% # Collapse all found $$ blocks with a whitespace separator
     unlist(),
   # Iterate through each Body removing the identified LaTeX
-  CleanBody = CleanBody %>% str_replace_all(pattern, replacement = "")
+  CleanBody = CleanBody %>% str_replace_all(pattern, replacement = " ")
 )
 
 
@@ -94,7 +96,7 @@ t$Id[which(x)]
 ```
 
 ```{r}
-posts %>% filter(Id == 1882)
+t %>% filter(Id == 172646)
 ```
 
 ```{r, rows.print=20}
@@ -106,5 +108,17 @@ t %>%
 # t %>% filter(Id ==  205563) %>% select(Body)
 ```
 
-
-
+```{r}
+# Create merged datafile
+merged <-
+  bind_rows(
+    # Questions
+    t %>% filter(Name == "Question") %>% select(Id, CleanBody),
+    # Answers, with associated question's ID inserted
+    t %>% filter(Name == "Answer") %>% select(Id = ParentId, CleanBody)
+  ) %>%
+  group_by(Id) %>% # Answers roll up into associated question
+  summarise_each(
+    funs(paste(., collapse = " ")) # Merge associated questions/answers
+  )
+```

@@ -191,9 +191,13 @@ $(document).ready(function () {
 <h1>Libraries used</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeShkcGx5cilcbmxpYnJhcnkoZ2dwbG90MilcbmxpYnJhcnkoc3RyaW5ncilcbmxpYnJhcnkodG0pXG5saWJyYXJ5KHNsYW0pXG5saWJyYXJ5KHRvcGljbW9kZWxzKVxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r library(dplyr) library(ggplot2) library(stringr) library(tm) library(slam) library(topicmodels)</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmxpYnJhcnkoZ2dwbG90MilcbmxpYnJhcnkoc3RyaW5ncilcbmxpYnJhcnkodG0pXG5saWJyYXJ5KHNsYW0pXG5saWJyYXJ5KHRvcGljbW9kZWxzKVxuYGBgIn0= -->
+<pre class="r"><code>library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tm)
+library(slam)
+library(topicmodels)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -244,14 +248,18 @@ see_pattern(&quot;[:punct:]&quot;)</code></pre>
 <p>The tm package includes a few standard English stopwords which I’ll use to get things started.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29ycHVzIDwtIENvcnB1cyhWZWN0b3JTb3VyY2UobWVyZ2VkJENsZWFuQm9keSkpICU+JSAjIFJlYWQgaW4gdGhlIG1lcmdlZCBwb3N0c1xuICB0bV9tYXAocmVtb3ZlV29yZHMsIHN0b3B3b3JkcyhcImVuZ2xpc2hcIikpICU+JSAjIFN0cmlwIHN0YW5kYXJkIHN0b3B3b3Jkc1xuICB0bV9tYXAocmVtb3ZlUHVuY3R1YXRpb24pICMgU3RyaXAgYW55IHJlbWFpbmluZyBhcG9zdHJvcGhlc1xuYGBgIn0= -->
+<pre class="r"><code>corpus &lt;- Corpus(VectorSource(merged$CleanBody)) %&gt;% # Read in the merged posts
+  tm_map(removeWords, stopwords(&quot;english&quot;)) %&gt;% # Strip standard stopwords
+  tm_map(removePunctuation) # Strip any remaining apostrophes</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Next, construct the document-term matrix.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudGVybV9tYXRyaXggPC0gRG9jdW1lbnRUZXJtTWF0cml4KGNvcnB1cylcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r term_matrix &lt;- DocumentTermMatrix(corpus)</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVybV9tYXRyaXggPC0gRG9jdW1lbnRUZXJtTWF0cml4KGNvcnB1cylcbmBgYCJ9 -->
+<pre class="r"><code>term_matrix &lt;- DocumentTermMatrix(corpus)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->

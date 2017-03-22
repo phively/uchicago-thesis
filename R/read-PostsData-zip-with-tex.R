@@ -2,6 +2,7 @@
 
 # Required package(s)
 require(dplyr)
+require(xml2)
 
 # Load data
 data <- unz("data/PostsData.zip", filename = "posts.csv") %>% # Link to zipped file

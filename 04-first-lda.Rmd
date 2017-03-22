@@ -165,13 +165,13 @@ Looks good. Try fitting a 15-topic model.
 
 ```{r}
 topic <- LDA(sparse, k = 15, method = "VEM", control = list(seed = 48029, verbose = 1))
+save(topic, file = "results/lda15.zip", compress = "xz")
 ```
 
 The top 20 terms for each topic follow.
 
 ```{r rows.print=20}
 terms(topic, 20) %>% data.frame(stringsAsFactors = FALSE)
-save(topic, file = "results/lda15.zip", compress = "xz")
 ```
 
 Finally, model perplexity scores.

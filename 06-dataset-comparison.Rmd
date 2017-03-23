@@ -1,0 +1,123 @@
+---
+title: "Dataset comparison"
+output: html_notebook
+---
+
+# Goals
+
+  * Determine which of the dataset cleaning methods is "best" for further investigation
+  * Check cross-validation approach to LDA
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(dplyr)
+library(wranglR)
+library(ggplot2)
+library(stringr)
+library(tm)
+library(slam)
+library(topicmodels)
+```
+
+# Load the data
+
+Load each of the pre-computed sparse matrices; see R code for details, e.g.
+
+  * [read-PostsData-zip.R](https://github.com/phively/uchicago-thesis/blob/master/R/read-PostsData-zip.R)
+  * [read-PostsData-zip-with-tex.R](https://github.com/phively/uchicago-thesis/blob/master/R/read-PostsData-zip-with-tex.R)
+  * [read-PostsData-zip-aggressive-tex-removal.R](https://github.com/phively/uchicago-thesis/blob/master/R/read-PostsData-zip-aggressive-tex-removal.R)
+
+```{r, message=F}
+# Load sparse matrix with tex
+load(file = "data/sparse_matrix_w_tex.zip")
+sparse_w_tex <- sparse
+
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+sparse_no_tex <- sparse
+
+# Load original sparse matrix
+load(file = "data/sparse_matrix.zip")
+```
+
+# Document selection
+
+To fairly compare perplexities, fit the model on only a subset of documents.
+
+```{r}
+# Number of documents
+D <- sparse$dimnames$Docs %>% length()
+
+# Create 2 groups, 80% and 20% of the document indices
+set.seed(3361)
+rand.ind <- KFoldXVal(1:D, k = 2, prop = .8)
+```
+
+In the sparse document-term matrices, i corresponds to documents (rows) and j to terms (columns)
+
+```{r}
+# Function to create test matrix
+split_set <- function(dtm, ind) {
+  # Identify which rows i (documents) to keep
+  sparse_ind <- dtm$i %in% ind
+  # Original document number
+  map_old <- 1:D 
+  # Remapped document number
+  map_new <- cumsum(map_old %in% ind) * (map_old %in% ind)
+
+  # Create sparse matrix keeping the elements that meet the above criteria
+  dtm$i <- dtm$i[sparse_ind]
+  dtm$i <- map_new[dtm$i]
+  dtm$j <- dtm$j[sparse_ind]
+  dtm$v <- dtm$v[sparse_ind]
+  dtm$nrow <- max(map_new)
+  dtm$dimnames$Docs <- sparse$dimnames$Docs[map_old %in% ind]
+  
+  #Return results
+  return(dtm)
+}
+```
+
+Now create the modeling datasets.
+
+```{r}
+sparse_mod <- split_set(sparse, rand.ind[[1]])
+sparse_no_tex_mod <- split_set(sparse_no_tex, rand.ind[[1]])
+sparse_tex_mod <- split_set(sparse_w_tex, rand.ind[[1]])
+```
+
+# Topic modeling
+
+Try 25-topic models.
+
+```{r}
+topic_s <- LDA(sparse_mod, k = 25, method = "VEM", control = list(seed = 8602, verbose = 1))
+save(topic_s, file = "results/lda25_sparse.zip", compress = "xz")
+
+topic_s_nt <- LDA(sparse_no_tex_mod, k = 25, method = "VEM", control = list(seed = 8602, verbose = 1))
+save(topic_s_nt, file = "results/lda25_sparse_notex.zip", compress = "xz")
+
+topic_s_wt <- LDA(sparse_w_tex, k = 25, method = "VEM", control = list(seed = 8602, verbose = 1))
+save(topic_s_wt, file = "results/lda25_sparse_tex.zip", compress = "xz")
+```
+
+The top 10 terms for each topic follow.
+
+```{r rows.print=20}
+terms(topic_s, 10) %>% data.frame(stringsAsFactors = FALSE)
+
+terms(topic_s_nt, 10) %>% data.frame(stringsAsFactors = FALSE)
+
+terms(topic_s_wt, 10) %>% data.frame(stringsAsFactors = FALSE)
+```
+
+Finally, model perplexity scores.
+
+```{r}
+data.frame(
+  topic = perplexity(topic_s),
+  topic_nt = perplexity(topic_s_nt),
+  topic_wt = perplexity(topic_s_wt)
+)
+```

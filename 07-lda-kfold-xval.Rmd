@@ -1,0 +1,134 @@
+---
+title: "LDA K-fold cross-validation"
+output: html_notebook
+---
+
+# Goals
+
+  * Find the optimal number of topics using a cross-validation approach
+  * Select a final LDA model using the aggressive TeX removal sparse matrix
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(dplyr)
+library(wranglR)
+library(ggplot2)
+library(stringr)
+library(tm)
+library(slam)
+library(topicmodels)
+```
+
+# Load the data
+
+See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
+
+```{r, message=F}
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+```
+
+# Cross-validation setup
+
+Set the number of groups $K$ and generate indices.
+
+```{r}
+# Set K
+K <- 3
+
+# Create k groups, as close to equal size as possible
+set.seed(93401)
+rand_ind <- KFoldXVal(1:sparse$nrow, k = K)
+```
+
+Create the functions to be used for cross-validation.
+
+```{r}
+# Cross-validation matrix generator function, split_set()
+source("R/function-split_set.R")
+
+# Cross-validation iterator
+xval <- function(dtm, index, ntopics, seed) {
+  # Result models list
+  models <- list()
+  
+  # Cross-validation loop
+  for (i in 1:K) {
+    # Create dataset for fitting
+    this_ind <- unlist(index)[unlist(index) %nin% index[[i]]]
+    this_data <- split_set(dtm, this_ind)
+    
+    # Create a topic model
+    models[[i]] <- LDA(this_data, k = ntopics, method = "VEM", control = list(seed = seed, verbose = 1))
+  }
+  
+  return(models)
+}
+```
+
+# Topic modeling
+
+## Modeling step
+
+### 5 topics
+
+```{r}
+now <- Sys.time()
+models5 <- xval(dtm = sparse, index = rand_ind, ntopics = 5, seed = 74749)
+save(models5, file = "results/lda_k_5.zip", compress = "xz")
+Sys.time() - now
+```
+
+### 10 topics
+
+```{r}
+now <- Sys.time()
+models10 <- xval(dtm = sparse, index = rand_ind, ntopics = 10, seed = 90672)
+save(models10, file = "results/lda_k_10.zip", compress = "xz")
+Sys.time() - now
+```
+
+### 15 topics
+
+```{r}
+now <- Sys.time()
+models15 <- xval(dtm = sparse, index = rand_ind, ntopics = 15, seed = 53177)
+save(models15, file = "results/lda_k_15.zip", compress = "xz")
+Sys.time() - now
+```
+
+### 20 topics
+
+```{r}
+now <- Sys.time()
+models20 <- xval(dtm = sparse, index = rand_ind, ntopics = 20, seed = 45281)
+save(models20, file = "results/lda_k_20.zip", compress = "xz")
+Sys.time() - now
+```
+
+### 25 topics
+
+```{r}
+now <- Sys.time()
+models25 <- xval(dtm = sparse, index = rand_ind, ntopics = 25, seed = 86244)
+save(models25, file = "results/lda_k_25.zip", compress = "xz")
+Sys.time() - now
+```
+
+### 30 topics
+
+```{r}
+now <- Sys.time()
+models30 <- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531)
+save(models30, file = "results/lda_k_30.zip", compress = "xz")
+Sys.time() - now
+```
+
+# Perplexity
+
+## In-sample results
+
+```{r}
+lapply(models5, perplexity)
+```

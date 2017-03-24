@@ -9,3 +9,5 @@ University of Chicago Master's Thesis.
 [04-first-lda.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/04-first-lda.nb.html)
 
 [05-lda-with-tex.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/05-lda-with-tex.nb.html)
+
+[06-dataset-comparison.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.nb.html)

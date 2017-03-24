@@ -168,7 +168,7 @@ summary(lm_perplex)
 That definitely looks linear. Confirm by plotting the results:
 
 ```{r}
-data.frame(tests, times) %>%
+perplexity_scaling %>%
   ggplot(aes(x = tests, y = times)) + labs(x = "documents", y = "time") +
   stat_smooth(method = "lm", alpha = .1) + geom_point()
 ```

@@ -72,7 +72,7 @@ split_set <- function(dtm, ind) {
   dtm$j <- dtm$j[sparse_ind]
   dtm$v <- dtm$v[sparse_ind]
   dtm$nrow <- max(map_new)
-  dtm$dimnames$Docs <- sparse$dimnames$Docs[map_old %in% ind]
+  dtm$dimnames$Docs <- dtm$dimnames$Docs[map_old %in% ind]
   
   #Return results
   return(dtm)
@@ -102,22 +102,151 @@ topic_s_wt <- LDA(sparse_w_tex, k = 25, method = "VEM", control = list(seed = 86
 save(topic_s_wt, file = "results/lda25_sparse_tex.zip", compress = "xz")
 ```
 
-The top 10 terms for each topic follow.
+The top 20 terms for each topic follow.
 
 ```{r rows.print=20}
-terms(topic_s, 10) %>% data.frame(stringsAsFactors = FALSE)
+terms(topic_s, 20) %>% data.frame(stringsAsFactors = FALSE)
 
-terms(topic_s_nt, 10) %>% data.frame(stringsAsFactors = FALSE)
+terms(topic_s_nt, 20) %>% data.frame(stringsAsFactors = FALSE)
 
-terms(topic_s_wt, 10) %>% data.frame(stringsAsFactors = FALSE)
+terms(topic_s_wt, 20) %>% data.frame(stringsAsFactors = FALSE)
 ```
+
+# Model comparison
 
 Finally, model perplexity scores.
 
+## Training data
+
 ```{r}
-data.frame(
-  topic = perplexity(topic_s),
-  topic_nt = perplexity(topic_s_nt),
-  topic_wt = perplexity(topic_s_wt)
+# Perplexity comparison data frame
+compare <- data.frame(
+  labels = c("no tex", "standard", "all tex"),
+  perplexity = c(perplexity(topic_s_nt), perplexity(topic_s), perplexity(topic_s_wt)),
+  words = c(length(sparse_no_tex_mod$dimnames$Terms),
+            length(sparse_mod$dimnames$Terms),
+            length(sparse_tex_mod$dimnames$Terms))
 )
+
+print(compare)
 ```
+```{r}
+compare %>% ggplot(aes(x = words, y = perplexity)) + geom_line() + ylim(0, max(compare$perp))
+```
+
+As expected, perplexity decreases as word count increases. There's a slight elbow (concave) but these are very close. Now, for the holdout data.
+
+## Prediction time
+
+How well does the perplexity function scale?
+
+```{r}
+# Control objects
+tests <- seq(50, 1000, by = 50)
+times <- rep(0, times = length(tests))
+
+# Iterate through tests
+for (i in 1:length(tests)) {
+  now <- Sys.time()
+  tmp <- split_set(sparse, 1:tests[i])
+  perplexity(topic_s, newdata = tmp)
+  times[i] <- Sys.time() - now
+}
+
+# Save data
+perplexity_scaling = data.frame(tests, times)
+write.csv(perplexity_scaling, file = "results/lda25_perplex_scale.csv", row.names = FALSE)
+```
+
+Linear model of results:
+
+```{r}
+lm_perplex <- perplexity_scaling %>% lm(times ~ tests, data = .)
+summary(lm_perplex)
+```
+
+That definitely looks linear. Confirm by plotting the results:
+
+```{r}
+data.frame(tests, times) %>%
+  ggplot(aes(x = tests, y = times)) + labs(x = "documents", y = "time") +
+  stat_smooth(method = "lm", alpha = .1) + geom_point()
+```
+
+Definitely linear. So we expect the full holdout dataset to take:
+
+```{r}
+lm_perplex %>% predict(newdata = data.frame(tests = length(rand.ind[[2]]), times = 0)) %>% round() %>%
+  paste(., "seconds")
+```
+
+This is negligible compared to the time taken to fit the models in the first place.
+
+## Holdout data results
+
+Compute perplexities.
+
+```{r}
+# Holdout data
+snt <- split_set(sparse_no_tex, rand.ind[[2]])
+spa <- split_set(sparse, rand.ind[[2]])
+swt <- split_set(sparse_w_tex, rand.ind[[2]])
+
+# Perplexity comparison data frame
+compare_datasets <- data.frame(
+  labels = c("no tex", "standard", "all tex"),
+  perplexity = c(perplexity(topic_s_nt, newdata = snt),
+                 perplexity(topic_s, newdata = spa),
+                 perplexity(topic_s_wt, newdata = swt)),
+  words = c(length(sparse_no_tex_mod$dimnames$Terms), length(sparse_mod$dimnames$Terms), length(sparse_tex_mod$dimnames$Terms))
+)
+
+write.csv(compare_datasets, file = "results/lda25_compare.csv", row.names = FALSE)
+```
+```{r}
+# Text summary
+print(compare_datasets)
+```
+```{r}
+# Graphical summary
+compare_datasets %>% ggplot(aes(x = words, y = perplexity)) + geom_line() + ylim(0, max(compare_datasets$perp))
+```
+
+## Runtime comparison
+
+```{r}
+# Control
+d <- 1000
+k <- 25
+times <- c(0, 0, 0)
+
+# No TeX benchmark
+now <- Sys.time()
+LDA(split_set(sparse_no_tex_mod, 1:d), k = k, method = "VEM", control = list(seed = 24756, verbose = 1))
+times[1] <- Sys.time() - now
+
+# Sparse benchmark
+now <- Sys.time()
+LDA(split_set(sparse_mod, 1:d), k = k, method = "VEM", control = list(seed = 24756, verbose = 1))
+times[2] <- Sys.time() - now
+
+# TeX benchmark
+now <- Sys.time()
+LDA(split_set(sparse_tex_mod, 1:d), k = k, method = "VEM", control = list(seed = 24756, verbose = 1))
+times[3] <- Sys.time() - now
+
+# Save data
+results <- data.frame(labels = c("no tex", "standard", "all tex"), secs = times * 60)
+write.csv(results, file = "results/lda25_model_bench.csv", row.names = FALSE)
+```
+
+How long does it take to run each dataset?
+
+```{r}
+results %>% mutate(labels = labels %>% relevel("no tex")) %>%
+  ggplot(aes(x = labels, y = secs, fill = labels)) +
+  labs(x = "dataset", y = "time in seconds") +
+  geom_bar(stat = "identity", alpha = .6)
+```
+
+Based on this there's no reason to use the "standard" dataset -- either go with the no tex version, which is a good deal faster, or the all tex version, which has notably lower perplexity.

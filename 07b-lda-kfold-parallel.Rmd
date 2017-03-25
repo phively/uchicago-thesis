@@ -1,0 +1,74 @@
+---
+title: "LDA K-fold cross-validation part 2"
+output: html_notebook
+---
+
+# Goals
+
+  * Find the optimal number of topics using a cross-validation approach
+  * Select a final LDA model using the aggressive TeX removal sparse matrix
+  * Learn a bit about parallel cloud computing
+
+Part 1, [07-lda-kfold-xval.Rmd](https://github.com/phively/uchicago-thesis/blob/master/07-lda-kfold-xval.Rmd), is too slow to complete locally so I'm going to parallelize the high-topic-count models.
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(dplyr)
+library(wranglR)
+library(tm)
+library(slam)
+library(topicmodels)
+library(foreach)
+library(doParallel)
+```
+
+# Load the data
+
+See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
+
+```{r, message=F}
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+```
+
+# Setup
+
+## Data
+
+Set the number of groups $K$ and generate indices.
+
+```{r}
+# Set K
+K <- 5
+
+# Create k groups, as close to equal size as possible
+set.seed(93401)
+rand_ind <- KFoldXVal(1:sparse$nrow, k = K)
+```
+
+Create the functions to be used for cross-validation.
+
+```{r}
+# Cross-validation matrix generator function, split_set()
+source("R/function-split_set.R")
+
+# Parallel cross-validation function
+xval <- function(dtm, index, ntopics, seed, ...) {
+  # Generate a list of models in parallel
+  models <- foreach(i = 1:K) %dopar% {
+    print(i)
+  }
+  
+  return(models)
+}
+```
+
+## Core initialization
+
+Use K cores for the process.
+
+```{r}
+registerDoMC(K)
+```
+

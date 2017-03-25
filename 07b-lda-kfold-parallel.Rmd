@@ -62,9 +62,7 @@ xval <- function(dtm, index, ntopics, ...) {
     this_ind <- unlist(index)[unlist(index) %nin% index[[i]]]
     this_data <- split_set(dtm, this_ind)
     # Return a topic model
-    return(
-      LDA(this_data, k = ntopics, method = "VEM", control = list(...))
-    )
+    LDA(this_data, k = ntopics, method = "VEM", control = list(...))
   }
   # Return the list of models
   return(models)
@@ -82,56 +80,72 @@ getDoParWorkers()
 
 # Topic modeling
 
+## 3 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models3 <- xval(dtm = sparse, index = rand_ind, ntopics = 3, seed = 17481, keep = 1)
+(t3 <- Sys.time() - now)
+save(models3, file = "results/lda_k_3.zip", compress = "xz", compression_level = 1)
+```
+
 ## 5 topics
 
 ```{r}
+gc()
 now <- Sys.time()
 models5 <- xval(dtm = sparse, index = rand_ind, ntopics = 5, seed = 74749, keep = 1)
 (t5 <- Sys.time() - now)
-save(models5, file = "results/lda_k_5.zip")
+save(models5, file = "results/lda_k_5.zip", compress = "xz", compression_level = 1)
 ```
 
 ## 10 topics
 
 ```{r}
+gc()
 now <- Sys.time()
 models10 <- xval(dtm = sparse, index = rand_ind, ntopics = 10, seed = 90672, keep = 1)
 (t10 <- Sys.time() - now)
-save(models10, file = "results/lda_k_10.zip")
+save(models10, file = "results/lda_k_10.zip", compress = "xz", compression_level = 1)
 ```
 
 ## 15 topics
 
 ```{r}
+gc()
 now <- Sys.time()
 models15 <- xval(dtm = sparse, index = rand_ind, ntopics = 15, seed = 53177, keep = 1)
 (t15 <- Sys.time() - now)
-save(models15, file = "results/lda_k_15.zip")
+save(models15, file = "results/lda_k_15.zip", compress = "xz", compression_level = 1)
 ```
 
 ## 20 topics
 
 ```{r}
+gc()
 now <- Sys.time()
 models20 <- xval(dtm = sparse, index = rand_ind, ntopics = 20, seed = 45281, keep = 1)
 (t20 <- Sys.time() - now)
-save(models20, file = "results/lda_k_20.zip")
+save(models20, file = "results/lda_k_20.zip", compress = "xz", compression_level = 1)
 ```
 
 ## 25 topics
 
 ```{r}
+gc()
 now <- Sys.time()
 models25 <- xval(dtm = sparse, index = rand_ind, ntopics = 25, seed = 86244, keep = 1)
 (t25 <- Sys.time() - now)
-save(models25, file = "results/lda_k_25.zip")
+save(models25, file = "results/lda_k_25.zip", compress = "xz", compression_level = 1)
 ```
 
 ## 30 topics
 
 ```{r}
+gc()
 now <- Sys.time()
 models30 <- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531, keep = 1)
 (t30 <- Sys.time() - now)
-save(models30, file = "results/lda_k_30.zip")
+save(models30, file = "results/lda_k_30.zip", compress = "xz", compression_level = 1)
 ```

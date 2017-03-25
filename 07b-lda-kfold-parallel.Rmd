@@ -9,7 +9,7 @@ output: html_notebook
   * Select a final LDA model using the aggressive TeX removal sparse matrix
   * Learn a bit about parallel cloud computing
 
-Part 1, [07-lda-kfold-xval.Rmd](https://github.com/phively/uchicago-thesis/blob/master/07-lda-kfold-xval.Rmd), is too slow to complete locally so I'm going to parallelize the high-topic-count models.
+Part 1, [07a-lda-kfold-xval.Rmd](https://github.com/phively/uchicago-thesis/blob/master/07a-lda-kfold-xval.Rmd), is too slow to complete locally so I'm going to parallelize the high-topic-count models on AWS.
 
 # Libraries used
 
@@ -56,10 +56,18 @@ source("R/function-split_set.R")
 # Parallel cross-validation function
 xval <- function(dtm, index, ntopics, seed, ...) {
   # Generate a list of models in parallel
-  models <- foreach(i = 1:K) %dopar% {
-    print(i)
+  models <- foreach(i = 1:K, .packages = c("wranglR", "topicmodels", "slam"),
+    .export = "split_set") %dopar% {
+    # Data to use
+    this_ind <- unlist(index)[unlist(index) %nin% index[[i]]]
+    this_data <- split_set(dtm, this_ind)
+    # Return a topic model
+    return(
+      LDA(this_data, k = ntopics, method = "VEM",
+          control = list(seed = seed, ...))
+    )
   }
-  
+  # Return the list of models
   return(models)
 }
 ```
@@ -69,6 +77,35 @@ xval <- function(dtm, index, ntopics, seed, ...) {
 Use K cores for the process.
 
 ```{r}
-registerDoMC(K)
+registerDoParallel(K)
+getDoParWorkers()
 ```
 
+# Topic modeling
+
+## 20 topics
+
+```{r}
+now <- Sys.time()
+models20 <- xval(dtm = sparse, index = rand_ind, ntopics = 20, seed = 45281, keep = 1, verbose = 1)
+save(models20, file = "results/lda_k_20.zip", compress = "xz")
+(t20 <- Sys.time() - now)
+```
+
+## 25 topics
+
+```{r}
+now <- Sys.time()
+models25 <- xval(dtm = sparse, index = rand_ind, ntopics = 25, seed = 86244, keep = 1, verbose = 1)
+save(models25, file = "results/lda_k_25.zip", compress = "xz")
+(t25 <- Sys.time() - now)
+```
+
+## 30 topics
+
+```{r}
+now <- Sys.time()
+models30 <- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531, keep = 1, verbose = 1)
+save(models30, file = "results/lda_k_30.zip", compress = "xz")
+(t30 <- Sys.time() - now)
+```

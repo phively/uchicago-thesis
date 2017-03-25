@@ -8,25 +8,50 @@ output: html_document
 ```{r}
 # Libraries
 library(foreach)
-library(doMC)
+library(doParallel)
+library(wranglR)
+library(topicmodels)
+library(slam)
 
 # Backend
-registerDoMC(3)
+registerDoParallel(3)
+```
+
+# Data
+
+```{r}
+# Iris data
 x <- iris[which(iris[,5] != "setosa"), c(1,5)]
 trials <- 1000
+
+# Test DTM data
+source("R/function-split_set.R")
+load("data/sparse_test.zip")
+K <- 3
+set.seed(123)
+inds <- KFoldXVal(1:sparse_test$nrow, k = K)
 ```
 
 # Iris
 
-Check it's working:
+## No thread
 
 ```{r}
-getDoParWorkers()
+print("Iris %do%")
+ptime <- system.time({
+  r <- foreach(icount(trials), .combine=cbind) %do% {
+    ind <- sample(100, 100, replace=TRUE)
+    result1 <- glm(x[ind,2]~x[ind,1], family=binomial(logit))
+    coefficients(result1)
+  }
+})[3]
+print(ptime)
 ```
 
-No threading:
+## Thread
 
 ```{r}
+print("Iris %dopar%")
 ptime <- system.time({
   r <- foreach(icount(trials), .combine=cbind) %dopar% {
     ind <- sample(100, 100, replace=TRUE)
@@ -37,15 +62,62 @@ ptime <- system.time({
 print(ptime)
 ```
 
-Threading:
+# LDA
+
+## No thread
+
+xval function, no threading
 
 ```{r}
-ptime <- system.time({
-  r <- foreach(icount(trials), .combine=cbind) %dopar% {
-    ind <- sample(100, 100, replace=TRUE)
-    result1 <- glm(x[ind,2]~x[ind,1], family=binomial(logit))
-    coefficients(result1)
+xval <- function(dtm, index, ntopics, seed, ...) {
+  # Generate a list of models in parallel
+  models <- foreach(i = 1:K, .packages = c("wranglR", "topicmodels", "slam"),
+    .export = "split_set") %do% {
+    # Data to use
+    this_ind <- unlist(index)[unlist(index) %nin% index[[i]]]
+    this_data <- split_set(dtm, this_ind)
+    # Return a topic model
+    return(
+      LDA(this_data, k = ntopics, method = "VEM",
+          control = list(seed = seed, ...))
+    )
   }
-})[3]
-print(ptime)
+  # Return the list of models
+  return(models)
+}
+```
+```{r}
+print("LDA %do%")
+now <- Sys.time()
+r <- xval(sparse_test, inds, ntopics = 5, seed = 123)
+print(Sys.time() - now)
+```
+
+## Thread
+
+xval function, threading
+
+```{r}
+xval <- function(dtm, index, ntopics, seed, ...) {
+  # Generate a list of models in parallel
+  models <- foreach(i = 1:K, .packages = c("wranglR", "topicmodels", "slam"),
+    .export = "split_set") %dopar% {
+    # Data to use
+    this_ind <- unlist(index)[unlist(index) %nin% index[[i]]]
+    this_data <- split_set(dtm, this_ind)
+    # Return a topic model
+    return(
+      LDA(this_data, k = ntopics, method = "VEM",
+          control = list(seed = seed, ...))
+    )
+  }
+  # Return the list of models
+  return(models)
+}
+```
+```{r}
+print("LDA %dopar%")
+now <- Sys.time()
+r <- xval(sparse_test, inds, ntopics = 5, seed = 123)
+print(Sys.time() - now)
 ```

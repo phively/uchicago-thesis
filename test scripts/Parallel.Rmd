@@ -10,6 +10,7 @@ output: html_document
 library(foreach)
 library(doParallel)
 library(wranglR)
+library(dplyr)
 library(topicmodels)
 library(slam)
 
@@ -56,7 +57,7 @@ print(ptime)
 
 t2.micro    = 60.518 seconds (not threaded)
 Sandybridge = 18.920 seconds
-c4.2xlarge  = 4.102 seconds
+c4.2xlarge  =  4.102 seconds
 
 ```{r}
 print("Iris %dopar%")
@@ -112,7 +113,7 @@ c4.2xlarge  = 32.503 seconds
 xval function, threading
 
 ```{r}
-xval <- function(dtm, index, ntopics, seed, ...) {
+xval <- function(dtm, index, ntopics, ...) {
   # Generate a list of models in parallel
   models <- foreach(i = 1:K, .packages = c("wranglR", "topicmodels", "slam"),
     .export = "split_set") %dopar% {
@@ -120,10 +121,8 @@ xval <- function(dtm, index, ntopics, seed, ...) {
     this_ind <- unlist(index)[unlist(index) %nin% index[[i]]]
     this_data <- split_set(dtm, this_ind)
     # Return a topic model
-    return(
-      LDA(this_data, k = ntopics, method = "VEM",
-          control = list(seed = seed, ...))
-    )
+    LDA(this_data, k = ntopics, method = "VEM",
+        control = list(...))
   }
   # Return the list of models
   return(models)
@@ -137,6 +136,9 @@ print(Sys.time() - now)
 ```
 
 # Many-core test
+
+Sandybridge = 16.830 seconds
+c4.2xlarge  =  2.719 seconds
 
 ```{r}
 # Allow 8 workers
@@ -154,7 +156,30 @@ ptime <- system.time({
 print(ptime)
 ```
 
-Sandybridge = 16.830 seconds
-c4.2xlarge  =  2.719 seconds
+# Real-world test
 
-Well, that ought to help! That's a 500% speedup. Back to our regularly scheduled cross-validation.
+Here's a real-world comparison of the full dataset, 5-fold cross-validation of 3 topics.
+
+Sandybridge = 406.202 seconds (single-threaded)
+c4.2xlarge  = 177.735 seconds (five threads)
+
+```{r}
+# New dataset
+load(file = "data/sparse_matrix_no_tex.zip")
+
+# Setup
+K <- 5
+set.seed(93401)
+rand_ind <- KFoldXVal(1:sparse$nrow, k = K)
+
+registerDoSEQ() # Sandybridge
+registerDoParallel(K) # c4.2xlarge
+
+# Benchmark
+now <- Sys.time()
+models3 <- xval(dtm = sparse, index = rand_ind, ntopics = 3, seed = 17481, keep = 1)
+(t3 <- Sys.time() - now)
+save(models3, file = "results/lda_k_3.zip")
+```
+
+Well, that ought to help! That's over 125% speedup. Back to our regularly scheduled cross-validation.

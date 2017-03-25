@@ -1118,53 +1118,837 @@ final e step document 73868</code></pre>
 <h3>15 topics</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm93IDwtIFN5cy50aW1lKClcbm1vZGVsczE1IDwtIHh2YWwoZHRtID0gc3BhcnNlLCBpbmRleCA9IHJhbmRfaW5kLCBudG9waWNzID0gMTUsIHNlZWQgPSA1MzE3Nywga2VlcCA9IDEsIHZlcmJvc2UgPSAxKVxuc2F2ZShtb2RlbHMxNSwgZmlsZSA9IFwicmVzdWx0cy9sZGFfa18xNS56aXBcIiwgY29tcHJlc3MgPSBcInh6XCIpXG4odDE1IDwtIFN5cy50aW1lKCkgLSBub3cpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm93IDwtIFN5cy50aW1lKClcbm1vZGVsczE1IDwtIHh2YWwoZHRtID0gc3BhcnNlLCBpbmRleCA9IHJhbmRfaW5kLCBudG9waWNzID0gMTUsIHNlZWQgPSA1MzE3Nywga2VlcCA9IDEsIHZlcmJvc2UgPSAxKVxuYGBgIn0= -->
 <pre class="r"><code>now &lt;- Sys.time()
-models15 &lt;- xval(dtm = sparse, index = rand_ind, ntopics = 15, seed = 53177, keep = 1, verbose = 1)
-save(models15, file = &quot;results/lda_k_15.zip&quot;, compress = &quot;xz&quot;)
+models15 &lt;- xval(dtm = sparse, index = rand_ind, ntopics = 15, seed = 53177, keep = 1, verbose = 1)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiKioqKiBlbSBpdGVyYXRpb24gMSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNS45NzM1MVxuKioqKiBlbSBpdGVyYXRpb24gMiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gOS40MTM0OVxuKioqKiBlbSBpdGVyYXRpb24gMyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMTMuMTY2MTRcbioqKiogZW0gaXRlcmF0aW9uIDQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDE3LjAwODU5XG4qKioqIGVtIGl0ZXJhdGlvbiA1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyMC44MDQ4MVxuKioqKiBlbSBpdGVyYXRpb24gNiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjQuNDYxODJcbioqKiogZW0gaXRlcmF0aW9uIDcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDI3LjkwOTAxXG4qKioqIGVtIGl0ZXJhdGlvbiA4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzMS4wODgyMlxuKioqKiBlbSBpdGVyYXRpb24gOSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzMuOTQ4NzNcbioqKiogZW0gaXRlcmF0aW9uIDEwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzNi40NDQ5OVxuKioqKiBlbSBpdGVyYXRpb24gMTEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM4LjUzNTcwXG4qKioqIGVtIGl0ZXJhdGlvbiAxMiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNDAuMTgyNTlcbioqKiogZW0gaXRlcmF0aW9uIDEzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA0MS4zNTA3MVxuKioqKiBlbSBpdGVyYXRpb24gMTQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDQyLjAwODIyXG4qKioqIGVtIGl0ZXJhdGlvbiAxNSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNDIuMTI2NjBcbioqKiogZW0gaXRlcmF0aW9uIDE2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA0MS42ODA3MlxuKioqKiBlbSBpdGVyYXRpb24gMTcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDQwLjY0OTc0XG4qKioqIGVtIGl0ZXJhdGlvbiAxOCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzkuMDE4NzFcbioqKiogZW0gaXRlcmF0aW9uIDE5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzNi43ODE5NVxuKioqKiBlbSBpdGVyYXRpb24gMjAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDMzLjk0ODE1XG4qKioqIGVtIGl0ZXJhdGlvbiAyMSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzAuNTQ4MjVcbioqKiogZW0gaXRlcmF0aW9uIDIyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyNi42NDYzMVxuKioqKiBlbSBpdGVyYXRpb24gMjMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDIyLjM1NTYyXG4qKioqIGVtIGl0ZXJhdGlvbiAyNCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMTcuODU3MzJcbioqKiogZW0gaXRlcmF0aW9uIDI1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxMy40MTQ4OFxuKioqKiBlbSBpdGVyYXRpb24gMjYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDkuMzYyMTZcbioqKiogZW0gaXRlcmF0aW9uIDI3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA2LjAzNTQyXG4qKioqIGVtIGl0ZXJhdGlvbiAyOCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMy42NDIxOFxuKioqKiBlbSBpdGVyYXRpb24gMjkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDIuMTQ5NTVcbioqKiogZW0gaXRlcmF0aW9uIDMwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxLjMyMTE1XG4qKioqIGVtIGl0ZXJhdGlvbiAzMSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC44ODI0M1xuKioqKiBlbSBpdGVyYXRpb24gMzIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuNjQxMDVcbioqKiogZW0gaXRlcmF0aW9uIDMzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjQ5NDY3XG4qKioqIGVtIGl0ZXJhdGlvbiAzNCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4zOTQ4OVxuKioqKiBlbSBpdGVyYXRpb24gMzUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMzE5NTFcbioqKiogZW0gaXRlcmF0aW9uIDM2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjI2MDU3XG4qKioqIGVtIGl0ZXJhdGlvbiAzNyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4yMTY5MVxuKioqKiBlbSBpdGVyYXRpb24gMzggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTg1ODZcbioqKiogZW0gaXRlcmF0aW9uIDM5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjE2MzgzXG4qKioqIGVtIGl0ZXJhdGlvbiA0MCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xNDc5MlxuKioqKiBlbSBpdGVyYXRpb24gNDEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTM2MTdcbioqKiogZW0gaXRlcmF0aW9uIDQyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEyNzI3XG4qKioqIGVtIGl0ZXJhdGlvbiA0MyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMjAzNlxuKioqKiBlbSBpdGVyYXRpb24gNDQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTE0ODZcbioqKiogZW0gaXRlcmF0aW9uIDQ1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjExMDQwXG4qKioqIGVtIGl0ZXJhdGlvbiA0NiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMDY3M1xuKioqKiBlbSBpdGVyYXRpb24gNDcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTAzNjhcbioqKiogZW0gaXRlcmF0aW9uIDQ4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwMTEyXG4qKioqIGVtIGl0ZXJhdGlvbiA0OSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTg5NlxuKioqKiBlbSBpdGVyYXRpb24gNTAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDk3MTFcbioqKiogZW0gaXRlcmF0aW9uIDUxICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5NTU0XG4qKioqIGVtIGl0ZXJhdGlvbiA1MiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTQyMVxuZmluYWwgZSBzdGVwIGRvY3VtZW50IDczODY4XG4qKioqIGVtIGl0ZXJhdGlvbiAxICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA1Ljk3MTEwXG4qKioqIGVtIGl0ZXJhdGlvbiAyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA5LjM5OTc0XG4qKioqIGVtIGl0ZXJhdGlvbiAzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxMy4xMjU2MFxuKioqKiBlbSBpdGVyYXRpb24gNCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMTYuOTE5MDFcbioqKiogZW0gaXRlcmF0aW9uIDUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDIwLjYzNjY4XG4qKioqIGVtIGl0ZXJhdGlvbiA2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyNC4xNzgwNVxuKioqKiBlbSBpdGVyYXRpb24gNyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjcuNDY1ODlcbioqKiogZW0gaXRlcmF0aW9uIDggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDMwLjQzNzU0XG4qKioqIGVtIGl0ZXJhdGlvbiA5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzMy4wNDE3OFxuKioqKiBlbSBpdGVyYXRpb24gMTAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM1LjIzNDQ5XG4qKioqIGVtIGl0ZXJhdGlvbiAxMSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzYuOTc2MjRcbioqKiogZW0gaXRlcmF0aW9uIDEyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzOC4yMzA2MVxuKioqKiBlbSBpdGVyYXRpb24gMTMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM4Ljk2NDI4XG4qKioqIGVtIGl0ZXJhdGlvbiAxNCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzkuMTQ2NzJcbioqKiogZW0gaXRlcmF0aW9uIDE1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzOC43NTA2NVxuKioqKiBlbSBpdGVyYXRpb24gMTYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM3Ljc1MzA1XG4qKioqIGVtIGl0ZXJhdGlvbiAxNyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzYuMTM3ODZcbioqKiogZW0gaXRlcmF0aW9uIDE4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzMy45MDA0NlxuKioqKiBlbSBpdGVyYXRpb24gMTkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDMxLjA1NDA0XG4qKioqIGVtIGl0ZXJhdGlvbiAyMCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjcuNjM5NjNcbioqKiogZW0gaXRlcmF0aW9uIDIxICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyMy43NDA3NFxuKioqKiBlbSBpdGVyYXRpb24gMjIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDE5LjUwMTcwXG4qKioqIGVtIGl0ZXJhdGlvbiAyMyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMTUuMTQ2NTdcbioqKiogZW0gaXRlcmF0aW9uIDI0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxMC45ODI5N1xuKioqKiBlbSBpdGVyYXRpb24gMjUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDcuMzYzOTNcbioqKiogZW0gaXRlcmF0aW9uIDI2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA0LjU4MTE1XG4qKioqIGVtIGl0ZXJhdGlvbiAyNyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMi43MjU1OFxuKioqKiBlbSBpdGVyYXRpb24gMjggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDEuNjQzNzJcbioqKiogZW0gaXRlcmF0aW9uIDI5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxLjA2MjM5XG4qKioqIGVtIGl0ZXJhdGlvbiAzMCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC43NDkyOFxuKioqKiBlbSBpdGVyYXRpb24gMzEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuNTY3NDFcbioqKiogZW0gaXRlcmF0aW9uIDMyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjQ0OTU0XG4qKioqIGVtIGl0ZXJhdGlvbiAzMyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4zNjQyNlxuKioqKiBlbSBpdGVyYXRpb24gMzQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMjk3MTRcbioqKiogZW0gaXRlcmF0aW9uIDM1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjI0NDgzXG4qKioqIGVtIGl0ZXJhdGlvbiAzNiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4yMDYzNVxuKioqKiBlbSBpdGVyYXRpb24gMzcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTc4ODVcbioqKiogZW0gaXRlcmF0aW9uIDM4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjE1OTEyXG4qKioqIGVtIGl0ZXJhdGlvbiAzOSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xNDQ3MlxuKioqKiBlbSBpdGVyYXRpb24gNDAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTMzOTdcbioqKiogZW0gaXRlcmF0aW9uIDQxICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEyNTcyXG4qKioqIGVtIGl0ZXJhdGlvbiA0MiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMTkyN1xuKioqKiBlbSBpdGVyYXRpb24gNDMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTE0MTFcbioqKiogZW0gaXRlcmF0aW9uIDQ0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwOTg5XG4qKioqIGVtIGl0ZXJhdGlvbiA0NSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMDYzOVxuKioqKiBlbSBpdGVyYXRpb24gNDYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTAzNDdcbioqKiogZW0gaXRlcmF0aW9uIDQ3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwMTAxXG4qKioqIGVtIGl0ZXJhdGlvbiA0OCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTg5MFxuKioqKiBlbSBpdGVyYXRpb24gNDkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDk3MTFcbioqKiogZW0gaXRlcmF0aW9uIDUwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5NTU2XG4qKioqIGVtIGl0ZXJhdGlvbiA1MSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTQyMFxuKioqKiBlbSBpdGVyYXRpb24gNTIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDkzMDFcbioqKiogZW0gaXRlcmF0aW9uIDUzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5MTk0XG4qKioqIGVtIGl0ZXJhdGlvbiA1NCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTA5OFxuKioqKiBlbSBpdGVyYXRpb24gNTUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDkwMTJcbioqKiogZW0gaXRlcmF0aW9uIDU2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA4OTM3XG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgNzM4NjhcbioqKiogZW0gaXRlcmF0aW9uIDEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDUuOTc0MDFcbioqKiogZW0gaXRlcmF0aW9uIDIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDkuNDA3MjdcbioqKiogZW0gaXRlcmF0aW9uIDMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDEzLjE0MzQwXG4qKioqIGVtIGl0ZXJhdGlvbiA0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxNi45NTg4NlxuKioqKiBlbSBpdGVyYXRpb24gNSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjAuNzE4MTVcbioqKiogZW0gaXRlcmF0aW9uIDYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDI0LjMyOTc5XG4qKioqIGVtIGl0ZXJhdGlvbiA3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyNy43MjU0MlxuKioqKiBlbSBpdGVyYXRpb24gOCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzAuODQ5MzRcbioqKiogZW0gaXRlcmF0aW9uIDkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDMzLjY1NDAxXG4qKioqIGVtIGl0ZXJhdGlvbiAxMCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzYuMDk2MzlcbioqKiogZW0gaXRlcmF0aW9uIDExICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzOC4xMzY1MlxuKioqKiBlbSBpdGVyYXRpb24gMTIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM5LjczNjc2XG4qKioqIGVtIGl0ZXJhdGlvbiAxMyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNDAuODYxNDBcbioqKiogZW0gaXRlcmF0aW9uIDE0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA0MS40NzcyNlxuKioqKiBlbSBpdGVyYXRpb24gMTUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDQxLjU1Mzg5XG4qKioqIGVtIGl0ZXJhdGlvbiAxNiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNDEuMDY0NzVcbioqKiogZW0gaXRlcmF0aW9uIDE3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzOS45ODgyMlxuKioqKiBlbSBpdGVyYXRpb24gMTggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM4LjMwOTgzXG4qKioqIGVtIGl0ZXJhdGlvbiAxOSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzYuMDI1MjdcbioqKiogZW0gaXRlcmF0aW9uIDIwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzMy4xNDU3N1xuKioqKiBlbSBpdGVyYXRpb24gMjEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDI5LjcwNjU0XG4qKioqIGVtIGl0ZXJhdGlvbiAyMiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjUuNzc4MzVcbioqKiogZW0gaXRlcmF0aW9uIDIzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyMS40ODM3MFxuKioqKiBlbSBpdGVyYXRpb24gMjQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDE3LjAxNTcyXG4qKioqIGVtIGl0ZXJhdGlvbiAyNSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMTIuNjUwNzZcbioqKiogZW0gaXRlcmF0aW9uIDI2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA4LjcyOTcyXG4qKioqIGVtIGl0ZXJhdGlvbiAyNyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNS41NzcwMlxuKioqKiBlbSBpdGVyYXRpb24gMjggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDMuMzYyNTdcbioqKiogZW0gaXRlcmF0aW9uIDI5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyLjAwODk1XG4qKioqIGVtIGl0ZXJhdGlvbiAzMCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMS4yNjI3M1xuKioqKiBlbSBpdGVyYXRpb24gMzEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuODYzNTFcbioqKiogZW0gaXRlcmF0aW9uIDMyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjYzOTI4XG4qKioqIGVtIGl0ZXJhdGlvbiAzMyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC41MDA0OVxuKioqKiBlbSBpdGVyYXRpb24gMzQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuNDA0NjBcbioqKiogZW0gaXRlcmF0aW9uIDM1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjMzMTQ2XG4qKioqIGVtIGl0ZXJhdGlvbiAzNiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4yNzMwM1xuKioqKiBlbSBpdGVyYXRpb24gMzcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMjI4NDVcbioqKiogZW0gaXRlcmF0aW9uIDM4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjE5NjAwXG4qKioqIGVtIGl0ZXJhdGlvbiAzOSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xNzI2NVxuKioqKiBlbSBpdGVyYXRpb24gNDAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTU1NjhcbioqKiogZW0gaXRlcmF0aW9uIDQxICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjE0MzEzXG4qKioqIGVtIGl0ZXJhdGlvbiA0MiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMzM1OVxuKioqKiBlbSBpdGVyYXRpb24gNDMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTI2MTdcbioqKiogZW0gaXRlcmF0aW9uIDQ0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEyMDI5XG4qKioqIGVtIGl0ZXJhdGlvbiA0NSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMTU1NFxuKioqKiBlbSBpdGVyYXRpb24gNDYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTExNjVcbioqKiogZW0gaXRlcmF0aW9uIDQ3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwODQzXG4qKioqIGVtIGl0ZXJhdGlvbiA0OCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMDU3MVxuKioqKiBlbSBpdGVyYXRpb24gNDkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTAzNDFcbioqKiogZW0gaXRlcmF0aW9uIDUwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwMTQwXG4qKioqIGVtIGl0ZXJhdGlvbiA1MSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTk2NlxuKioqKiBlbSBpdGVyYXRpb24gNTIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDk4MTNcbioqKiogZW0gaXRlcmF0aW9uIDUzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5Njc5XG4qKioqIGVtIGl0ZXJhdGlvbiA1NCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTU2MVxuKioqKiBlbSBpdGVyYXRpb24gNTUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDk0NTZcbmZpbmFsIGUgc3RlcCBkb2N1bWVudCA3Mzg2OFxuKioqKiBlbSBpdGVyYXRpb24gMSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNS45NjY5NVxuKioqKiBlbSBpdGVyYXRpb24gMiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gOS4zOTUzM1xuKioqKiBlbSBpdGVyYXRpb24gMyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMTMuMTI1OTZcbioqKiogZW0gaXRlcmF0aW9uIDQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDE2LjkzMDE2XG4qKioqIGVtIGl0ZXJhdGlvbiA1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyMC42NjU5NFxuKioqKiBlbSBpdGVyYXRpb24gNiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjQuMjM0MTdcbioqKiogZW0gaXRlcmF0aW9uIDcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDI3LjU1ODQ2XG4qKioqIGVtIGl0ZXJhdGlvbiA4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzMC41NzY1MVxuKioqKiBlbSBpdGVyYXRpb24gOSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzMuMjM2MTBcbioqKiogZW0gaXRlcmF0aW9uIDEwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzNS40OTA2OFxuKioqKiBlbSBpdGVyYXRpb24gMTEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM3LjI5NzQ5XG4qKioqIGVtIGl0ZXJhdGlvbiAxMiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzguNjE2MTFcbioqKiogZW0gaXRlcmF0aW9uIDEzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzOS40MDkwMFxuKioqKiBlbSBpdGVyYXRpb24gMTQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM5LjY0MjQ3XG4qKioqIGVtIGl0ZXJhdGlvbiAxNSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzkuMjg2ODRcbioqKiogZW0gaXRlcmF0aW9uIDE2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzOC4zMTc4MFxuKioqKiBlbSBpdGVyYXRpb24gMTcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM2LjcxODczXG4qKioqIGVtIGl0ZXJhdGlvbiAxOCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzQuNDg0ODFcbioqKiogZW0gaXRlcmF0aW9uIDE5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzMS42MjkyNlxuKioqKiBlbSBpdGVyYXRpb24gMjAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDI4LjE5MzI5XG4qKioqIGVtIGl0ZXJhdGlvbiAyMSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjQuMjYwNjNcbioqKiogZW0gaXRlcmF0aW9uIDIyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxOS45NzU4NFxuKioqKiBlbSBpdGVyYXRpb24gMjMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDE1LjU2MzAzXG4qKioqIGVtIGl0ZXJhdGlvbiAyNCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMTEuMzMwNDNcbioqKiogZW0gaXRlcmF0aW9uIDI1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA3LjYzMzk0XG4qKioqIGVtIGl0ZXJhdGlvbiAyNiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gNC43NzE5NlxuKioqKiBlbSBpdGVyYXRpb24gMjcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDIuODQ1ODRcbioqKiogZW0gaXRlcmF0aW9uIDI4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxLjcxMTc3XG4qKioqIGVtIGl0ZXJhdGlvbiAyOSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMS4wOTg3OFxuKioqKiBlbSBpdGVyYXRpb24gMzAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuNzY5MjdcbioqKiogZW0gaXRlcmF0aW9uIDMxICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjU3OTU5XG4qKioqIGVtIGl0ZXJhdGlvbiAzMiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC40NTc5N1xuKioqKiBlbSBpdGVyYXRpb24gMzMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMzcwNjZcbioqKiogZW0gaXRlcmF0aW9uIDM0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjMwMjA5XG4qKioqIGVtIGl0ZXJhdGlvbiAzNSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4yNDg0MlxuKioqKiBlbSBpdGVyYXRpb24gMzYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMjA4OTJcbioqKiogZW0gaXRlcmF0aW9uIDM3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjE4MDc3XG4qKioqIGVtIGl0ZXJhdGlvbiAzOCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xNjA2MlxuKioqKiBlbSBpdGVyYXRpb24gMzkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTQ1OTdcbioqKiogZW0gaXRlcmF0aW9uIDQwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEzNTAwXG4qKioqIGVtIGl0ZXJhdGlvbiA0MSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMjY1NlxuKioqKiBlbSBpdGVyYXRpb24gNDIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTE5OTNcbioqKiogZW0gaXRlcmF0aW9uIDQzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjExNDYxXG4qKioqIGVtIGl0ZXJhdGlvbiA0NCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMTAyOFxuKioqKiBlbSBpdGVyYXRpb24gNDUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTA2NzNcbioqKiogZW0gaXRlcmF0aW9uIDQ2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwMzc4XG4qKioqIGVtIGl0ZXJhdGlvbiA0NyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMDEyOVxuKioqKiBlbSBpdGVyYXRpb24gNDggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDk5MThcbioqKiogZW0gaXRlcmF0aW9uIDQ5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5NzM4XG4qKioqIGVtIGl0ZXJhdGlvbiA1MCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTU4M1xuKioqKiBlbSBpdGVyYXRpb24gNTEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDk0NDhcbioqKiogZW0gaXRlcmF0aW9uIDUyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5MzMyXG4qKioqIGVtIGl0ZXJhdGlvbiA1MyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTIzMVxuKioqKiBlbSBpdGVyYXRpb24gNTQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDkxNDJcbioqKiogZW0gaXRlcmF0aW9uIDU1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5MDYzXG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgNzM4NjhcbioqKiogZW0gaXRlcmF0aW9uIDEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDUuOTY5MDJcbioqKiogZW0gaXRlcmF0aW9uIDIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDkuMzk5NjJcbioqKiogZW0gaXRlcmF0aW9uIDMgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDEzLjEzMzg4XG4qKioqIGVtIGl0ZXJhdGlvbiA0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxNi45NDQ4OVxuKioqKiBlbSBpdGVyYXRpb24gNSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjAuNjkyNzZcbioqKiogZW0gaXRlcmF0aW9uIDYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDI0LjI4MTIwXG4qKioqIGVtIGl0ZXJhdGlvbiA3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAyNy42MzY4NFxuKioqKiBlbSBpdGVyYXRpb24gOCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzAuNjk5MTVcbioqKiogZW0gaXRlcmF0aW9uIDkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDMzLjQxNjcwXG4qKioqIGVtIGl0ZXJhdGlvbiAxMCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzUuNzQ0NDJcbioqKiogZW0gaXRlcmF0aW9uIDExICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzNy42NDA3OVxuKioqKiBlbSBpdGVyYXRpb24gMTIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM5LjA2NzQ3XG4qKioqIGVtIGl0ZXJhdGlvbiAxMyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzkuOTg5MDdcbioqKiogZW0gaXRlcmF0aW9uIDE0ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSA0MC4zNzI2OVxuKioqKiBlbSBpdGVyYXRpb24gMTUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDQwLjE4OTEwXG4qKioqIGVtIGl0ZXJhdGlvbiAxNiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzkuNDEzNzVcbioqKiogZW0gaXRlcmF0aW9uIDE3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzOC4wMjg0OFxuKioqKiBlbSBpdGVyYXRpb24gMTggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDM2LjAyNDY5XG4qKioqIGVtIGl0ZXJhdGlvbiAxOSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMzMuNDA4MTJcbioqKiogZW0gaXRlcmF0aW9uIDIwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzMC4yMDY0NlxuKioqKiBlbSBpdGVyYXRpb24gMjEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDI2LjQ4MDQwXG4qKioqIGVtIGl0ZXJhdGlvbiAyMiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMjIuMzM4NjdcbioqKiogZW0gaXRlcmF0aW9uIDIzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAxNy45NTYwOVxuKioqKiBlbSBpdGVyYXRpb24gMjQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDEzLjU4ODI1XG4qKioqIGVtIGl0ZXJhdGlvbiAyNSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gOS41NjM3OFxuKioqKiBlbSBpdGVyYXRpb24gMjYgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDYuMjIyNzZcbioqKiogZW0gaXRlcmF0aW9uIDI3ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAzLjc4ODc1XG4qKioqIGVtIGl0ZXJhdGlvbiAyOCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMi4yNTAxN1xuKioqKiBlbSBpdGVyYXRpb24gMjkgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDEuMzg1NzVcbioqKiogZW0gaXRlcmF0aW9uIDMwICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjkyNDU5XG4qKioqIGVtIGl0ZXJhdGlvbiAzMSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC42NzA2NVxuKioqKiBlbSBpdGVyYXRpb24gMzIgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuNTE3MzNcbioqKiogZW0gaXRlcmF0aW9uIDMzICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjQxMzcwXG4qKioqIGVtIGl0ZXJhdGlvbiAzNCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4zMzU5M1xuKioqKiBlbSBpdGVyYXRpb24gMzUgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMjc0MTNcbioqKiogZW0gaXRlcmF0aW9uIDM2ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjIyNzI1XG4qKioqIGVtIGl0ZXJhdGlvbiAzNyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xOTM0NFxuKioqKiBlbSBpdGVyYXRpb24gMzggKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTY5NDFcbioqKiogZW0gaXRlcmF0aW9uIDM5ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjE1MjEyXG4qKioqIGVtIGl0ZXJhdGlvbiA0MCAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMzk0MFxuKioqKiBlbSBpdGVyYXRpb24gNDEgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTI5ODRcbioqKiogZW0gaXRlcmF0aW9uIDQyICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEyMjQ3XG4qKioqIGVtIGl0ZXJhdGlvbiA0MyAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMTY2N1xuKioqKiBlbSBpdGVyYXRpb24gNDQgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTExOThcbioqKiogZW0gaXRlcmF0aW9uIDQ1ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwODEyXG4qKioqIGVtIGl0ZXJhdGlvbiA0NiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4xMDQ5M1xuKioqKiBlbSBpdGVyYXRpb24gNDcgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMTAyMjZcbioqKiogZW0gaXRlcmF0aW9uIDQ4ICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjEwMDAxXG4qKioqIGVtIGl0ZXJhdGlvbiA0OSAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTgxMVxuKioqKiBlbSBpdGVyYXRpb24gNTAgKioqKlxuZG9jdW1lbnQgNzM4Njhcbm5ldyBhbHBoYSA9IDAuMDk2NDdcbioqKiogZW0gaXRlcmF0aW9uIDUxICoqKipcbmRvY3VtZW50IDczODY4XG5uZXcgYWxwaGEgPSAwLjA5NTA2XG4qKioqIGVtIGl0ZXJhdGlvbiA1MiAqKioqXG5kb2N1bWVudCA3Mzg2OFxubmV3IGFscGhhID0gMC4wOTM4MlxuZmluYWwgZSBzdGVwIGRvY3VtZW50IDczODY4XG4ifQ== -->
+<pre><code>**** em iteration 1 ****
+document 73868
+new alpha = 5.97351
+**** em iteration 2 ****
+document 73868
+new alpha = 9.41349
+**** em iteration 3 ****
+document 73868
+new alpha = 13.16614
+**** em iteration 4 ****
+document 73868
+new alpha = 17.00859
+**** em iteration 5 ****
+document 73868
+new alpha = 20.80481
+**** em iteration 6 ****
+document 73868
+new alpha = 24.46182
+**** em iteration 7 ****
+document 73868
+new alpha = 27.90901
+**** em iteration 8 ****
+document 73868
+new alpha = 31.08822
+**** em iteration 9 ****
+document 73868
+new alpha = 33.94873
+**** em iteration 10 ****
+document 73868
+new alpha = 36.44499
+**** em iteration 11 ****
+document 73868
+new alpha = 38.53570
+**** em iteration 12 ****
+document 73868
+new alpha = 40.18259
+**** em iteration 13 ****
+document 73868
+new alpha = 41.35071
+**** em iteration 14 ****
+document 73868
+new alpha = 42.00822
+**** em iteration 15 ****
+document 73868
+new alpha = 42.12660
+**** em iteration 16 ****
+document 73868
+new alpha = 41.68072
+**** em iteration 17 ****
+document 73868
+new alpha = 40.64974
+**** em iteration 18 ****
+document 73868
+new alpha = 39.01871
+**** em iteration 19 ****
+document 73868
+new alpha = 36.78195
+**** em iteration 20 ****
+document 73868
+new alpha = 33.94815
+**** em iteration 21 ****
+document 73868
+new alpha = 30.54825
+**** em iteration 22 ****
+document 73868
+new alpha = 26.64631
+**** em iteration 23 ****
+document 73868
+new alpha = 22.35562
+**** em iteration 24 ****
+document 73868
+new alpha = 17.85732
+**** em iteration 25 ****
+document 73868
+new alpha = 13.41488
+**** em iteration 26 ****
+document 73868
+new alpha = 9.36216
+**** em iteration 27 ****
+document 73868
+new alpha = 6.03542
+**** em iteration 28 ****
+document 73868
+new alpha = 3.64218
+**** em iteration 29 ****
+document 73868
+new alpha = 2.14955
+**** em iteration 30 ****
+document 73868
+new alpha = 1.32115
+**** em iteration 31 ****
+document 73868
+new alpha = 0.88243
+**** em iteration 32 ****
+document 73868
+new alpha = 0.64105
+**** em iteration 33 ****
+document 73868
+new alpha = 0.49467
+**** em iteration 34 ****
+document 73868
+new alpha = 0.39489
+**** em iteration 35 ****
+document 73868
+new alpha = 0.31951
+**** em iteration 36 ****
+document 73868
+new alpha = 0.26057
+**** em iteration 37 ****
+document 73868
+new alpha = 0.21691
+**** em iteration 38 ****
+document 73868
+new alpha = 0.18586
+**** em iteration 39 ****
+document 73868
+new alpha = 0.16383
+**** em iteration 40 ****
+document 73868
+new alpha = 0.14792
+**** em iteration 41 ****
+document 73868
+new alpha = 0.13617
+**** em iteration 42 ****
+document 73868
+new alpha = 0.12727
+**** em iteration 43 ****
+document 73868
+new alpha = 0.12036
+**** em iteration 44 ****
+document 73868
+new alpha = 0.11486
+**** em iteration 45 ****
+document 73868
+new alpha = 0.11040
+**** em iteration 46 ****
+document 73868
+new alpha = 0.10673
+**** em iteration 47 ****
+document 73868
+new alpha = 0.10368
+**** em iteration 48 ****
+document 73868
+new alpha = 0.10112
+**** em iteration 49 ****
+document 73868
+new alpha = 0.09896
+**** em iteration 50 ****
+document 73868
+new alpha = 0.09711
+**** em iteration 51 ****
+document 73868
+new alpha = 0.09554
+**** em iteration 52 ****
+document 73868
+new alpha = 0.09421
+final e step document 73868
+**** em iteration 1 ****
+document 73868
+new alpha = 5.97110
+**** em iteration 2 ****
+document 73868
+new alpha = 9.39974
+**** em iteration 3 ****
+document 73868
+new alpha = 13.12560
+**** em iteration 4 ****
+document 73868
+new alpha = 16.91901
+**** em iteration 5 ****
+document 73868
+new alpha = 20.63668
+**** em iteration 6 ****
+document 73868
+new alpha = 24.17805
+**** em iteration 7 ****
+document 73868
+new alpha = 27.46589
+**** em iteration 8 ****
+document 73868
+new alpha = 30.43754
+**** em iteration 9 ****
+document 73868
+new alpha = 33.04178
+**** em iteration 10 ****
+document 73868
+new alpha = 35.23449
+**** em iteration 11 ****
+document 73868
+new alpha = 36.97624
+**** em iteration 12 ****
+document 73868
+new alpha = 38.23061
+**** em iteration 13 ****
+document 73868
+new alpha = 38.96428
+**** em iteration 14 ****
+document 73868
+new alpha = 39.14672
+**** em iteration 15 ****
+document 73868
+new alpha = 38.75065
+**** em iteration 16 ****
+document 73868
+new alpha = 37.75305
+**** em iteration 17 ****
+document 73868
+new alpha = 36.13786
+**** em iteration 18 ****
+document 73868
+new alpha = 33.90046
+**** em iteration 19 ****
+document 73868
+new alpha = 31.05404
+**** em iteration 20 ****
+document 73868
+new alpha = 27.63963
+**** em iteration 21 ****
+document 73868
+new alpha = 23.74074
+**** em iteration 22 ****
+document 73868
+new alpha = 19.50170
+**** em iteration 23 ****
+document 73868
+new alpha = 15.14657
+**** em iteration 24 ****
+document 73868
+new alpha = 10.98297
+**** em iteration 25 ****
+document 73868
+new alpha = 7.36393
+**** em iteration 26 ****
+document 73868
+new alpha = 4.58115
+**** em iteration 27 ****
+document 73868
+new alpha = 2.72558
+**** em iteration 28 ****
+document 73868
+new alpha = 1.64372
+**** em iteration 29 ****
+document 73868
+new alpha = 1.06239
+**** em iteration 30 ****
+document 73868
+new alpha = 0.74928
+**** em iteration 31 ****
+document 73868
+new alpha = 0.56741
+**** em iteration 32 ****
+document 73868
+new alpha = 0.44954
+**** em iteration 33 ****
+document 73868
+new alpha = 0.36426
+**** em iteration 34 ****
+document 73868
+new alpha = 0.29714
+**** em iteration 35 ****
+document 73868
+new alpha = 0.24483
+**** em iteration 36 ****
+document 73868
+new alpha = 0.20635
+**** em iteration 37 ****
+document 73868
+new alpha = 0.17885
+**** em iteration 38 ****
+document 73868
+new alpha = 0.15912
+**** em iteration 39 ****
+document 73868
+new alpha = 0.14472
+**** em iteration 40 ****
+document 73868
+new alpha = 0.13397
+**** em iteration 41 ****
+document 73868
+new alpha = 0.12572
+**** em iteration 42 ****
+document 73868
+new alpha = 0.11927
+**** em iteration 43 ****
+document 73868
+new alpha = 0.11411
+**** em iteration 44 ****
+document 73868
+new alpha = 0.10989
+**** em iteration 45 ****
+document 73868
+new alpha = 0.10639
+**** em iteration 46 ****
+document 73868
+new alpha = 0.10347
+**** em iteration 47 ****
+document 73868
+new alpha = 0.10101
+**** em iteration 48 ****
+document 73868
+new alpha = 0.09890
+**** em iteration 49 ****
+document 73868
+new alpha = 0.09711
+**** em iteration 50 ****
+document 73868
+new alpha = 0.09556
+**** em iteration 51 ****
+document 73868
+new alpha = 0.09420
+**** em iteration 52 ****
+document 73868
+new alpha = 0.09301
+**** em iteration 53 ****
+document 73868
+new alpha = 0.09194
+**** em iteration 54 ****
+document 73868
+new alpha = 0.09098
+**** em iteration 55 ****
+document 73868
+new alpha = 0.09012
+**** em iteration 56 ****
+document 73868
+new alpha = 0.08937
+final e step document 73868
+**** em iteration 1 ****
+document 73868
+new alpha = 5.97401
+**** em iteration 2 ****
+document 73868
+new alpha = 9.40727
+**** em iteration 3 ****
+document 73868
+new alpha = 13.14340
+**** em iteration 4 ****
+document 73868
+new alpha = 16.95886
+**** em iteration 5 ****
+document 73868
+new alpha = 20.71815
+**** em iteration 6 ****
+document 73868
+new alpha = 24.32979
+**** em iteration 7 ****
+document 73868
+new alpha = 27.72542
+**** em iteration 8 ****
+document 73868
+new alpha = 30.84934
+**** em iteration 9 ****
+document 73868
+new alpha = 33.65401
+**** em iteration 10 ****
+document 73868
+new alpha = 36.09639
+**** em iteration 11 ****
+document 73868
+new alpha = 38.13652
+**** em iteration 12 ****
+document 73868
+new alpha = 39.73676
+**** em iteration 13 ****
+document 73868
+new alpha = 40.86140
+**** em iteration 14 ****
+document 73868
+new alpha = 41.47726
+**** em iteration 15 ****
+document 73868
+new alpha = 41.55389
+**** em iteration 16 ****
+document 73868
+new alpha = 41.06475
+**** em iteration 17 ****
+document 73868
+new alpha = 39.98822
+**** em iteration 18 ****
+document 73868
+new alpha = 38.30983
+**** em iteration 19 ****
+document 73868
+new alpha = 36.02527
+**** em iteration 20 ****
+document 73868
+new alpha = 33.14577
+**** em iteration 21 ****
+document 73868
+new alpha = 29.70654
+**** em iteration 22 ****
+document 73868
+new alpha = 25.77835
+**** em iteration 23 ****
+document 73868
+new alpha = 21.48370
+**** em iteration 24 ****
+document 73868
+new alpha = 17.01572
+**** em iteration 25 ****
+document 73868
+new alpha = 12.65076
+**** em iteration 26 ****
+document 73868
+new alpha = 8.72972
+**** em iteration 27 ****
+document 73868
+new alpha = 5.57702
+**** em iteration 28 ****
+document 73868
+new alpha = 3.36257
+**** em iteration 29 ****
+document 73868
+new alpha = 2.00895
+**** em iteration 30 ****
+document 73868
+new alpha = 1.26273
+**** em iteration 31 ****
+document 73868
+new alpha = 0.86351
+**** em iteration 32 ****
+document 73868
+new alpha = 0.63928
+**** em iteration 33 ****
+document 73868
+new alpha = 0.50049
+**** em iteration 34 ****
+document 73868
+new alpha = 0.40460
+**** em iteration 35 ****
+document 73868
+new alpha = 0.33146
+**** em iteration 36 ****
+document 73868
+new alpha = 0.27303
+**** em iteration 37 ****
+document 73868
+new alpha = 0.22845
+**** em iteration 38 ****
+document 73868
+new alpha = 0.19600
+**** em iteration 39 ****
+document 73868
+new alpha = 0.17265
+**** em iteration 40 ****
+document 73868
+new alpha = 0.15568
+**** em iteration 41 ****
+document 73868
+new alpha = 0.14313
+**** em iteration 42 ****
+document 73868
+new alpha = 0.13359
+**** em iteration 43 ****
+document 73868
+new alpha = 0.12617
+**** em iteration 44 ****
+document 73868
+new alpha = 0.12029
+**** em iteration 45 ****
+document 73868
+new alpha = 0.11554
+**** em iteration 46 ****
+document 73868
+new alpha = 0.11165
+**** em iteration 47 ****
+document 73868
+new alpha = 0.10843
+**** em iteration 48 ****
+document 73868
+new alpha = 0.10571
+**** em iteration 49 ****
+document 73868
+new alpha = 0.10341
+**** em iteration 50 ****
+document 73868
+new alpha = 0.10140
+**** em iteration 51 ****
+document 73868
+new alpha = 0.09966
+**** em iteration 52 ****
+document 73868
+new alpha = 0.09813
+**** em iteration 53 ****
+document 73868
+new alpha = 0.09679
+**** em iteration 54 ****
+document 73868
+new alpha = 0.09561
+**** em iteration 55 ****
+document 73868
+new alpha = 0.09456
+final e step document 73868
+**** em iteration 1 ****
+document 73868
+new alpha = 5.96695
+**** em iteration 2 ****
+document 73868
+new alpha = 9.39533
+**** em iteration 3 ****
+document 73868
+new alpha = 13.12596
+**** em iteration 4 ****
+document 73868
+new alpha = 16.93016
+**** em iteration 5 ****
+document 73868
+new alpha = 20.66594
+**** em iteration 6 ****
+document 73868
+new alpha = 24.23417
+**** em iteration 7 ****
+document 73868
+new alpha = 27.55846
+**** em iteration 8 ****
+document 73868
+new alpha = 30.57651
+**** em iteration 9 ****
+document 73868
+new alpha = 33.23610
+**** em iteration 10 ****
+document 73868
+new alpha = 35.49068
+**** em iteration 11 ****
+document 73868
+new alpha = 37.29749
+**** em iteration 12 ****
+document 73868
+new alpha = 38.61611
+**** em iteration 13 ****
+document 73868
+new alpha = 39.40900
+**** em iteration 14 ****
+document 73868
+new alpha = 39.64247
+**** em iteration 15 ****
+document 73868
+new alpha = 39.28684
+**** em iteration 16 ****
+document 73868
+new alpha = 38.31780
+**** em iteration 17 ****
+document 73868
+new alpha = 36.71873
+**** em iteration 18 ****
+document 73868
+new alpha = 34.48481
+**** em iteration 19 ****
+document 73868
+new alpha = 31.62926
+**** em iteration 20 ****
+document 73868
+new alpha = 28.19329
+**** em iteration 21 ****
+document 73868
+new alpha = 24.26063
+**** em iteration 22 ****
+document 73868
+new alpha = 19.97584
+**** em iteration 23 ****
+document 73868
+new alpha = 15.56303
+**** em iteration 24 ****
+document 73868
+new alpha = 11.33043
+**** em iteration 25 ****
+document 73868
+new alpha = 7.63394
+**** em iteration 26 ****
+document 73868
+new alpha = 4.77196
+**** em iteration 27 ****
+document 73868
+new alpha = 2.84584
+**** em iteration 28 ****
+document 73868
+new alpha = 1.71177
+**** em iteration 29 ****
+document 73868
+new alpha = 1.09878
+**** em iteration 30 ****
+document 73868
+new alpha = 0.76927
+**** em iteration 31 ****
+document 73868
+new alpha = 0.57959
+**** em iteration 32 ****
+document 73868
+new alpha = 0.45797
+**** em iteration 33 ****
+document 73868
+new alpha = 0.37066
+**** em iteration 34 ****
+document 73868
+new alpha = 0.30209
+**** em iteration 35 ****
+document 73868
+new alpha = 0.24842
+**** em iteration 36 ****
+document 73868
+new alpha = 0.20892
+**** em iteration 37 ****
+document 73868
+new alpha = 0.18077
+**** em iteration 38 ****
+document 73868
+new alpha = 0.16062
+**** em iteration 39 ****
+document 73868
+new alpha = 0.14597
+**** em iteration 40 ****
+document 73868
+new alpha = 0.13500
+**** em iteration 41 ****
+document 73868
+new alpha = 0.12656
+**** em iteration 42 ****
+document 73868
+new alpha = 0.11993
+**** em iteration 43 ****
+document 73868
+new alpha = 0.11461
+**** em iteration 44 ****
+document 73868
+new alpha = 0.11028
+**** em iteration 45 ****
+document 73868
+new alpha = 0.10673
+**** em iteration 46 ****
+document 73868
+new alpha = 0.10378
+**** em iteration 47 ****
+document 73868
+new alpha = 0.10129
+**** em iteration 48 ****
+document 73868
+new alpha = 0.09918
+**** em iteration 49 ****
+document 73868
+new alpha = 0.09738
+**** em iteration 50 ****
+document 73868
+new alpha = 0.09583
+**** em iteration 51 ****
+document 73868
+new alpha = 0.09448
+**** em iteration 52 ****
+document 73868
+new alpha = 0.09332
+**** em iteration 53 ****
+document 73868
+new alpha = 0.09231
+**** em iteration 54 ****
+document 73868
+new alpha = 0.09142
+**** em iteration 55 ****
+document 73868
+new alpha = 0.09063
+final e step document 73868
+**** em iteration 1 ****
+document 73868
+new alpha = 5.96902
+**** em iteration 2 ****
+document 73868
+new alpha = 9.39962
+**** em iteration 3 ****
+document 73868
+new alpha = 13.13388
+**** em iteration 4 ****
+document 73868
+new alpha = 16.94489
+**** em iteration 5 ****
+document 73868
+new alpha = 20.69276
+**** em iteration 6 ****
+document 73868
+new alpha = 24.28120
+**** em iteration 7 ****
+document 73868
+new alpha = 27.63684
+**** em iteration 8 ****
+document 73868
+new alpha = 30.69915
+**** em iteration 9 ****
+document 73868
+new alpha = 33.41670
+**** em iteration 10 ****
+document 73868
+new alpha = 35.74442
+**** em iteration 11 ****
+document 73868
+new alpha = 37.64079
+**** em iteration 12 ****
+document 73868
+new alpha = 39.06747
+**** em iteration 13 ****
+document 73868
+new alpha = 39.98907
+**** em iteration 14 ****
+document 73868
+new alpha = 40.37269
+**** em iteration 15 ****
+document 73868
+new alpha = 40.18910
+**** em iteration 16 ****
+document 73868
+new alpha = 39.41375
+**** em iteration 17 ****
+document 73868
+new alpha = 38.02848
+**** em iteration 18 ****
+document 73868
+new alpha = 36.02469
+**** em iteration 19 ****
+document 73868
+new alpha = 33.40812
+**** em iteration 20 ****
+document 73868
+new alpha = 30.20646
+**** em iteration 21 ****
+document 73868
+new alpha = 26.48040
+**** em iteration 22 ****
+document 73868
+new alpha = 22.33867
+**** em iteration 23 ****
+document 73868
+new alpha = 17.95609
+**** em iteration 24 ****
+document 73868
+new alpha = 13.58825
+**** em iteration 25 ****
+document 73868
+new alpha = 9.56378
+**** em iteration 26 ****
+document 73868
+new alpha = 6.22276
+**** em iteration 27 ****
+document 73868
+new alpha = 3.78875
+**** em iteration 28 ****
+document 73868
+new alpha = 2.25017
+**** em iteration 29 ****
+document 73868
+new alpha = 1.38575
+**** em iteration 30 ****
+document 73868
+new alpha = 0.92459
+**** em iteration 31 ****
+document 73868
+new alpha = 0.67065
+**** em iteration 32 ****
+document 73868
+new alpha = 0.51733
+**** em iteration 33 ****
+document 73868
+new alpha = 0.41370
+**** em iteration 34 ****
+document 73868
+new alpha = 0.33593
+**** em iteration 35 ****
+document 73868
+new alpha = 0.27413
+**** em iteration 36 ****
+document 73868
+new alpha = 0.22725
+**** em iteration 37 ****
+document 73868
+new alpha = 0.19344
+**** em iteration 38 ****
+document 73868
+new alpha = 0.16941
+**** em iteration 39 ****
+document 73868
+new alpha = 0.15212
+**** em iteration 40 ****
+document 73868
+new alpha = 0.13940
+**** em iteration 41 ****
+document 73868
+new alpha = 0.12984
+**** em iteration 42 ****
+document 73868
+new alpha = 0.12247
+**** em iteration 43 ****
+document 73868
+new alpha = 0.11667
+**** em iteration 44 ****
+document 73868
+new alpha = 0.11198
+**** em iteration 45 ****
+document 73868
+new alpha = 0.10812
+**** em iteration 46 ****
+document 73868
+new alpha = 0.10493
+**** em iteration 47 ****
+document 73868
+new alpha = 0.10226
+**** em iteration 48 ****
+document 73868
+new alpha = 0.10001
+**** em iteration 49 ****
+document 73868
+new alpha = 0.09811
+**** em iteration 50 ****
+document 73868
+new alpha = 0.09647
+**** em iteration 51 ****
+document 73868
+new alpha = 0.09506
+**** em iteration 52 ****
+document 73868
+new alpha = 0.09382
+final e step document 73868</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2F2ZShtb2RlbHMxNSwgZmlsZSA9IFwicmVzdWx0cy9sZGFfa18xNS56aXBcIiwgY29tcHJlc3MgPSBcInh6XCIpXG4odDE1IDwtIFN5cy50aW1lKCkgLSBub3cpXG5gYGAifQ== -->
+<pre class="r"><code>save(models15, file = &quot;results/lda_k_15.zip&quot;, compress = &quot;xz&quot;)
 (t15 &lt;- Sys.time() - now)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiVGltZSBkaWZmZXJlbmNlIG9mIDExLjQ1Mzg3IGhvdXJzXG4ifQ== -->
+<pre><code>Time difference of 11.45387 hours</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-</div>
-<div id="topics-3" class="section level3">
-<h3>20 topics</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm93IDwtIFN5cy50aW1lKClcbm1vZGVsczIwIDwtIHh2YWwoZHRtID0gc3BhcnNlLCBpbmRleCA9IHJhbmRfaW5kLCBudG9waWNzID0gMjAsIHNlZWQgPSA0NTI4MSwga2VlcCA9IDEsIHZlcmJvc2UgPSAxKVxuc2F2ZShtb2RlbHMyMCwgZmlsZSA9IFwicmVzdWx0cy9sZGFfa18yMC56aXBcIiwgY29tcHJlc3MgPSBcInh6XCIpXG4odDIwIDwtIFN5cy50aW1lKCkgLSBub3cpXG5gYGAifQ== -->
-<pre class="r"><code>now &lt;- Sys.time()
-models20 &lt;- xval(dtm = sparse, index = rand_ind, ntopics = 20, seed = 45281, keep = 1, verbose = 1)
-save(models20, file = &quot;results/lda_k_20.zip&quot;, compress = &quot;xz&quot;)
-(t20 &lt;- Sys.time() - now)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="topics-4" class="section level3">
-<h3>25 topics</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm93IDwtIFN5cy50aW1lKClcbm1vZGVsczI1IDwtIHh2YWwoZHRtID0gc3BhcnNlLCBpbmRleCA9IHJhbmRfaW5kLCBudG9waWNzID0gMjUsIHNlZWQgPSA4NjI0NCwga2VlcCA9IDEsIHZlcmJvc2UgPSAxKVxuc2F2ZShtb2RlbHMyNSwgZmlsZSA9IFwicmVzdWx0cy9sZGFfa18yNS56aXBcIiwgY29tcHJlc3MgPSBcInh6XCIpXG4odDI1IDwtIFN5cy50aW1lKCkgLSBub3cpXG5gYGAifQ== -->
-<pre class="r"><code>now &lt;- Sys.time()
-models25 &lt;- xval(dtm = sparse, index = rand_ind, ntopics = 25, seed = 86244, keep = 1, verbose = 1)
-save(models25, file = &quot;results/lda_k_25.zip&quot;, compress = &quot;xz&quot;)
-(t25 &lt;- Sys.time() - now)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="topics-5" class="section level3">
-<h3>30 topics</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm93IDwtIFN5cy50aW1lKClcbm1vZGVsczMwIDwtIHh2YWwoZHRtID0gc3BhcnNlLCBpbmRleCA9IHJhbmRfaW5kLCBudG9waWNzID0gMzAsIHNlZWQgPSA0MTUzMSwga2VlcCA9IDEsIHZlcmJvc2UgPSAxKVxuc2F2ZShtb2RlbHMzMCwgZmlsZSA9IFwicmVzdWx0cy9sZGFfa18zMC56aXBcIiwgY29tcHJlc3MgPSBcInh6XCIpXG4odDMwIDwtIFN5cy50aW1lKCkgLSBub3cpXG5gYGAifQ== -->
-<pre class="r"><code>now &lt;- Sys.time()
-models30 &lt;- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531, keep = 1, verbose = 1)
-save(models30, file = &quot;results/lda_k_30.zip&quot;, compress = &quot;xz&quot;)
-(t30 &lt;- Sys.time() - now)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
+<p>This takes a really long time. Makes more sense to do the rest on AWS in parallel for pennies an hour….</p>
 </div>
 </div>
 </div>
@@ -1174,12 +1958,17 @@ save(models30, file = &quot;results/lda_k_30.zip&quot;, compress = &quot;xz&quot
 <h2>In-sample results</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGFwcGx5KG1vZGVsczUsIHBlcnBsZXhpdHkpICU+JSB1bmxpc3QoKVxuYGBgIn0= -->
-<pre class="r"><code>lapply(models5, perplexity) %&gt;% unlist()</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDYWxjdWxhdGUgaW4tc2FtcGxlIHBlcnBsZXhpdHlcbnBlcnBsZXhpdHkgPC0gZGF0YS5mcmFtZShcbiAgbW9kZWwgPSBjKFwiNVwiLCBcIjEwXCIsIFwiMTVcIikgJT4lIHJlcChlYWNoID0gSyksXG4gIGluX3NhbXBsZSA9IGMoXG4gICAgbGFwcGx5KG1vZGVsczUsIHBlcnBsZXhpdHkpICU+JSB1bmxpc3QoKSxcbiAgICBsYXBwbHkobW9kZWxzMTAsIHBlcnBsZXhpdHkpICU+JSB1bmxpc3QoKSxcbiAgICBsYXBwbHkobW9kZWxzMTUsIHBlcnBsZXhpdHkpICU+JSB1bmxpc3QoKVxuICApXG4pXG5gYGAifQ== -->
+<pre class="r"><code># Calculate in-sample perplexity
+perplexity &lt;- data.frame(
+  model = c(&quot;5&quot;, &quot;10&quot;, &quot;15&quot;) %&gt;% rep(each = K),
+  in_sample = c(
+    lapply(models5, perplexity) %&gt;% unlist(),
+    lapply(models10, perplexity) %&gt;% unlist(),
+    lapply(models15, perplexity) %&gt;% unlist()
+  )
+)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIxNDUuNDYxIDIxNTEuMjAzIDIxNDYuNDAwIDIxNDUuOTM5IDIxNDYuMjQ1XG4ifQ== -->
-<pre><code>[1] 2145.461 2151.203 2146.400 2145.939 2146.245</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1187,22 +1976,49 @@ save(models30, file = &quot;results/lda_k_30.zip&quot;, compress = &quot;xz&quot
 <h2>Out-of-sample results</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZm9yKGkgaW4gMTpLKSB7XG4gIHBlcnBsZXhpdGllc1tpXSA8LSBwZXJwbGV4aXR5KG1vZGVsczVbW2ldXSwgbmV3ZGF0YSA9IHNwbGl0X3NldChzcGFyc2UsIHJhbmRfaW5kW1tpXV0pKVxufVxuXG5gYGAifQ== -->
-<pre class="r"><code>for(i in 1:K) {
-  perplexities[i] &lt;- perplexity(models5[[i]], newdata = split_set(sparse, rand_ind[[i]]))
-}
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDYWxjdWxhdGUgb3V0LW9mLXNhbXBsZSBwZXJwbGV4aXR5XG5wZXJwNSA8LSByZXAoMCwgdGltZXMgPSBLKVxucGVycDEwIDwtIHJlcCgwLCB0aW1lcyA9IEspXG5wZXJwMTUgPC0gcmVwKDAsIHRpbWVzID0gSylcbmZvcihpIGluIDE6Sykge1xuICBwZXJwNVtpXSA8LSBwZXJwbGV4aXR5KG1vZGVsczVbW2ldXSwgbmV3ZGF0YSA9IHNwbGl0X3NldChzcGFyc2UsIHJhbmRfaW5kW1tpXV0pKVxuICBwZXJwMTBbaV0gPC0gcGVycGxleGl0eShtb2RlbHMxMFtbaV1dLCBuZXdkYXRhID0gc3BsaXRfc2V0KHNwYXJzZSwgcmFuZF9pbmRbW2ldXSkpXG4gIHBlcnAxNVtpXSA8LSBwZXJwbGV4aXR5KG1vZGVsczE1W1tpXV0sIG5ld2RhdGEgPSBzcGxpdF9zZXQoc3BhcnNlLCByYW5kX2luZFtbaV1dKSlcbn1cbmBgYCJ9 -->
+<pre class="r"><code># Calculate out-of-sample perplexity
+perp5 &lt;- rep(0, times = K)
+perp10 &lt;- rep(0, times = K)
+perp15 &lt;- rep(0, times = K)
+for(i in 1:K) {
+  perp5[i] &lt;- perplexity(models5[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+  perp10[i] &lt;- perplexity(models10[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+  perp15[i] &lt;- perplexity(models15[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+}</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiZmluYWwgZSBzdGVwIGRvY3VtZW50IDMwNzc4XG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgMzA3NzhcbmZpbmFsIGUgc3RlcCBkb2N1bWVudCAzMDc3OVxuIn0= -->
-<pre><code>final e step document 30778
-final e step document 30778
-final e step document 30779</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiZmluYWwgZSBzdGVwIGRvY3VtZW50IDE4NDY3XG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgMTg0NjdcbmZpbmFsIGUgc3RlcCBkb2N1bWVudCAxODQ2N1xuZmluYWwgZSBzdGVwIGRvY3VtZW50IDE4NDY3XG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgMTg0NjdcbmZpbmFsIGUgc3RlcCBkb2N1bWVudCAxODQ2N1xuZmluYWwgZSBzdGVwIGRvY3VtZW50IDE4NDY3XG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgMTg0NjdcbmZpbmFsIGUgc3RlcCBkb2N1bWVudCAxODQ2N1xuZmluYWwgZSBzdGVwIGRvY3VtZW50IDE4NDY3XG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgMTg0NjdcbmZpbmFsIGUgc3RlcCBkb2N1bWVudCAxODQ2N1xuZmluYWwgZSBzdGVwIGRvY3VtZW50IDE4NDY3XG5maW5hbCBlIHN0ZXAgZG9jdW1lbnQgMTg0NjdcbmZpbmFsIGUgc3RlcCBkb2N1bWVudCAxODQ2N1xuIn0= -->
+<pre><code>final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467
+final e step document 18467</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBBcHBlbmQgdG8gcGVycGxleGl0eSBkYXRhIGZyYW1lXG5wZXJwbGV4aXR5IDwtIG11dGF0ZShcbiAgb3V0X3NhbXBsZSA9IGMocGVycDUsIHBlcnAxMCwgcGVycDE1KVxuKVxuYGBgIn0= -->
+<pre class="r"><code># Append to perplexity data frame
+perplexity &lt;- mutate(
+  out_sample = c(perp5, perp10, perp15)
+)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbXV0YXRlXyguZGF0YSwgLmRvdHMgPSBsYXp5ZXZhbDo6bGF6eV9kb3RzKC4uLikpIDogXG4gIGFyZ3VtZW50IFwiLmRhdGFcIiBpcyBtaXNzaW5nLCB3aXRoIG5vIGRlZmF1bHRcbiJ9 -->
+<pre><code>Error in mutate_(.data, .dots = lazyeval::lazy_dots(...)) : 
+  argument &quot;.data&quot; is missing, with no default</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkxEQSBLLWZvbGQgY3Jvc3MtdmFsaWRhdGlvbiINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgR29hbHMNCg0KICAqIEZpbmQgdGhlIG9wdGltYWwgbnVtYmVyIG9mIHRvcGljcyB1c2luZyBhIGNyb3NzLXZhbGlkYXRpb24gYXBwcm9hY2gNCiAgKiBTZWxlY3QgYSBmaW5hbCBMREEgbW9kZWwgdXNpbmcgdGhlIGFnZ3Jlc3NpdmUgVGVYIHJlbW92YWwgc3BhcnNlIG1hdHJpeA0KDQojIExpYnJhcmllcyB1c2VkDQoNCmBgYHtyLCB3YXJuaW5nPUYsIG1lc3NhZ2U9RiwgZXJyb3I9RiwgY29tbWVudD1GfQ0KbGlicmFyeShkcGx5cikNCmxpYnJhcnkod3JhbmdsUikNCmxpYnJhcnkoZ2dwbG90MikNCmxpYnJhcnkoc3RyaW5ncikNCmxpYnJhcnkodG0pDQpsaWJyYXJ5KHNsYW0pDQpsaWJyYXJ5KHRvcGljbW9kZWxzKQ0KYGBgDQoNCiMgTG9hZCB0aGUgZGF0YQ0KDQpTZWUgWzA2LWRhdGFzZXQtY29tcGFyaXNvbi5SbWRdKGh0dHBzOi8vZ2l0aHViLmNvbS9waGl2ZWx5L3VjaGljYWdvLXRoZXNpcy9ibG9iL21hc3Rlci8wNi1kYXRhc2V0LWNvbXBhcmlzb24uUm1kKSBmb3IgZGV0YWlscyBvbiBob3cgdGhlIHNwYXJzZSBtYXRyaXggd2FzIGdlbmVyYXRlZC4NCg0KYGBge3IsIG1lc3NhZ2U9Rn0NCiMgTG9hZCBzcGFyc2UgbWF0cml4IHdpdGggbm8gdGV4DQpsb2FkKGZpbGUgPSAiZGF0YS9zcGFyc2VfbWF0cml4X25vX3RleC56aXAiKQ0KYGBgDQoNCiMgQ3Jvc3MtdmFsaWRhdGlvbiBzZXR1cA0KDQpTZXQgdGhlIG51bWJlciBvZiBncm91cHMgJEskIGFuZCBnZW5lcmF0ZSBpbmRpY2VzLg0KDQpgYGB7cn0NCiMgU2V0IEsNCksgPC0gNQ0KDQojIENyZWF0ZSBrIGdyb3VwcywgYXMgY2xvc2UgdG8gZXF1YWwgc2l6ZSBhcyBwb3NzaWJsZQ0Kc2V0LnNlZWQoOTM0MDEpDQpyYW5kX2luZCA8LSBLRm9sZFhWYWwoMTpzcGFyc2UkbnJvdywgayA9IEspDQpgYGANCg0KQ3JlYXRlIHRoZSBmdW5jdGlvbnMgdG8gYmUgdXNlZCBmb3IgY3Jvc3MtdmFsaWRhdGlvbi4NCg0KYGBge3J9DQojIENyb3NzLXZhbGlkYXRpb24gbWF0cml4IGdlbmVyYXRvciBmdW5jdGlvbiwgc3BsaXRfc2V0KCkNCnNvdXJjZSgiUi9mdW5jdGlvbi1zcGxpdF9zZXQuUiIpDQoNCiMgQ3Jvc3MtdmFsaWRhdGlvbiBpdGVyYXRvcg0KeHZhbCA8LSBmdW5jdGlvbihkdG0sIGluZGV4LCBudG9waWNzLCBzZWVkLCAuLi4pIHsNCiAgIyBSZXN1bHQgbW9kZWxzIGxpc3QNCiAgbW9kZWxzIDwtIGxpc3QoKQ0KICANCiAgIyBDcm9zcy12YWxpZGF0aW9uIGxvb3ANCiAgZm9yIChpIGluIDE6Sykgew0KICAgICMgQ3JlYXRlIGRhdGFzZXQgZm9yIGZpdHRpbmcNCiAgICB0aGlzX2luZCA8LSB1bmxpc3QoaW5kZXgpW3VubGlzdChpbmRleCkgJW5pbiUgaW5kZXhbW2ldXV0NCiAgICB0aGlzX2RhdGEgPC0gc3BsaXRfc2V0KGR0bSwgdGhpc19pbmQpDQogICAgDQogICAgIyBDcmVhdGUgYSB0b3BpYyBtb2RlbA0KICAgIG1vZGVsc1tbaV1dIDwtIExEQSh0aGlzX2RhdGEsIGsgPSBudG9waWNzLCBtZXRob2QgPSAiVkVNIiwgY29udHJvbCA9IGxpc3Qoc2VlZCA9IHNlZWQsIC4uLikpDQogIH0NCiAgDQogIHJldHVybihtb2RlbHMpDQp9DQpgYGANCg0KIyBUb3BpYyBtb2RlbGluZw0KDQojIyBNb2RlbGluZyBzdGVwDQoNCiMjIyA1IHRvcGljcw0KDQpgYGB7cn0NCm5vdyA8LSBTeXMudGltZSgpDQptb2RlbHM1IDwtIHh2YWwoZHRtID0gc3BhcnNlLCBpbmRleCA9IHJhbmRfaW5kLCBudG9waWNzID0gNSwgc2VlZCA9IDc0NzQ5LCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczUsIGZpbGUgPSAicmVzdWx0cy9sZGFfa181LnppcCIsIGNvbXByZXNzID0gInh6IikNCih0NSA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMjIyAxMCB0b3BpY3MNCg0KYGBge3J9DQpub3cgPC0gU3lzLnRpbWUoKQ0KbW9kZWxzMTAgPC0geHZhbChkdG0gPSBzcGFyc2UsIGluZGV4ID0gcmFuZF9pbmQsIG50b3BpY3MgPSAxMCwgc2VlZCA9IDkwNjcyLCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczEwLCBmaWxlID0gInJlc3VsdHMvbGRhX2tfMTAuemlwIiwgY29tcHJlc3MgPSAieHoiKQ0KKHQxMCA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMjIyAxNSB0b3BpY3MNCg0KYGBge3J9DQpub3cgPC0gU3lzLnRpbWUoKQ0KbW9kZWxzMTUgPC0geHZhbChkdG0gPSBzcGFyc2UsIGluZGV4ID0gcmFuZF9pbmQsIG50b3BpY3MgPSAxNSwgc2VlZCA9IDUzMTc3LCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczE1LCBmaWxlID0gInJlc3VsdHMvbGRhX2tfMTUuemlwIiwgY29tcHJlc3MgPSAieHoiKQ0KKHQxNSA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMjIyAyMCB0b3BpY3MNCg0KYGBge3J9DQpub3cgPC0gU3lzLnRpbWUoKQ0KbW9kZWxzMjAgPC0geHZhbChkdG0gPSBzcGFyc2UsIGluZGV4ID0gcmFuZF9pbmQsIG50b3BpY3MgPSAyMCwgc2VlZCA9IDQ1MjgxLCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczIwLCBmaWxlID0gInJlc3VsdHMvbGRhX2tfMjAuemlwIiwgY29tcHJlc3MgPSAieHoiKQ0KKHQyMCA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMjIyAyNSB0b3BpY3MNCg0KYGBge3J9DQpub3cgPC0gU3lzLnRpbWUoKQ0KbW9kZWxzMjUgPC0geHZhbChkdG0gPSBzcGFyc2UsIGluZGV4ID0gcmFuZF9pbmQsIG50b3BpY3MgPSAyNSwgc2VlZCA9IDg2MjQ0LCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczI1LCBmaWxlID0gInJlc3VsdHMvbGRhX2tfMjUuemlwIiwgY29tcHJlc3MgPSAieHoiKQ0KKHQyNSA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMjIyAzMCB0b3BpY3MNCg0KYGBge3J9DQpub3cgPC0gU3lzLnRpbWUoKQ0KbW9kZWxzMzAgPC0geHZhbChkdG0gPSBzcGFyc2UsIGluZGV4ID0gcmFuZF9pbmQsIG50b3BpY3MgPSAzMCwgc2VlZCA9IDQxNTMxLCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczMwLCBmaWxlID0gInJlc3VsdHMvbGRhX2tfMzAuemlwIiwgY29tcHJlc3MgPSAieHoiKQ0KKHQzMCA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMgUGVycGxleGl0eQ0KDQojIyBJbi1zYW1wbGUgcmVzdWx0cw0KDQpgYGB7cn0NCmxhcHBseShtb2RlbHM1LCBwZXJwbGV4aXR5KSAlPiUgdW5saXN0KCkNCmBgYA0KDQojIyBPdXQtb2Ytc2FtcGxlIHJlc3VsdHMNCg0KYGBge3J9DQpwZXJwbGV4aXRpZXMgPC0gcmVwKDAsIHRpbWVzID0gSykNCmZvcihpIGluIDE6Sykgew0KICBwZXJwbGV4aXRpZXNbaV0gPC0gcGVycGxleGl0eShtb2RlbHM1W1tpXV0sIG5ld2RhdGEgPSBzcGxpdF9zZXQoc3BhcnNlLCByYW5kX2luZFtbaV1dKSkNCn0NCmBgYA==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkxEQSBLLWZvbGQgY3Jvc3MtdmFsaWRhdGlvbiINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgR29hbHMNCg0KICAqIEZpbmQgdGhlIG9wdGltYWwgbnVtYmVyIG9mIHRvcGljcyB1c2luZyBhIGNyb3NzLXZhbGlkYXRpb24gYXBwcm9hY2gNCiAgKiBTZWxlY3QgYSBmaW5hbCBMREEgbW9kZWwgdXNpbmcgdGhlIGFnZ3Jlc3NpdmUgVGVYIHJlbW92YWwgc3BhcnNlIG1hdHJpeA0KDQojIExpYnJhcmllcyB1c2VkDQoNCmBgYHtyLCB3YXJuaW5nPUYsIG1lc3NhZ2U9RiwgZXJyb3I9RiwgY29tbWVudD1GfQ0KbGlicmFyeShkcGx5cikNCmxpYnJhcnkod3JhbmdsUikNCmxpYnJhcnkoZ2dwbG90MikNCmxpYnJhcnkoc3RyaW5ncikNCmxpYnJhcnkodG0pDQpsaWJyYXJ5KHNsYW0pDQpsaWJyYXJ5KHRvcGljbW9kZWxzKQ0KYGBgDQoNCiMgTG9hZCB0aGUgZGF0YQ0KDQpTZWUgWzA2LWRhdGFzZXQtY29tcGFyaXNvbi5SbWRdKGh0dHBzOi8vZ2l0aHViLmNvbS9waGl2ZWx5L3VjaGljYWdvLXRoZXNpcy9ibG9iL21hc3Rlci8wNi1kYXRhc2V0LWNvbXBhcmlzb24uUm1kKSBmb3IgZGV0YWlscyBvbiBob3cgdGhlIHNwYXJzZSBtYXRyaXggd2FzIGdlbmVyYXRlZC4NCg0KYGBge3IsIG1lc3NhZ2U9Rn0NCiMgTG9hZCBzcGFyc2UgbWF0cml4IHdpdGggbm8gdGV4DQpsb2FkKGZpbGUgPSAiZGF0YS9zcGFyc2VfbWF0cml4X25vX3RleC56aXAiKQ0KYGBgDQoNCiMgQ3Jvc3MtdmFsaWRhdGlvbiBzZXR1cA0KDQpTZXQgdGhlIG51bWJlciBvZiBncm91cHMgJEskIGFuZCBnZW5lcmF0ZSBpbmRpY2VzLg0KDQpgYGB7cn0NCiMgU2V0IEsNCksgPC0gNQ0KDQojIENyZWF0ZSBrIGdyb3VwcywgYXMgY2xvc2UgdG8gZXF1YWwgc2l6ZSBhcyBwb3NzaWJsZQ0Kc2V0LnNlZWQoOTM0MDEpDQpyYW5kX2luZCA8LSBLRm9sZFhWYWwoMTpzcGFyc2UkbnJvdywgayA9IEspDQpgYGANCg0KQ3JlYXRlIHRoZSBmdW5jdGlvbnMgdG8gYmUgdXNlZCBmb3IgY3Jvc3MtdmFsaWRhdGlvbi4NCg0KYGBge3J9DQojIENyb3NzLXZhbGlkYXRpb24gbWF0cml4IGdlbmVyYXRvciBmdW5jdGlvbiwgc3BsaXRfc2V0KCkNCnNvdXJjZSgiUi9mdW5jdGlvbi1zcGxpdF9zZXQuUiIpDQoNCiMgQ3Jvc3MtdmFsaWRhdGlvbiBpdGVyYXRvcg0KeHZhbCA8LSBmdW5jdGlvbihkdG0sIGluZGV4LCBudG9waWNzLCBzZWVkLCAuLi4pIHsNCiAgIyBSZXN1bHQgbW9kZWxzIGxpc3QNCiAgbW9kZWxzIDwtIGxpc3QoKQ0KICANCiAgIyBDcm9zcy12YWxpZGF0aW9uIGxvb3ANCiAgZm9yIChpIGluIDE6Sykgew0KICAgICMgQ3JlYXRlIGRhdGFzZXQgZm9yIGZpdHRpbmcNCiAgICB0aGlzX2luZCA8LSB1bmxpc3QoaW5kZXgpW3VubGlzdChpbmRleCkgJW5pbiUgaW5kZXhbW2ldXV0NCiAgICB0aGlzX2RhdGEgPC0gc3BsaXRfc2V0KGR0bSwgdGhpc19pbmQpDQogICAgDQogICAgIyBDcmVhdGUgYSB0b3BpYyBtb2RlbA0KICAgIG1vZGVsc1tbaV1dIDwtIExEQSh0aGlzX2RhdGEsIGsgPSBudG9waWNzLCBtZXRob2QgPSAiVkVNIiwgY29udHJvbCA9IGxpc3Qoc2VlZCA9IHNlZWQsIC4uLikpDQogIH0NCiAgDQogIHJldHVybihtb2RlbHMpDQp9DQpgYGANCg0KIyBUb3BpYyBtb2RlbGluZw0KDQojIyBNb2RlbGluZyBzdGVwDQoNCiMjIyA1IHRvcGljcw0KDQpgYGB7cn0NCm5vdyA8LSBTeXMudGltZSgpDQptb2RlbHM1IDwtIHh2YWwoZHRtID0gc3BhcnNlLCBpbmRleCA9IHJhbmRfaW5kLCBudG9waWNzID0gNSwgc2VlZCA9IDc0NzQ5LCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczUsIGZpbGUgPSAicmVzdWx0cy9sZGFfa181LnppcCIsIGNvbXByZXNzID0gInh6IikNCih0NSA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMjIyAxMCB0b3BpY3MNCg0KYGBge3J9DQpub3cgPC0gU3lzLnRpbWUoKQ0KbW9kZWxzMTAgPC0geHZhbChkdG0gPSBzcGFyc2UsIGluZGV4ID0gcmFuZF9pbmQsIG50b3BpY3MgPSAxMCwgc2VlZCA9IDkwNjcyLCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczEwLCBmaWxlID0gInJlc3VsdHMvbGRhX2tfMTAuemlwIiwgY29tcHJlc3MgPSAieHoiKQ0KKHQxMCA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNCiMjIyAxNSB0b3BpY3MNCg0KYGBge3J9DQpub3cgPC0gU3lzLnRpbWUoKQ0KbW9kZWxzMTUgPC0geHZhbChkdG0gPSBzcGFyc2UsIGluZGV4ID0gcmFuZF9pbmQsIG50b3BpY3MgPSAxNSwgc2VlZCA9IDUzMTc3LCBrZWVwID0gMSwgdmVyYm9zZSA9IDEpDQpzYXZlKG1vZGVsczE1LCBmaWxlID0gInJlc3VsdHMvbGRhX2tfMTUuemlwIiwgY29tcHJlc3MgPSAieHoiKQ0KKHQxNSA8LSBTeXMudGltZSgpIC0gbm93KQ0KYGBgDQoNClRoaXMgdGFrZXMgYSByZWFsbHkgbG9uZyB0aW1lLiBNYWtlcyBtb3JlIHNlbnNlIHRvIGRvIHRoZSByZXN0IG9uIEFXUyBpbiBwYXJhbGxlbCBmb3IgcGVubmllcyBhbiBob3VyLi4uLg0KDQojIFBlcnBsZXhpdHkNCg0KIyMgSW4tc2FtcGxlIHJlc3VsdHMNCg0KYGBge3J9DQojIENhbGN1bGF0ZSBpbi1zYW1wbGUgcGVycGxleGl0eQ0KcGVycGxleGl0eSA8LSBkYXRhLmZyYW1lKA0KICBtb2RlbCA9IGMoIjUiLCAiMTAiLCAiMTUiKSAlPiUgcmVwKGVhY2ggPSBLKSwNCiAgaW5fc2FtcGxlID0gYygNCiAgICBsYXBwbHkobW9kZWxzNSwgcGVycGxleGl0eSkgJT4lIHVubGlzdCgpLA0KICAgIGxhcHBseShtb2RlbHMxMCwgcGVycGxleGl0eSkgJT4lIHVubGlzdCgpLA0KICAgIGxhcHBseShtb2RlbHMxNSwgcGVycGxleGl0eSkgJT4lIHVubGlzdCgpDQogICkNCikNCmBgYA0KDQojIyBPdXQtb2Ytc2FtcGxlIHJlc3VsdHMNCg0KYGBge3J9DQojIENhbGN1bGF0ZSBvdXQtb2Ytc2FtcGxlIHBlcnBsZXhpdHkNCnBlcnA1IDwtIHJlcCgwLCB0aW1lcyA9IEspDQpwZXJwMTAgPC0gcmVwKDAsIHRpbWVzID0gSykNCnBlcnAxNSA8LSByZXAoMCwgdGltZXMgPSBLKQ0KZm9yKGkgaW4gMTpLKSB7DQogIHBlcnA1W2ldIDwtIHBlcnBsZXhpdHkobW9kZWxzNVtbaV1dLCBuZXdkYXRhID0gc3BsaXRfc2V0KHNwYXJzZSwgcmFuZF9pbmRbW2ldXSkpDQogIHBlcnAxMFtpXSA8LSBwZXJwbGV4aXR5KG1vZGVsczEwW1tpXV0sIG5ld2RhdGEgPSBzcGxpdF9zZXQoc3BhcnNlLCByYW5kX2luZFtbaV1dKSkNCiAgcGVycDE1W2ldIDwtIHBlcnBsZXhpdHkobW9kZWxzMTVbW2ldXSwgbmV3ZGF0YSA9IHNwbGl0X3NldChzcGFyc2UsIHJhbmRfaW5kW1tpXV0pKQ0KfQ0KDQojIEFwcGVuZCB0byBwZXJwbGV4aXR5IGRhdGEgZnJhbWUNCnBlcnBsZXhpdHkgPC0gcGVycGxleGl0eSAlPiUgbXV0YXRlKA0KICBvdXRfc2FtcGxlID0gYyhwZXJwNSwgcGVycDEwLCBwZXJwMTUpDQopDQoNCiMgU2F2ZSByZXN1bHRzDQp3cml0ZS5jc3YocGVycGxleGl0eSwgZmlsZSA9ICJyZXN1bHRzL2xkYV9rX3BlcnBfNV8xNS5jc3YiLCByb3cubmFtZXMgPSBGQUxTRSkNCmBgYA==</div>
 
 
 

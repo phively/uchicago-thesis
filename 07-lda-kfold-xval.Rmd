@@ -98,46 +98,42 @@ save(models15, file = "results/lda_k_15.zip", compress = "xz")
 (t15 <- Sys.time() - now)
 ```
 
-### 20 topics
-
-```{r}
-now <- Sys.time()
-models20 <- xval(dtm = sparse, index = rand_ind, ntopics = 20, seed = 45281, keep = 1, verbose = 1)
-save(models20, file = "results/lda_k_20.zip", compress = "xz")
-(t20 <- Sys.time() - now)
-```
-
-### 25 topics
-
-```{r}
-now <- Sys.time()
-models25 <- xval(dtm = sparse, index = rand_ind, ntopics = 25, seed = 86244, keep = 1, verbose = 1)
-save(models25, file = "results/lda_k_25.zip", compress = "xz")
-(t25 <- Sys.time() - now)
-```
-
-### 30 topics
-
-```{r}
-now <- Sys.time()
-models30 <- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531, keep = 1, verbose = 1)
-save(models30, file = "results/lda_k_30.zip", compress = "xz")
-(t30 <- Sys.time() - now)
-```
+This takes a really long time. Makes more sense to do the rest on AWS in parallel for pennies an hour....
 
 # Perplexity
 
 ## In-sample results
 
 ```{r}
-lapply(models5, perplexity) %>% unlist()
+# Calculate in-sample perplexity
+perplexity <- data.frame(
+  model = c("5", "10", "15") %>% rep(each = K),
+  in_sample = c(
+    lapply(models5, perplexity) %>% unlist(),
+    lapply(models10, perplexity) %>% unlist(),
+    lapply(models15, perplexity) %>% unlist()
+  )
+)
 ```
 
 ## Out-of-sample results
 
 ```{r}
-perplexities <- rep(0, times = K)
+# Calculate out-of-sample perplexity
+perp5 <- rep(0, times = K)
+perp10 <- rep(0, times = K)
+perp15 <- rep(0, times = K)
 for(i in 1:K) {
-  perplexities[i] <- perplexity(models5[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+  perp5[i] <- perplexity(models5[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+  perp10[i] <- perplexity(models10[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+  perp15[i] <- perplexity(models15[[i]], newdata = split_set(sparse, rand_ind[[i]]))
 }
+
+# Append to perplexity data frame
+perplexity <- perplexity %>% mutate(
+  out_sample = c(perp5, perp10, perp15)
+)
+
+# Save results
+write.csv(perplexity, file = "results/lda_k_perp_5_15.csv", row.names = FALSE)
 ```

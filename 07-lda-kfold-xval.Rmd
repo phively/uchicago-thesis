@@ -35,7 +35,7 @@ Set the number of groups $K$ and generate indices.
 
 ```{r}
 # Set K
-K <- 3
+K <- 5
 
 # Create k groups, as close to equal size as possible
 set.seed(93401)
@@ -49,7 +49,7 @@ Create the functions to be used for cross-validation.
 source("R/function-split_set.R")
 
 # Cross-validation iterator
-xval <- function(dtm, index, ntopics, seed) {
+xval <- function(dtm, index, ntopics, seed, ...) {
   # Result models list
   models <- list()
   
@@ -60,7 +60,7 @@ xval <- function(dtm, index, ntopics, seed) {
     this_data <- split_set(dtm, this_ind)
     
     # Create a topic model
-    models[[i]] <- LDA(this_data, k = ntopics, method = "VEM", control = list(seed = seed, verbose = 1))
+    models[[i]] <- LDA(this_data, k = ntopics, method = "VEM", control = list(seed = seed, ...))
   }
   
   return(models)
@@ -75,54 +75,54 @@ xval <- function(dtm, index, ntopics, seed) {
 
 ```{r}
 now <- Sys.time()
-models5 <- xval(dtm = sparse, index = rand_ind, ntopics = 5, seed = 74749)
+models5 <- xval(dtm = sparse, index = rand_ind, ntopics = 5, seed = 74749, keep = 1, verbose = 1)
 save(models5, file = "results/lda_k_5.zip", compress = "xz")
-Sys.time() - now
+(t5 <- Sys.time() - now)
 ```
 
 ### 10 topics
 
 ```{r}
 now <- Sys.time()
-models10 <- xval(dtm = sparse, index = rand_ind, ntopics = 10, seed = 90672)
+models10 <- xval(dtm = sparse, index = rand_ind, ntopics = 10, seed = 90672, keep = 1, verbose = 1)
 save(models10, file = "results/lda_k_10.zip", compress = "xz")
-Sys.time() - now
+(t10 <- Sys.time() - now)
 ```
 
 ### 15 topics
 
 ```{r}
 now <- Sys.time()
-models15 <- xval(dtm = sparse, index = rand_ind, ntopics = 15, seed = 53177)
+models15 <- xval(dtm = sparse, index = rand_ind, ntopics = 15, seed = 53177, keep = 1, verbose = 1)
 save(models15, file = "results/lda_k_15.zip", compress = "xz")
-Sys.time() - now
+(t15 <- Sys.time() - now)
 ```
 
 ### 20 topics
 
 ```{r}
 now <- Sys.time()
-models20 <- xval(dtm = sparse, index = rand_ind, ntopics = 20, seed = 45281)
+models20 <- xval(dtm = sparse, index = rand_ind, ntopics = 20, seed = 45281, keep = 1, verbose = 1)
 save(models20, file = "results/lda_k_20.zip", compress = "xz")
-Sys.time() - now
+(t20 <- Sys.time() - now)
 ```
 
 ### 25 topics
 
 ```{r}
 now <- Sys.time()
-models25 <- xval(dtm = sparse, index = rand_ind, ntopics = 25, seed = 86244)
+models25 <- xval(dtm = sparse, index = rand_ind, ntopics = 25, seed = 86244, keep = 1, verbose = 1)
 save(models25, file = "results/lda_k_25.zip", compress = "xz")
-Sys.time() - now
+(t25 <- Sys.time() - now)
 ```
 
 ### 30 topics
 
 ```{r}
 now <- Sys.time()
-models30 <- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531)
+models30 <- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531, keep = 1, verbose = 1)
 save(models30, file = "results/lda_k_30.zip", compress = "xz")
-Sys.time() - now
+(t30 <- Sys.time() - now)
 ```
 
 # Perplexity
@@ -130,5 +130,14 @@ Sys.time() - now
 ## In-sample results
 
 ```{r}
-lapply(models5, perplexity)
+lapply(models5, perplexity) %>% unlist()
+```
+
+## Out-of-sample results
+
+```{r}
+perplexities <- rep(0, times = K)
+for(i in 1:K) {
+  perplexities[i] <- perplexity(models5[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+}
 ```

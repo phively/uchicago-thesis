@@ -40,6 +40,7 @@ inds <- KFoldXVal(1:sparse_test$nrow, k = K)
 t2.micro    = 60.465 seconds
 Sandybridge = 28.460 seconds
 c4.2xlarge  = 10.945 seconds
+r4.4xlarge  = 13.216 seconds
 
 ```{r}
 print("Iris %do%")
@@ -58,6 +59,7 @@ print(ptime)
 t2.micro    = 60.518 seconds (not threaded)
 Sandybridge = 18.920 seconds
 c4.2xlarge  =  4.102 seconds
+r4.4xlarge  =  4.843 seconds
 
 ```{r}
 print("Iris %dopar%")
@@ -77,6 +79,7 @@ print(ptime)
 
 Sandybridge = 127.890 seconds
 c4.2xlarge  =  87.163 seconds
+r4.4xlarge  =  91.619 seconds
 
 xval function, no threading
 
@@ -109,6 +112,7 @@ print(Sys.time() - now)
 
 Sandybridge = 52.100 seconds
 c4.2xlarge  = 32.503 seconds
+r4.4xlarge  = 34.003 seconds
 
 xval function, threading
 
@@ -139,6 +143,7 @@ print(Sys.time() - now)
 
 Sandybridge = 16.830 seconds
 c4.2xlarge  =  2.719 seconds
+r4.4xlarge  =  2.966 seconds
 
 ```{r}
 # Allow 8 workers
@@ -162,6 +167,7 @@ Here's a real-world comparison of the full dataset, 5-fold cross-validation of 3
 
 Sandybridge = 406.202 seconds (single-threaded)
 c4.2xlarge  = 177.735 seconds (five threads)
+r4.4xlarge  =  62.179 seconds (ten threads)
 
 ```{r}
 # New dataset
@@ -172,8 +178,9 @@ K <- 5
 set.seed(93401)
 rand_ind <- KFoldXVal(1:sparse$nrow, k = K)
 
-registerDoSEQ() # Sandybridge
-registerDoParallel(K) # c4.2xlarge
+# registerDoSEQ() # Sandybridge
+# registerDoParallel(5) # c4.2xlarge
+# registerDoParallel(10) # r4.4xlarge
 
 # Benchmark
 now <- Sys.time()
@@ -182,4 +189,4 @@ models3 <- xval(dtm = sparse, index = rand_ind, ntopics = 3, seed = 17481, keep 
 save(models3, file = "results/lda_k_3.zip")
 ```
 
-Well, that ought to help! That's over 125% speedup. Back to our regularly scheduled cross-validation.
+Well, that ought to help! That's over 125% speedup on the c4.2xlarge instance and more like a 550% increase on the high-memory r4.4xlarge instance. Back to our regularly scheduled cross-validation.

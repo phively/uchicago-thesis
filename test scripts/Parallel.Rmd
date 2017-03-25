@@ -22,7 +22,7 @@ registerDoParallel(3)
 ```{r}
 # Iris data
 x <- iris[which(iris[,5] != "setosa"), c(1,5)]
-trials <- 1000
+trials <- 5000
 
 # Test DTM data
 source("R/function-split_set.R")
@@ -35,6 +35,9 @@ inds <- KFoldXVal(1:sparse_test$nrow, k = K)
 # Iris
 
 ## No thread
+
+t2.micro    = 60.465 seconds
+Sandybridge = 28.460 seconds
 
 ```{r}
 print("Iris %do%")
@@ -49,6 +52,9 @@ print(ptime)
 ```
 
 ## Thread
+
+t2.micro    = 60.518 seconds (not threaded)
+Sandybridge = 18.920 seconds
 
 ```{r}
 print("Iris %dopar%")
@@ -66,11 +72,13 @@ print(ptime)
 
 ## No thread
 
+Sandybridge = 127.890 seconds
+
 xval function, no threading
 
 ```{r}
 xval <- function(dtm, index, ntopics, seed, ...) {
-  # Generate a list of models in parallel
+  # Generate a list of models
   models <- foreach(i = 1:K, .packages = c("wranglR", "topicmodels", "slam"),
     .export = "split_set") %do% {
     # Data to use
@@ -94,6 +102,8 @@ print(Sys.time() - now)
 ```
 
 ## Thread
+
+Sandybridge = 52.100 seconds
 
 xval function, threading
 
@@ -121,3 +131,4 @@ now <- Sys.time()
 r <- xval(sparse_test, inds, ntopics = 5, seed = 123)
 print(Sys.time() - now)
 ```
+

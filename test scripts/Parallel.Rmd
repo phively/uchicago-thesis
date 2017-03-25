@@ -38,6 +38,7 @@ inds <- KFoldXVal(1:sparse_test$nrow, k = K)
 
 t2.micro    = 60.465 seconds
 Sandybridge = 28.460 seconds
+c4.2xlarge  = 10.945 seconds
 
 ```{r}
 print("Iris %do%")
@@ -55,6 +56,7 @@ print(ptime)
 
 t2.micro    = 60.518 seconds (not threaded)
 Sandybridge = 18.920 seconds
+c4.2xlarge  = 4.102 seconds
 
 ```{r}
 print("Iris %dopar%")
@@ -73,6 +75,7 @@ print(ptime)
 ## No thread
 
 Sandybridge = 127.890 seconds
+c4.2xlarge  =  87.163 seconds
 
 xval function, no threading
 
@@ -104,6 +107,7 @@ print(Sys.time() - now)
 ## Thread
 
 Sandybridge = 52.100 seconds
+c4.2xlarge  = 32.503 seconds
 
 xval function, threading
 
@@ -132,3 +136,25 @@ r <- xval(sparse_test, inds, ntopics = 5, seed = 123)
 print(Sys.time() - now)
 ```
 
+# Many-core test
+
+```{r}
+# Allow 8 workers
+registerDoParallel(8)
+
+# Bootstrapping
+print("Iris many %dopar%")
+ptime <- system.time({
+  r <- foreach(icount(trials), .combine=cbind) %dopar% {
+    ind <- sample(100, 100, replace=TRUE)
+    result1 <- glm(x[ind,2]~x[ind,1], family=binomial(logit))
+    coefficients(result1)
+  }
+})[3]
+print(ptime)
+```
+
+Sandybridge = 16.830 seconds
+c4.2xlarge  =  2.719 seconds
+
+Well, that ought to help! That's a 500% speedup. Back to our regularly scheduled cross-validation.

@@ -34,3 +34,6 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 .Rproj.user
+
+# Large results files
+lda_k_*.zip

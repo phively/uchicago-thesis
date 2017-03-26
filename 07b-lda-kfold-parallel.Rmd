@@ -149,3 +149,67 @@ models30 <- xval(dtm = sparse, index = rand_ind, ntopics = 30, seed = 41531, kee
 (t30 <- Sys.time() - now)
 save(models30, file = "results/lda_k_30.zip", compress = "xz", compression_level = 1)
 ```
+
+## 35 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models35 <- xval(dtm = sparse, index = rand_ind, ntopics = 35, seed = 68513, keep = 1)
+(t35 <- Sys.time() - now)
+save(models35, file = "results/lda_k_35.zip", compress = "xz", compression_level = 1)
+```
+
+# Perplexities
+
+## In-sample results
+
+```{r}
+# Set up data frame and labels
+perplexity <- data.frame(
+  model = c(3, 5, 10, 15, 20, 25, 30) %>% rep(each = K),
+  fold = rep(1:K, times = 7),
+  # Add time elapsed in hours
+  time = c(t3, t5, t10, t15, t20, t25, t30) %>% as.numeric(units = "hours") %>% rep(each = K)
+)
+
+# Calculate in-sample perplexity
+in_sample = c(
+  lapply(models3, FUN = perplexity) %>% unlist(),
+  lapply(models5, FUN = perplexity) %>% unlist(),
+  lapply(models10, FUN = perplexity) %>% unlist(),
+  lapply(models15, FUN = perplexity) %>% unlist(),
+  lapply(models20, FUN = perplexity) %>% unlist(),
+  lapply(models25, FUN = perplexity) %>% unlist(),
+  lapply(models30, FUN = perplexity) %>% unlist()
+)
+perplexity <- perplexity %>% mutate(in_sample)
+```
+
+## Out-of-sample results
+
+```{r}
+# Function for out-of-sample perplexity
+oos_perplexity <- function(models_list) {
+  foreach (i = 1:K) %dopar% {
+    perplexity(models_list[[i]], newdata = split_set(sparse, rand_ind[[i]]))
+  }
+}
+
+# Calculate out-of-sample perplexity
+perp3 <- oos_perplexity(models3) %>% unlist()
+perp5 <- oos_perplexity(models5) %>% unlist()
+perp10 <- oos_perplexity(models10) %>% unlist()
+perp15 <- oos_perplexity(models15) %>% unlist()
+perp20 <- oos_perplexity(models20) %>% unlist()
+perp25 <- oos_perplexity(models25) %>% unlist()
+perp30 <- oos_perplexity(models30) %>% unlist()
+
+# Append to perplexity data frame
+perplexity <- perplexity %>% mutate(
+  out_sample = c(perp3, perp5, perp10, perp15, perp20, perp25, perp30) %>% unlist()
+)
+
+# Save results
+write.csv(perplexity, file = "results/lda_k_perp.csv", row.names = FALSE)
+```

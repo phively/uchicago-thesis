@@ -36,4 +36,4 @@ vignettes/*.pdf
 .Rproj.user
 
 # Large results files
-lda_k_*.zip
+results/*.zip

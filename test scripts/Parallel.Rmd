@@ -1,6 +1,8 @@
 ---
 title: "Multicore test"
-output: html_document
+output:
+  html_notebook: default
+  html_document: default
 ---
 
 # Setup
@@ -37,10 +39,12 @@ inds <- KFoldXVal(1:sparse_test$nrow, k = K)
 
 ## No thread
 
-t2.micro    = 60.465 seconds
-Sandybridge = 28.460 seconds
-c4.2xlarge  = 10.945 seconds
-r4.4xlarge  = 13.216 seconds
+| Platform    | Benchmark      |
+| ----------- | -------------- |
+| t2.micro    | 60.465 seconds |
+| Sandybridge | 28.460 seconds |
+| c4.2xlarge  | 10.945 seconds |
+| r4.4xlarge  | 13.216 seconds |
 
 ```{r}
 print("Iris %do%")
@@ -55,11 +59,12 @@ print(ptime)
 ```
 
 ## Thread
-
-t2.micro    = 60.518 seconds (not threaded)
-Sandybridge = 18.920 seconds
-c4.2xlarge  =  4.102 seconds
-r4.4xlarge  =  4.843 seconds
+| Platform    | Benchmark      |
+| ----------- | -------------- |
+| t2.micro    | 60.518 seconds (not threaded) |
+| Sandybridge | 18.920 seconds |
+| c4.2xlarge  |  4.102 seconds |
+| r4.4xlarge  |  4.843 seconds |
 
 ```{r}
 print("Iris %dopar%")
@@ -77,9 +82,11 @@ print(ptime)
 
 ## No thread
 
-Sandybridge = 127.890 seconds
-c4.2xlarge  =  87.163 seconds
-r4.4xlarge  =  91.619 seconds
+| Platform    | Benchmark      |
+| ----------- | -------------- |
+| Sandybridge | 127.890 seconds|
+| c4.2xlarge  |  87.163 seconds|
+| r4.4xlarge  |  91.619 seconds|
 
 xval function, no threading
 
@@ -110,9 +117,11 @@ print(Sys.time() - now)
 
 ## Thread
 
-Sandybridge = 52.100 seconds
-c4.2xlarge  = 32.503 seconds
-r4.4xlarge  = 34.003 seconds
+| Platform    | Benchmark      |
+| ----------- | -------------- |
+| Sandybridge | 52.100 seconds |
+| c4.2xlarge  | 32.503 seconds |
+| r4.4xlarge  | 34.003 seconds |
 
 xval function, threading
 
@@ -141,9 +150,11 @@ print(Sys.time() - now)
 
 # Many-core test
 
-Sandybridge = 16.830 seconds
-c4.2xlarge  =  2.719 seconds
-r4.4xlarge  =  2.966 seconds
+| Platform    | Benchmark      |
+| ----------- | -------------- |
+| Sandybridge | 16.830 seconds |
+| c4.2xlarge  |  2.719 seconds |
+| r4.4xlarge  |  2.966 seconds |
 
 ```{r}
 # Allow 8 workers
@@ -165,9 +176,11 @@ print(ptime)
 
 Here's a real-world comparison of the full dataset, 5-fold cross-validation of 3 topics.
 
-Sandybridge = 406.202 seconds (single-threaded)
-c4.2xlarge  = 177.735 seconds (five threads)
-r4.4xlarge  =  62.179 seconds (ten threads)
+| Platform    | Benchmark      |
+| ------------|--------------- |
+| Sandybridge | 406.202 seconds (single-threaded) |
+| c4.2xlarge  | 177.735 seconds (five threads) |
+| r4.4xlarge  |  62.179 seconds (ten threads) |
 
 ```{r}
 # New dataset

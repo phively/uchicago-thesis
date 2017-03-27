@@ -160,6 +160,16 @@ models35 <- xval(dtm = sparse, index = rand_ind, ntopics = 35, seed = 68513, kee
 save(models35, file = "results/lda_k_35.zip", compress = "xz", compression_level = 1)
 ```
 
+## 40 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models40 <- xval(dtm = sparse, index = rand_ind, ntopics = 40, seed = 19275, keep = 1)
+(t40 <- Sys.time() - now)
+save(models40, file = "results/lda_k_40.zip", compress = "xz", compression_level = 1)
+```
+
 # Perplexities
 
 ## In-sample results
@@ -167,10 +177,10 @@ save(models35, file = "results/lda_k_35.zip", compress = "xz", compression_level
 ```{r}
 # Set up data frame and labels
 perplexity <- data.frame(
-  model = c(3, 5, 10, 15, 20, 25, 30) %>% rep(each = K),
-  fold = rep(1:K, times = 7),
+  model = c(3, 5, 10, 15, 20, 25, 30, 35) %>% rep(each = K),
+  fold = rep(1:K, times = 8),
   # Add time elapsed in hours
-  time = c(t3, t5, t10, t15, t20, t25, t30) %>% as.numeric(units = "hours") %>% rep(each = K)
+  time = c(t3, t5, t10, t15, t20, t25, t30, t35) %>% as.numeric(units = "hours") %>% rep(each = K)
 )
 
 # Calculate in-sample perplexity
@@ -181,7 +191,8 @@ in_sample = c(
   lapply(models15, FUN = perplexity) %>% unlist(),
   lapply(models20, FUN = perplexity) %>% unlist(),
   lapply(models25, FUN = perplexity) %>% unlist(),
-  lapply(models30, FUN = perplexity) %>% unlist()
+  lapply(models30, FUN = perplexity) %>% unlist(),
+  lapply(models35, FUN = perplexity) %>% unlist
 )
 perplexity <- perplexity %>% mutate(in_sample)
 ```
@@ -204,10 +215,11 @@ perp15 <- oos_perplexity(models15) %>% unlist()
 perp20 <- oos_perplexity(models20) %>% unlist()
 perp25 <- oos_perplexity(models25) %>% unlist()
 perp30 <- oos_perplexity(models30) %>% unlist()
+perp35 <- oos_perplexity(models35) %>% unlist()
 
 # Append to perplexity data frame
 perplexity <- perplexity %>% mutate(
-  out_sample = c(perp3, perp5, perp10, perp15, perp20, perp25, perp30) %>% unlist()
+  out_sample = c(perp3, perp5, perp10, perp15, perp20, perp25, perp30, perp35) %>% unlist()
 )
 
 # Save results

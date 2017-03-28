@@ -188,7 +188,7 @@ save(models45, file = "results/lda_k_45.zip", compress = "xz", compression_level
 # Set up data frame and labels
 perplexity <- data.frame(
   model = c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45) %>% rep(each = K),
-  fold = rep(1:K, times = 9),
+  fold = rep(1:K, times = 11),
   # Add time elapsed in hours
   time = c(t3, t5, t10, t15, t20, t25, t30, t35, t40, t45) %>% as.numeric(units = "hours") %>% rep(each = K)
 )
@@ -238,4 +238,26 @@ perplexity <- perplexity %>% mutate(
 
 # Save results
 write.csv(perplexity, file = "results/lda_k_perp.csv", row.names = FALSE)
+```
+
+# Additional topics around the observed minimum
+
+## 38 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models38 <- xval(dtm = sparse, index = rand_ind, ntopics = 38, seed = 14508, keep = 1)
+(t38 <- Sys.time() - now)
+save(models38, file = "results/lda_k_38.zip", compress = "xz", compression_level = 1)
+```
+
+## 42 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models42 <- xval(dtm = sparse, index = rand_ind, ntopics = 42, seed = 81348, keep = 1)
+(t42 <- Sys.time() - now)
+save(models42, file = "results/lda_k_42.zip", compress = "xz", compression_level = 1)
 ```

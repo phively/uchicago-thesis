@@ -252,6 +252,26 @@ models38 <- xval(dtm = sparse, index = rand_ind, ntopics = 38, seed = 14508, kee
 save(models38, file = "results/lda_k_38.zip", compress = "xz", compression_level = 1)
 ```
 
+## 39 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models39 <- xval(dtm = sparse, index = rand_ind, ntopics = 39, seed = 85390, keep = 1)
+(t39 <- Sys.time() - now)
+save(models39, file = "results/lda_k_39.zip", compress = "xz", compression_level = 1)
+```
+
+## 41 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models41 <- xval(dtm = sparse, index = rand_ind, ntopics = 41, seed = 87837, keep = 1)
+(t41 <- Sys.time() - now)
+save(models41, file = "results/lda_k_41.zip", compress = "xz", compression_level = 1)
+```
+
 ## 42 topics
 
 ```{r}
@@ -260,4 +280,60 @@ now <- Sys.time()
 models42 <- xval(dtm = sparse, index = rand_ind, ntopics = 42, seed = 81348, keep = 1)
 (t42 <- Sys.time() - now)
 save(models42, file = "results/lda_k_42.zip", compress = "xz", compression_level = 1)
+```
+
+# New perplexity
+
+```{r}
+perps_new <- data.frame(
+  model = c(38, 39, 41, 42) %>% rep(each = K),
+  fold = rep(1:K, times = 4),
+  # Add time elapsed in hours
+  time = c(t38, t39, t41, t42) %>% as.numeric(units = "hours") %>% rep(each = K)
+)
+
+in_sample = c(
+  lapply(models38, FUN = perplexity) %>% unlist(),
+  lapply(models39, FUN = perplexity) %>% unlist(),
+  lapply(models41, FUN = perplexity) %>% unlist(),
+  lapply(models42, FUN = perplexity) %>% unlist()
+)
+perps_new <- perps_new %>% mutate(in_sample)
+```
+
+
+## Out-of-sample
+
+```{r}
+perp38 <- oos_perplexity(models38) %>% unlist()
+perp39 <- oos_perplexity(models39) %>% unlist()
+perp41 <- oos_perplexity(models41) %>% unlist()
+perp42 <- oos_perplexity(models42) %>% unlist()
+
+perps_new <- perps_new %>% mutate(out_sample = c(perp38, perp39, perp41, perp42))
+
+perplexity <- rbind(perplexity, perps_new) %>% arrange(model, fold)
+
+write.csv(perplexity, file = "results/lda_k_perp.csv")
+```
+
+# Perplexity comparison
+
+```{r}
+perplexity %>%
+  ggplot(aes(x = model)) + geom_point(aes(y = in_sample, color = "In-sample")) + geom_line(aes(y = in_sample, color = "In-sample")) +
+  geom_point(aes(y = out_sample, color = "Out-sample")) + geom_line(aes(y = out_sample, color = "Out-sample")) +
+  labs(x = "topics", y = "perplexity", color = "", title = paste(K, "-fold cross-validation perplexity", sep = ""))
+```
+
+The minimum is at $K = 40$.
+
+# Final model
+
+```{r}
+gc()
+now <- Sys.time()
+models40f <- LDA(dtm = sparse, index = rand_ind, ntopics = 40, seed = 19275, keep = 1)
+(t40f <- Sys.time() - now)
+save(models40f, file = "results/lda_finl_40.zip", compress = "xz", compression_level = 1)
 ```

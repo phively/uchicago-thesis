@@ -13,3 +13,7 @@ University of Chicago Master's Thesis.
 [06-dataset-comparison.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.nb.html)
 
 [Parallel.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/test%20scripts/Parallel.nb.html)
+
+[07a-lda-kfold-xval.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/07a-lda-kfold-xval.nb.html)
+
+[07b-lda-kfold-parallel.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/07b-lda-kfold-parallel.nb.html)

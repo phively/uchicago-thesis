@@ -14,7 +14,7 @@ Part 1, [07a-lda-kfold-xval.Rmd](https://github.com/phively/uchicago-thesis/blob
 # Libraries used
 
 ```{r, warning=F, message=F, error=F, comment=F}
-library(dplyr)
+library(tidyverse)
 library(wranglR)
 library(tm)
 library(slam)
@@ -71,7 +71,7 @@ xval <- function(dtm, index, ntopics, ...) {
 
 ## Core initialization
 
-Use 12 cores for the process.
+Use 12 (of 16) cores for the process.
 
 ```{r}
 registerDoParallel(12)
@@ -320,13 +320,13 @@ write.csv(perplexity, file = "results/lda_k_perp.csv")
 # Perplexity comparison
 
 ```{r}
-perplexity %>%
-  ggplot(aes(x = model)) + geom_point(aes(y = in_sample, color = "In-sample")) + geom_line(aes(y = in_sample, color = "In-sample")) +
-  geom_point(aes(y = out_sample, color = "Out-sample")) + geom_line(aes(y = out_sample, color = "Out-sample")) +
+perplexity %>% filter(model >= 10) %>% group_by(model) %>% mutate(in_avg = mean(in_sample), out_avg =mean(out_sample)) %>%
+  ggplot(aes(x = model)) + geom_point(aes(y = in_sample, color = "In-sample")) + geom_line(aes(y = in_avg, color = "In-sample")) +
+  geom_point(aes(y = out_sample, color = "Out-sample")) + geom_line(aes(y = out_avg, color = "Out-sample")) +
   labs(x = "topics", y = "perplexity", color = "", title = paste(K, "-fold cross-validation perplexity", sep = ""))
 ```
 
-The minimum is at $K = 40$.
+The minimum is at $K = 40$, which is conveniently a nice round number.
 
 # Final model
 

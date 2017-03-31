@@ -333,7 +333,8 @@ The minimum is at $K = 40$, which is conveniently a nice round number.
 ```{r}
 gc()
 now <- Sys.time()
-models40f <- LDA(dtm = sparse, index = rand_ind, ntopics = 40, seed = 19275, keep = 1)
+models40f <- LDA(sparse, k = 40, method = "VEM",
+                 control = list(seed = 19275, keep = 1, verbose = 1))
 (t40f <- Sys.time() - now)
-save(models40f, file = "results/lda_finl_40.zip", compress = "xz", compression_level = 1)
+save(models40f, file = "results/lda_final_40.zip", compress = "xz", compression_level = 1)
 ```

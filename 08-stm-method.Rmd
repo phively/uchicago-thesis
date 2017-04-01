@@ -1,0 +1,184 @@
+---
+title: "Structural topic models"
+output: html_notebook
+---
+
+# Goals
+
+  * Explore the structure
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(dplyr)
+library(slam)
+library(stm)
+library(foreach)
+library(doParallel)
+```
+
+Set up parallel runs
+
+```{r}
+registerDoParallel(5)
+getDoParWorkers()
+```
+
+# Test run of stm
+
+## Load test data
+
+```{r}
+# Test data
+load(file = "data/sparse_test_smaller.zip")
+extra_sparse <- readCorpus(extra_sparse, type = "slam")
+```
+
+If covariates are not included, stm acts like a correlated topic model.
+
+## 5-topic test model
+
+```{r}
+now <- Sys.time()
+m5 <- stm(extra_sparse$documents, extra_sparse$vocab, K = 5, init.type = "Spectral", ngroups = 5)
+(t5 <- Sys.time() - now)
+```
+
+## 10-topic test model
+
+```{r}
+now <- Sys.time()
+m10 <- stm(extra_sparse$documents, extra_sparse$vocab, K = 10, init.type = "Spectral", ngroups = 5)
+(t10 <- Sys.time() - now)
+```
+
+## Explore test results
+
+```{r}
+labelTopics(m5)
+topicCorr(m5)$poscor %>% data.frame() %>% signif(2)
+topicQuality(m5, documents = extra_sparse$documents)
+plot(m5)
+plot(topicCorr(m5))
+```
+
+```{r}
+labelTopics(m10)
+topicCorr(m10)$poscor %>% data.frame() %>% signif(2)
+topicQuality(m10, documents = extra_sparse$documents)
+plot(m10)
+plot(topicCorr(m10))
+```
+
+## Try the K-searching method
+
+```{r}
+now <- Sys.time()
+manyK <- foreach(this.k = seq(3, 15, by = 3), .packages = "stm") %dopar% {
+  output <- searchK(extra_sparse$documents, extra_sparse$vocab, K = this.k, proportion = .5, heldout.seed = 123, verbose = FALSE)
+  return(output$results)
+}
+(tK <- Sys.time() - now)
+```
+
+## searchK results
+
+```{r, fig.height=8}
+for.plotting <- list(results = bind_rows(manyK), call = NULL)
+attr(for.plotting, "class") <- "searchK"
+plot(for.plotting)
+```
+
+## Test the holdout functions
+
+```{r}
+holdout <- make.heldout(extra_sparse$documents, extra_sparse$vocab, proportion = 1, seed = 123)
+```
+
+# Load the final data
+
+See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
+
+```{r, message=F}
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+sparse <- readCorpus(sparse, type = "slam")
+```
+
+# CTM method without correlations
+
+We can get a model like an LDA by enforcing a diagonal $\Sigma$ with `sigma.prior = 1` but note that the topic distribution in this model is not actually a Dirichlet.
+
+```{r}
+nc_ctm40 <- stm(sparse$documents, sparse$vocab, K = 40, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), sigma.prior = 1)
+nc_ctm40$time/60
+```
+
+# Rerun the 40 topic model as CTM
+
+Correlated topic models relax the $\Sigma$ is diagonal constraint.
+
+```{r}
+now <- Sys.time()
+ctm40 <- stm(sparse$documents, sparse$vocab, K = 40, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)))
+(t40 <- Sys.time() - now)
+```
+
+# Compare diagonal and non-diagonal $\Sigma$
+
+```{r, fig.height=8}
+# Time to complete
+nc_ctm40$time/60
+ctm40$time/60
+# Correlations
+plot(topicCorr(nc_ctm40))
+plot(topicCorr(ctm40))
+# Most frequent topics
+plot(nc_ctm40, n = 5, xlim = c(0, .1))
+plot(ctm40, n = 5, xlim = c(0, .1))
+```
+
+# Other numbers of topics
+
+That was surprisingly fast. Try every 5 as before.
+
+```{r}
+ctm5  <- stm(sparse$documents, sparse$vocab, K = 5,  init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm10 <- stm(sparse$documents, sparse$vocab, K = 10, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm15 <- stm(sparse$documents, sparse$vocab, K = 15, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm20 <- stm(sparse$documents, sparse$vocab, K = 20, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm25 <- stm(sparse$documents, sparse$vocab, K = 25, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm30 <- stm(sparse$documents, sparse$vocab, K = 30, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm35 <- stm(sparse$documents, sparse$vocab, K = 35, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm45 <- stm(sparse$documents, sparse$vocab, K = 45, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+ctm50 <- stm(sparse$documents, sparse$vocab, K = 50, init.type = "Spectral", ngroups = 7, control = list(maxV = length(sparse$vocab)))
+```
+
+# Multiple K
+
+```{r}
+now <- Sys.time()
+manyK <- foreach(this.k = seq(50, 5, by = -5), .packages = "stm") %dopar% {
+  output <- searchK(sparse$documents, sparse$vocab, K = this.k, init.type = "Spectral", ngroups = 7,
+  proportion = .5, heldout.seed = 13316, verbose = FALSE)
+  return(output$results)
+}
+(tK <- Sys.time() - now)
+```
+
+## searchK results
+
+```{r, fig.height=8}
+for.plotting <- list(results = bind_rows(manyK), call = NULL)
+attr(for.plotting, "class") <- "searchK"
+plot(for.plotting)
+```
+
+# Save results
+
+```{r}
+save(ctm5, ctm10, ctm15, ctm20, ctm25, ctm30, ctm35, ctm40, ctm45, ctm50, nc_ctm40,
+     file ="results/ctm_by_5.zip", compress = "xz", compression_level = 1)
+```

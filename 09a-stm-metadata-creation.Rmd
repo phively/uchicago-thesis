@@ -1,0 +1,56 @@
+---
+title: "STM metadata"
+output: html_notebook
+---
+
+# Goal
+
+  * Create metadata to be used for structural topic models
+  * Familiarise myself with model specifications used by the `stm` package
+  
+# Libraries
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(stm)
+library(foreach)
+library(doParallel)
+```
+
+# Load posts metadata
+
+```{r}
+# Read zipped posts.csv
+# Currently includes CreationDate, Score, ViewCount, LastActivityDate, AnswerCount, FavoriteCount, Tags
+source("R/read-PostsData-save-metadata.R")
+```
+
+# Metadata exploration
+
+```{r}
+summary(metadata)
+```
+
+There are many NAs under FavoriteCount.
+
+```{r}
+metadata$Id[which(is.na(metadata$FavoriteCount)) %>% head()]
+```
+
+Looks like it's fine to fill these in with 0.
+
+```{r}
+metadata <- metadata %>% mutate(
+  FavoriteCount = ifelse(is.na(FavoriteCount), 0, FavoriteCount)
+)
+summary(metadata$FavoriteCount)
+```
+
+Save the cleaned metadata.
+
+```{r}
+save(metadata, file = "data/posts_metadata.zip", compress = "xz")
+```
+
+# STM with test data

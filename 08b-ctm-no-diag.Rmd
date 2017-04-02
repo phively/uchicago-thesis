@@ -1,0 +1,52 @@
+---
+title: "Correlated topic model with diagonal covariance"
+output: html_notebook
+---
+
+# Goal
+
+  * Use the `stm` package to fit CTMs with diagonal $\Sigma$
+  * Have a baseline for comparing structural topic models
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(dplyr)
+library(slam)
+library(stm)
+library(foreach)
+library(doParallel)
+```
+
+Set up parallel runs
+
+```{r}
+registerDoParallel(5)
+getDoParWorkers()
+```
+
+# Load the final data
+
+See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
+
+```{r, message=F}
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+sparse <- readCorpus(sparse, type = "slam")
+```
+
+# CTM method without correlations
+
+Topics $K \in \left\{ 5, 10, \dots, 50 \right\}$
+
+```{r}
+now <- Sys.time()
+diag.results <- foreach(this.k = seq(50, 5, by = -5), .packages = "stm") %dopar% {
+  output <- searchK(sparse$documents, sparse$vocab, K = this.k, init.type = "Spectral", ngroups = 7,
+  proportion = .5, heldout.seed = 13316, sigma.prior = 1, verbose = FALSE)
+  return(output$results)
+}
+tK <- Sys.time() - now
+save(diag.results, "results/ctm_5_to_50.Rdata")
+```
+

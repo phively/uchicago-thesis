@@ -89,12 +89,6 @@ attr(for.plotting, "class") <- "searchK"
 plot(for.plotting)
 ```
 
-## Test the holdout functions
-
-```{r}
-holdout <- make.heldout(extra_sparse$documents, extra_sparse$vocab, proportion = 1, seed = 123)
-```
-
 # Load the final data
 
 See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
@@ -171,14 +165,26 @@ manyK <- foreach(this.k = seq(50, 5, by = -5), .packages = "stm") %dopar% {
 ## searchK results
 
 ```{r, fig.height=8}
-for.plotting <- list(results = bind_rows(manyK), call = NULL)
-attr(for.plotting, "class") <- "searchK"
-plot(for.plotting)
+manyK <- list(results = bind_rows(manyK), call = NULL)
+attr(manyK, "class") <- "searchK"
+plot(manyK)
+```
+
+## Try additional K
+
+```{r}
+now <- Sys.time()
+moreK <- foreach(this.k = seq(100, 55, by = -5), .packages = "stm") %dopar% {
+  output <- searchK(sparse$documents, sparse$vocab, K = this.k, init.type = "Spectral", ngroups = 7,
+  proportion = .5, heldout.seed = 13316, verbose = FALSE)
+  return(output$results)
+}
+(tK2 <- Sys.time() - now)
 ```
 
 # Save results
 
 ```{r}
-save(ctm5, ctm10, ctm15, ctm20, ctm25, ctm30, ctm35, ctm40, ctm45, ctm50, nc_ctm40,
+save(ctm5, ctm10, ctm15, ctm20, ctm25, ctm30, ctm35, ctm40, ctm45, ctm50, nc_ctm40, manyK,
      file ="results/ctm_by_5.zip", compress = "xz", compression_level = 1)
 ```

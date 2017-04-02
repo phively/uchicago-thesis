@@ -47,6 +47,14 @@ metadata <- metadata %>% mutate(
 summary(metadata$FavoriteCount)
 ```
 
+Add an index to metadata to map between Id number and document number.
+
+```{r}
+metadata <- metadata %>% mutate(
+  Doc_Id = 1:length(Id)
+)
+```
+
 Save the cleaned metadata.
 
 ```{r}
@@ -55,5 +63,101 @@ save(metadata, file = "data/posts_metadata.zip", compress = "xz")
 
 # STM experimentation
 
+## Load data
+
 ```{r}
+# Load sparse matrix with no tex
+load(file = "data/sparse_test_smaller.zip")
+
+# Metadata
+small_meta <- metadata %>% head(1000) %>% mutate(
+  floor_dt = floor_date(CreationDate, unit = "month") %>% as.numeric()
+)
+
+# Put in stm format
+extra_sparse <- readCorpus(extra_sparse, type = "slam")
+```
+
+## STM with creation date covariate
+
+```{r}
+# s() is a B-spline
+test_stm10 <- small_meta %>% stm(
+  documents = extra_sparse$documents, vocab = extra_sparse$vocab, K = 10,
+  init.type = "Spectral", ngroups = 5,
+  prevalence = ~ s(Score) + s(floor_dt), data = .
+)
+```
+
+```{r}
+# Time in minutes
+test_stm10$time/60
+```
+
+## Visualize results
+
+```{r, fig.width=8}
+# Common topics
+plot(test_stm10, n = 5)
+
+# Top documents associated with "Topic 8: matrix, pca, factor"
+findThoughts(model = test_stm10, texts = small_meta$CleanBody, n = 2, topics = 8)$docs$`Topic 8` %>% substr(0, 500)
+```
+
+## Covariate visualization
+
+```{r}
+# Topic labels
+topic_label <- apply(cbind(1:10, labelTopics(test_stm10, n = 3)$prob), MARGIN = 1, FUN = paste, collapse = ", ")
+
+# See how the Score covariate affects results
+cov_effects <- small_meta %>%
+  estimateEffect(1:10 ~ s(Score) + s(floor_dt), test_stm10, metadata = ., documents = extra_sparse$documents)
+```
+
+```{r, fig.height = 6, warning=F, error=F, message=F}
+# Mean topic score comparisons
+plot(cov_effects, covariate = "floor_dt", method = "difference", cov.value1 = 0, cov.value2 = 20,
+     topic = 1:10, labeltype = "custom", custom.labels = topic_label,
+     xlab = "Lower score ... Higher score", xlim = c(-4, 4))
+```
+
+```{r}
+# Date against proportion
+invisible(pdf(file = NULL))
+q <- plot(cov_effects, covariate = "floor_dt", topics = 8, method = "continuous")
+invisible(dev.off())
+q <- data.frame(date = as_datetime(q$x), proportion = q$means[[1]], lci = q$ci[[1]][1, ], uci = q$ci[[1]][2, ])
+q %>% ggplot(aes(x = date, y = proportion)) + geom_line() + geom_line(aes(y = lci), linetype = "dotted") +
+  geom_line(aes(y = uci), linetype = "dotted") + labs(title = "Topic 8: matrix, pca, factor")
+
+# Continuous score against proportion
+pdf(file = NULL)
+q <- plot(cov_effects, covariate = "Score", topics = 8, method = "continuous")
+dev.off()
+q <- data.frame(score = q$x, proportion = q$means[[1]], lci = q$ci[[1]][1, ], uci = q$ci[[1]][2, ])
+q %>% ggplot(aes(x = score, y = proportion)) + geom_line() + geom_line(aes(y = lci), linetype = "dotted") +
+  geom_line(aes(y = uci), linetype = "dotted") + labs(title = "Topic 8: matrix, pca, factor")
+
+# Confirm that the most popular post is indeed about PCA
+small_meta$CleanBody[which(small_meta$Score == max(small_meta$Score))] %>% substr(0, 500)
+```
+
+## Comparing topics
+
+```{r, fig.width=10}
+set.seed(123)
+plot(test_stm10, type = "perspectives", topics = c(8, 10), topic.names = topic_label,
+     main = paste(topic_label[8], topic_label[10], sep = ";  "))
+```
+
+```{r, fig.width=6, fig.height=6}
+# Topic correlations
+plot(topicCorr(test_stm10), vlabels = topic_label)
+```
+
+```{r, fig.width=12}
+set.seed(123)
+plot(test_stm10, type = "perspectives", topics = c(7, 10), topic.names = topic_label,
+     main = paste(topic_label[7], topic_label[10], sep = ";  "))
 ```

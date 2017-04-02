@@ -98,7 +98,7 @@ merged <-
 
 # Add metadata
 metadata <- merged %>% left_join(
-  data %>% select(Id, CreationDate, Score, ViewCount, LastActivityDate, AnswerCount, FavoriteCount, Tags),
+  data %>% select(Id, Title, CreationDate, Score, ViewCount, LastActivityDate, AnswerCount, FavoriteCount, Tags),
   by = "Id"
 ) %>% mutate(
   CreationDate = ymd_hms(CreationDate),

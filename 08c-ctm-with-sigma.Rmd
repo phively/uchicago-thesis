@@ -1,16 +1,16 @@
 ---
-title: "Structural topic models"
+title: "Correlated topic models K"
 output: html_notebook
 ---
 
 # Goals
 
-  * Explore the structure
+  * Identify a suitable number of topics $K$ to use for the CTM.
 
 # Libraries used
 
 ```{r, warning=F, message=F, error=F, comment=F}
-library(dplyr)
+library(tidyverse)
 library(slam)
 library(stm)
 library(foreach)
@@ -22,71 +22,6 @@ Set up parallel runs
 ```{r}
 registerDoParallel(5)
 getDoParWorkers()
-```
-
-# Test run of stm
-
-## Load test data
-
-```{r}
-# Test data
-load(file = "data/sparse_test_smaller.zip")
-extra_sparse <- readCorpus(extra_sparse, type = "slam")
-```
-
-If covariates are not included, stm acts like a correlated topic model.
-
-## 5-topic test model
-
-```{r}
-now <- Sys.time()
-m5 <- stm(extra_sparse$documents, extra_sparse$vocab, K = 5, init.type = "Spectral", ngroups = 5)
-(t5 <- Sys.time() - now)
-```
-
-## 10-topic test model
-
-```{r}
-now <- Sys.time()
-m10 <- stm(extra_sparse$documents, extra_sparse$vocab, K = 10, init.type = "Spectral", ngroups = 5)
-(t10 <- Sys.time() - now)
-```
-
-## Explore test results
-
-```{r}
-labelTopics(m5)
-topicCorr(m5)$poscor %>% data.frame() %>% signif(2)
-topicQuality(m5, documents = extra_sparse$documents)
-plot(m5)
-plot(topicCorr(m5))
-```
-
-```{r}
-labelTopics(m10)
-topicCorr(m10)$poscor %>% data.frame() %>% signif(2)
-topicQuality(m10, documents = extra_sparse$documents)
-plot(m10)
-plot(topicCorr(m10))
-```
-
-## Try the K-searching method
-
-```{r}
-now <- Sys.time()
-manyK <- foreach(this.k = seq(3, 15, by = 3), .packages = "stm") %dopar% {
-  output <- searchK(extra_sparse$documents, extra_sparse$vocab, K = this.k, proportion = .5, heldout.seed = 123, verbose = FALSE)
-  return(output$results)
-}
-(tK <- Sys.time() - now)
-```
-
-## searchK results
-
-```{r, fig.height=8}
-for.plotting <- list(results = bind_rows(manyK), call = NULL)
-attr(for.plotting, "class") <- "searchK"
-plot(for.plotting)
 ```
 
 # Load the final data
@@ -182,9 +117,19 @@ moreK <- foreach(this.k = seq(100, 55, by = -5), .packages = "stm") %dopar% {
 (tK2 <- Sys.time() - now)
 ```
 
+```{r, fig.height=8}
+tmp <- manyK
+tmp$results <- rbind(bind_rows(moreK), manyK$results)
+plot(tmp)
+```
+
 # Save results
 
 ```{r}
-save(ctm5, ctm10, ctm15, ctm20, ctm25, ctm30, ctm35, ctm40, ctm45, ctm50, nc_ctm40, manyK,
+write.csv(rbind(manyK$results, bind_rows(moreK)), file = "results/ctm_holdout.csv")
+```
+
+```{r}
+save(ctm5, ctm10, ctm15, ctm20, ctm25, ctm30, ctm35, ctm40, ctm45, ctm50, nc_ctm40, manyK, moreK,
      file ="results/ctm_by_5.zip", compress = "xz", compression_level = 1)
 ```

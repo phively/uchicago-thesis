@@ -176,3 +176,86 @@ nc_ctm150 <- searchK(sparse$documents, sparse$vocab, K = 150, init.type = "Spect
   control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
 save(nc_ctm150, file = "results/nc_ctm150.zip", compress = "xz", compression_level = 1)
 ```
+
+# Update cross-validation data frame
+
+```{r}
+xval <- bind_rows(xval,
+  nc_ctm60$results, nc_ctm70$results, nc_ctm80$results, nc_ctm90$results, nc_ctm100$results,
+  nc_ctm110$results, nc_ctm120$results, nc_ctm130$results, nc_ctm140$results, nc_ctm150$results)
+write.csv(xval, file = "results/nc_ctm_xval.csv", row.names = FALSE)
+```
+
+```{r}
+xval %>% ggplot(aes(x = K, y = heldout)) + geom_point()
+```
+
+# New strategy -- true hold-out cross-validation
+
+```{r}
+# Create holdout set
+holdout <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = 18467, proportion = 1, seed = 70886)
+```
+
+```{r}
+# 5
+gc()
+nc_ctm05 <- stm(holdout$documents, holdout$vocab, K = 5, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm05, file = "results/nc_ctm05.zip", compress = "xz", compression_level = 1)
+
+# 10
+gc()
+nc_ctm10 <- stm(holdout$documents, holdout$vocab, K = 10, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm10, file = "results/nc_ctm10.zip", compress = "xz", compression_level = 1)
+
+# 15
+gc()
+nc_ctm15 <- stm(holdout$documents, holdout$vocab, K = 15, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm15, file = "results/nc_ctm15.zip", compress = "xz", compression_level = 1)
+
+# 20
+gc()
+nc_ctm20 <- stm(holdout$documents, holdout$vocab, K = 20, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm20, file = "results/nc_ctm20.zip", compress = "xz", compression_level = 1)
+
+# 25
+gc()
+nc_ctm25 <- stm(holdout$documents, holdout$vocab, K = 25, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm25, file = "results/nc_ctm25.zip", compress = "xz", compression_level = 1)
+
+# 30
+gc()
+nc_ctm30 <- stm(holdout$documents, holdout$vocab, K = 30, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm30, file = "results/nc_ctm30.zip", compress = "xz", compression_level = 1)
+
+# 35
+gc()
+nc_ctm35 <- stm(holdout$documents, holdout$vocab, K = 35, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm35, file = "results/nc_ctm35.zip", compress = "xz", compression_level = 1)
+
+# 40
+gc()
+nc_ctm40 <- stm(holdout$documents, holdout$vocab, K = 40, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm40, file = "results/nc_ctm40.zip", compress = "xz", compression_level = 1)
+
+# 45
+gc()
+nc_ctm45 <- stm(holdout$documents, holdout$vocab, K = 45, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm45, file = "results/nc_ctm45.zip", compress = "xz", compression_level = 1)
+
+# 50
+gc()
+nc_ctm50 <- stm(holdout$documents, holdout$vocab, K = 50, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
+save(nc_ctm50, file = "results/nc_ctm50.zip", compress = "xz", compression_level = 1)
+```

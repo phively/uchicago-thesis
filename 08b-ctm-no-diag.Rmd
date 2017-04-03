@@ -11,7 +11,7 @@ output: html_notebook
 # Libraries used
 
 ```{r, warning=F, message=F, error=F, comment=F}
-library(dplyr)
+library(tidyverse)
 library(slam)
 library(stm)
 library(foreach)
@@ -40,13 +40,139 @@ sparse <- readCorpus(sparse, type = "slam")
 Topics $K \in \left\{ 5, 10, \dots, 50 \right\}$
 
 ```{r}
-now <- Sys.time()
-diag.results <- foreach(this.k = seq(50, 5, by = -5), .packages = "stm") %dopar% {
-  output <- searchK(sparse$documents, sparse$vocab, K = this.k, init.type = "Spectral", ngroups = 7,
-  proportion = .5, heldout.seed = 13316, sigma.prior = 1, verbose = FALSE)
-  return(output$results)
-}
-tK <- Sys.time() - now
-save(diag.results, "results/ctm_5_to_50.Rdata")
+# 5
+gc()
+nc_ctm05 <- searchK(sparse$documents, sparse$vocab, K = 5, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm05, file = "results/nc_ctm05.zip", compress = "xz", compression_level = 1)
+
+# 10
+gc()
+nc_ctm10 <- searchK(sparse$documents, sparse$vocab, K = 10, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm10, file = "results/nc_ctm10.zip", compress = "xz", compression_level = 1)
+
+# 15
+gc()
+nc_ctm15 <- searchK(sparse$documents, sparse$vocab, K = 15, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm15, file = "results/nc_ctm15.zip", compress = "xz", compression_level = 1)
+
+# 20
+gc()
+nc_ctm20 <- searchK(sparse$documents, sparse$vocab, K = 20, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm20, file = "results/nc_ctm20.zip", compress = "xz", compression_level = 1)
+
+# 25
+gc()
+nc_ctm25 <- searchK(sparse$documents, sparse$vocab, K = 25, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm25, file = "results/nc_ctm25.zip", compress = "xz", compression_level = 1)
+
+# 30
+gc()
+nc_ctm30 <- searchK(sparse$documents, sparse$vocab, K = 30, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm30, file = "results/nc_ctm30.zip", compress = "xz", compression_level = 1)
+
+# 35
+gc()
+nc_ctm35 <- searchK(sparse$documents, sparse$vocab, K = 35, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm35, file = "results/nc_ctm35.zip", compress = "xz", compression_level = 1)
+
+# 40
+gc()
+nc_ctm40 <- searchK(sparse$documents, sparse$vocab, K = 40, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm40, file = "results/nc_ctm40.zip", compress = "xz", compression_level = 1)
+
+# 45
+gc()
+nc_ctm45 <- searchK(sparse$documents, sparse$vocab, K = 45, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm45, file = "results/nc_ctm45.zip", compress = "xz", compression_level = 1)
+
+# 50
+gc()
+nc_ctm50 <- searchK(sparse$documents, sparse$vocab, K = 50, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm50, file = "results/nc_ctm50.zip", compress = "xz", compression_level = 1)
 ```
 
+```{r}
+xval <- bind_rows(nc_ctm05$results, nc_ctm10$results, nc_ctm15$results, nc_ctm20$results, nc_ctm25$results,
+  nc_ctm30$results, nc_ctm35$results, nc_ctm40$results, nc_ctm45$results, nc_ctm50$results)
+write.csv(xval, file = "results/nc_ctm_xval.csv", row.names = FALSE)
+```
+
+```{r}
+xval %>% ggplot(aes(x = K, y = heldout)) + geom_point()
+```
+
+There's clearly room for improvement.
+
+# CTM method, diagonal $\Sigma$, 60 through 150
+
+```{r}
+# 60
+gc()
+nc_ctm60 <- searchK(sparse$documents, sparse$vocab, K = 60, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm60, file = "results/nc_ctm60.zip", compress = "xz", compression_level = 1)
+
+# 70
+gc()
+nc_ctm70 <- searchK(sparse$documents, sparse$vocab, K = 70, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm70, file = "results/nc_ctm70.zip", compress = "xz", compression_level = 1)
+
+# 80
+gc()
+nc_ctm80 <- searchK(sparse$documents, sparse$vocab, K = 80, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm80, file = "results/nc_ctm80.zip", compress = "xz", compression_level = 1)
+
+# 90
+gc()
+nc_ctm90 <- searchK(sparse$documents, sparse$vocab, K = 90, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm90, file = "results/nc_ctm90.zip", compress = "xz", compression_level = 1)
+
+# 100
+gc()
+nc_ctm100 <- searchK(sparse$documents, sparse$vocab, K = 100, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm100, file = "results/nc_ctm100.zip", compress = "xz", compression_level = 1)
+
+# 110
+gc()
+nc_ctm110 <- searchK(sparse$documents, sparse$vocab, K = 110, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm110, file = "results/nc_ctm110.zip", compress = "xz", compression_level = 1)
+
+# 120
+gc()
+nc_ctm120 <- searchK(sparse$documents, sparse$vocab, K = 120, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm120, file = "results/nc_ctm120.zip", compress = "xz", compression_level = 1)
+
+# 130
+gc()
+nc_ctm130 <- searchK(sparse$documents, sparse$vocab, K = 130, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm130, file = "results/nc_ctm130.zip", compress = "xz", compression_level = 1)
+
+# 140
+gc()
+nc_ctm140 <- searchK(sparse$documents, sparse$vocab, K = 140, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm140, file = "results/nc_ctm140.zip", compress = "xz", compression_level = 1)
+
+# 150
+gc()
+nc_ctm150 <- searchK(sparse$documents, sparse$vocab, K = 150, init.type = "Spectral", ngroups = 7,
+  control = list(maxV = length(sparse$vocab)), proportion = .5, heldout.seed = 13316, sigma.prior = 1)
+save(nc_ctm150, file = "results/nc_ctm150.zip", compress = "xz", compression_level = 1)
+```

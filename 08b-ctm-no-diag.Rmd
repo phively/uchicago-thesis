@@ -192,70 +192,72 @@ xval %>% ggplot(aes(x = K, y = heldout)) + geom_point()
 
 # New strategy -- true hold-out cross-validation
 
-```{r}
-# Create holdout set
-holdout <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 18467, proportion = 1, seed = 70886)
-```
+## Holdout set
 
 ```{r}
+# Create holdout sets
+holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = 18467, proportion = 1, seed = 70886)
+holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = 18467, proportion = 1, seed = 57199)
+holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = 18467, proportion = 1, seed = 68467)
+```
+
+## Test group, K = 5
+
+```{r}
+# Test group
+
 # 5
 gc()
 nc_ctm05 <- stm(holdout$documents, holdout$vocab, K = 5, init.type = "Spectral", ngroups = 7,
   control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
 save(nc_ctm05, file = "results/nc_ctm05.zip", compress = "xz", compression_level = 1)
-
-# 10
-gc()
-nc_ctm10 <- stm(holdout$documents, holdout$vocab, K = 10, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm10, file = "results/nc_ctm10.zip", compress = "xz", compression_level = 1)
-
-# 15
-gc()
-nc_ctm15 <- stm(holdout$documents, holdout$vocab, K = 15, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm15, file = "results/nc_ctm15.zip", compress = "xz", compression_level = 1)
-
-# 20
-gc()
-nc_ctm20 <- stm(holdout$documents, holdout$vocab, K = 20, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm20, file = "results/nc_ctm20.zip", compress = "xz", compression_level = 1)
-
-# 25
-gc()
-nc_ctm25 <- stm(holdout$documents, holdout$vocab, K = 25, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm25, file = "results/nc_ctm25.zip", compress = "xz", compression_level = 1)
-
-# 30
-gc()
-nc_ctm30 <- stm(holdout$documents, holdout$vocab, K = 30, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm30, file = "results/nc_ctm30.zip", compress = "xz", compression_level = 1)
-
-# 35
-gc()
-nc_ctm35 <- stm(holdout$documents, holdout$vocab, K = 35, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm35, file = "results/nc_ctm35.zip", compress = "xz", compression_level = 1)
-
-# 40
-gc()
-nc_ctm40 <- stm(holdout$documents, holdout$vocab, K = 40, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm40, file = "results/nc_ctm40.zip", compress = "xz", compression_level = 1)
-
-# 45
-gc()
-nc_ctm45 <- stm(holdout$documents, holdout$vocab, K = 45, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm45, file = "results/nc_ctm45.zip", compress = "xz", compression_level = 1)
-
-# 50
-gc()
-nc_ctm50 <- stm(holdout$documents, holdout$vocab, K = 50, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm50, file = "results/nc_ctm50.zip", compress = "xz", compression_level = 1)
 ```
+
+## 10 through 50
+
+### A
+
+```{r}
+# Parallel run
+gc()
+nc_10_50a <- foreach(k = c(10, 20, 30, 40, 50)) %dopar% {
+  stm(holdout1$documents, holdout1$vocab, K = k, init.type = "Spectral", ngroups = 5,
+    control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+}
+save(nc_10_50a, file = "results/nc_10_50a.zip", compress = "xz", compression_level = 1)
+```
+
+### B
+
+```{r}
+# Parallel run
+gc()
+nc_10_50b <- foreach(k = c(10, 20, 30, 40, 50)) %dopar% {
+  stm(holdout2$documents, holdout2$vocab, K = k, init.type = "Spectral", ngroups = 5,
+    control = list(maxV = length(holdout2$vocab)), sigma.prior = 1)
+}
+save(nc_10_50b, file = "results/nc_10_50b.zip", compress = "xz", compression_level = 1)
+```
+
+### C
+
+```{r}
+# Parallel run
+gc()
+nc_10_50c <- foreach(k = c(10, 20, 30, 40, 50)) %dopar% {
+  stm(holdout3$documents, holdout3$vocab, K = k, init.type = "Spectral", ngroups = 5,
+    control = list(maxV = length(holdout3$vocab)), sigma.prior = 1)
+}
+save(nc_10_50c, file = "results/nc_10_50c.zip", compress = "xz", compression_level = 1)
+```
+
+# Evaluate holdout samples
+
+```{r}
+h5 <- eval.heldout(nc_ctm05, missing = holdout$missing)
+h10_50 <- lapply(nc_10_50, eval.heldout, missing = holdout$missing)
+```
+

@@ -282,21 +282,32 @@ models42 <- xval(dtm = sparse, index = rand_ind, ntopics = 42, seed = 81348, kee
 save(models42, file = "results/lda_k_42.zip", compress = "xz", compression_level = 1)
 ```
 
+## 50 topics
+
+```{r}
+gc()
+now <- Sys.time()
+models50 <- xval(dtm = sparse, index = rand_ind, ntopics = 50, seed = 68513, keep = 1)
+(t50 <- Sys.time() - now)
+save(models50, file = "results/lda_k_50.zip", compress = "xz", compression_level = 1)
+```
+
 # New perplexity
 
 ```{r}
 perps_new <- data.frame(
-  model = c(38, 39, 41, 42) %>% rep(each = K),
-  fold = rep(1:K, times = 4),
+  model = c(38, 39, 41, 42, 50) %>% rep(each = K),
+  fold = rep(1:K, times = 5),
   # Add time elapsed in hours
-  time = c(t38, t39, t41, t42) %>% as.numeric(units = "hours") %>% rep(each = K)
+  time = c(t38, t39, t41, t42, t50) %>% as.numeric(units = "hours") %>% rep(each = K)
 )
 
 in_sample = c(
   lapply(models38, FUN = perplexity) %>% unlist(),
   lapply(models39, FUN = perplexity) %>% unlist(),
   lapply(models41, FUN = perplexity) %>% unlist(),
-  lapply(models42, FUN = perplexity) %>% unlist()
+  lapply(models42, FUN = perplexity) %>% unlist(),
+  lapply(models50, FUN = perplexity) %>% unlist()
 )
 perps_new <- perps_new %>% mutate(in_sample)
 ```
@@ -309,8 +320,9 @@ perp38 <- oos_perplexity(models38) %>% unlist()
 perp39 <- oos_perplexity(models39) %>% unlist()
 perp41 <- oos_perplexity(models41) %>% unlist()
 perp42 <- oos_perplexity(models42) %>% unlist()
+perp50 <- oos_perplexity(models50) %>% unlist()
 
-perps_new <- perps_new %>% mutate(out_sample = c(perp38, perp39, perp41, perp42))
+perps_new <- perps_new %>% mutate(out_sample = c(perp38, perp39, perp41, perp42, perp50))
 
 perplexity <- rbind(perplexity, perps_new) %>% arrange(model, fold)
 

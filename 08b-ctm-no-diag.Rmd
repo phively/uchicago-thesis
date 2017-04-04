@@ -258,6 +258,22 @@ save(nc_10_50c, file = "results/nc_10_50c.zip", compress = "xz", compression_lev
 
 ```{r}
 h5 <- eval.heldout(nc_ctm05, missing = holdout$missing)
-h10_50 <- lapply(nc_10_50, eval.heldout, missing = holdout$missing)
+h10_50a <- lapply(nc_10_50a, eval.heldout, missing = holdout1$missing)
+h10_50b <- lapply(nc_10_50b, eval.heldout, missing = holdout2$missing)
+h10_50c <- lapply(nc_10_50c, eval.heldout, missing = holdout3$missing)
+```
+
+```{r}
+a <- matrix(0, nrow = 5, ncol = 3)
+for (i in 1:5) {
+  a[i, 1] <- h10_50a[[i]]$expected
+  a[i, 2] <- h10_50b[[i]]$expected
+  a[i, 3] <- h10_50c[[i]]$expected
+}
+```
+
+```{r}
+plot(as.vector(a) ~ rep(1:5, times = 3))
+lines(rowMeans(a) ~ rep(1:5))
 ```
 

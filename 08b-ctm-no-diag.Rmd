@@ -21,7 +21,7 @@ library(doParallel)
 Set up parallel runs
 
 ```{r}
-registerDoParallel(5)
+registerDoParallel(20)
 getDoParWorkers()
 ```
 
@@ -197,83 +197,67 @@ xval %>% ggplot(aes(x = K, y = heldout)) + geom_point()
 ```{r}
 # Create holdout sets
 holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 18467, proportion = 1, seed = 70886)
+  N = 200, proportion = 1, seed = 83319)
 holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 18467, proportion = 1, seed = 57199)
+  N = 200, proportion = 1, seed = 5052)
 holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 18467, proportion = 1, seed = 68467)
+  N = 200, proportion = 1, seed = 54551)
+holdout4 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = 200, proportion = 1, seed = 19245)
+holdout5 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = 200, proportion = 1, seed = 56423)
+
+holdout <- list(holdout1, holdout2, holdout3, holdout4, holdout5)
 ```
 
-## Test group, K = 5
-
-```{r}
-# Test group
-
-# 5
-gc()
-nc_ctm05 <- stm(holdout$documents, holdout$vocab, K = 5, init.type = "Spectral", ngroups = 7,
-  control = list(maxV = length(holdout$vocab)), sigma.prior = 1)
-save(nc_ctm05, file = "results/nc_ctm05.zip", compress = "xz", compression_level = 1)
-```
-
-## 10 through 50
-
-### A
+## K = 5 to 20
 
 ```{r}
 # Parallel run
 gc()
-nc_10_50a <- foreach(k = c(10, 20, 30, 40, 50)) %dopar% {
-  stm(holdout1$documents, holdout1$vocab, K = k, init.type = "Spectral", ngroups = 5,
-    control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+nc_5_20 <- foreach(k = seq(5, 20, by = 5)) %dopar% {
+  # Cross-validated sets
+  foreach(i = 1:5) %dopar% {
+    stm(holdout[[i]]$documents, holdout[[i]]$vocab, K = k, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout[[i]]$vocab)), sigma.prior = 1)
+  }
 }
-save(nc_10_50a, file = "results/nc_10_50a.zip", compress = "xz", compression_level = 1)
+save(nc_5_20, file = "results/nc_5_20.zip", compress = "xz", compression_level = 1)
 ```
 
-### B
+## K = 25 to 40
 
 ```{r}
 # Parallel run
 gc()
-nc_10_50b <- foreach(k = c(10, 20, 30, 40, 50)) %dopar% {
-  stm(holdout2$documents, holdout2$vocab, K = k, init.type = "Spectral", ngroups = 5,
-    control = list(maxV = length(holdout2$vocab)), sigma.prior = 1)
+nc_25_40 <- foreach(k = seq(25, 40, by = 5)) %dopar% {
+  # Cross-validated sets
+  foreach(i = 1:5) %dopar% {
+    stm(holdout[[i]]$documents, holdout[[i]]$vocab, K = k, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout[[i]]$vocab)), sigma.prior = 1)
+  }
 }
-save(nc_10_50b, file = "results/nc_10_50b.zip", compress = "xz", compression_level = 1)
+save(nc_25_40, file = "results/nc_25_40.zip", compress = "xz", compression_level = 1)
 ```
 
-### C
+## K = 45 to 60
 
 ```{r}
 # Parallel run
 gc()
-nc_10_50c <- foreach(k = c(10, 20, 30, 40, 50)) %dopar% {
-  stm(holdout3$documents, holdout3$vocab, K = k, init.type = "Spectral", ngroups = 5,
-    control = list(maxV = length(holdout3$vocab)), sigma.prior = 1)
+nc_45_60 <- foreach(k = seq(45, 60, by = 5)) %dopar% {
+  # Cross-validated sets
+  foreach(i = 1:5) %dopar% {
+    stm(holdout[[i]]$documents, holdout[[i]]$vocab, K = k, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout[[i]]$vocab)), sigma.prior = 1)
+  }
 }
-save(nc_10_50c, file = "results/nc_10_50c.zip", compress = "xz", compression_level = 1)
+save(nc_45_60, file = "results/nc_45_60.zip", compress = "xz", compression_level = 1)
 ```
 
 # Evaluate holdout samples
 
 ```{r}
-h5 <- eval.heldout(nc_ctm05, missing = holdout$missing)
-h10_50a <- lapply(nc_10_50a, eval.heldout, missing = holdout1$missing)
-h10_50b <- lapply(nc_10_50b, eval.heldout, missing = holdout2$missing)
-h10_50c <- lapply(nc_10_50c, eval.heldout, missing = holdout3$missing)
-```
 
-```{r}
-a <- matrix(0, nrow = 5, ncol = 3)
-for (i in 1:5) {
-  a[i, 1] <- h10_50a[[i]]$expected
-  a[i, 2] <- h10_50b[[i]]$expected
-  a[i, 3] <- h10_50c[[i]]$expected
-}
-```
-
-```{r}
-plot(as.vector(a) ~ rep(1:5, times = 3))
-lines(rowMeans(a) ~ rep(1:5))
 ```
 

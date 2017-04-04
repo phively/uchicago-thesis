@@ -234,46 +234,57 @@ save(nc_5, file = "results/nc_5.zip", compress = "xz", compression_level = 1)
 
 ```{r}
 # 10
+gc()
 nc_10 <- xval(k = 10)
 save(nc_10, file = "results/nc_10.zip", compress = "xz", compression_level = 1)
 
 # 15
+gc()
 nc_15 <- xval(k = 15)
 save(nc_15, file = "results/nc_15.zip", compress = "xz", compression_level = 1)
 
 # 20
+gc()
 nc_20 <- xval(k = 20)
 save(nc_20, file = "results/nc_20.zip", compress = "xz", compression_level = 1)
 
 # 25
+gc()
 nc_25 <- xval(k = 25)
 save(nc_25, file = "results/nc_25.zip", compress = "xz", compression_level = 1)
 
 # 30
+gc()
 nc_30 <- xval(k = 30)
 save(nc_30, file = "results/nc_30.zip", compress = "xz", compression_level = 1)
 
 # 35
+gc()
 nc_35 <- xval(k = 35)
 save(nc_35, file = "results/nc_35.zip", compress = "xz", compression_level = 1)
 
 # 40
+gc()
 nc_40 <- xval(k = 40)
 save(nc_40, file = "results/nc_40.zip", compress = "xz", compression_level = 1)
 
 # 45
+gc()
 nc_45 <- xval(k = 45)
 save(nc_45, file = "results/nc_45.zip", compress = "xz", compression_level = 1)
 
 # 50
+gc()
 nc_50 <- xval(k = 50)
 save(nc_50, file = "results/nc_50.zip", compress = "xz", compression_level = 1)
 
 # 55
+gc()
 nc_55 <- xval(k = 55)
 save(nc_55, file = "results/nc_55.zip", compress = "xz", compression_level = 1)
 
 # 60
+gc()
 nc_60 <- xval(k = 60)
 save(nc_60, file = "results/nc_60.zip", compress = "xz", compression_level = 1)
 ```
@@ -284,9 +295,32 @@ save(nc_60, file = "results/nc_60.zip", compress = "xz", compression_level = 1)
 test <- list()
 for(i in 1:5) {
   test[[i]] <- eval.heldout(nc_5[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[5+i]] <- eval.heldout(nc_10[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[10+i]] <- eval.heldout(nc_15[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[15+i]] <- eval.heldout(nc_20[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[20+i]] <- eval.heldout(nc_25[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[25+i]] <- eval.heldout(nc_30[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[30+i]] <- eval.heldout(nc_35[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[35+i]] <- eval.heldout(nc_40[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[40+i]] <- eval.heldout(nc_45[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[45+i]] <- eval.heldout(nc_50[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[50+i]] <- eval.heldout(nc_55[[i]], holdout[[i]]$missing)$doc.heldout
+  test[[55+i]] <- eval.heldout(nc_60[[i]], holdout[[i]]$missing)$doc.heldout
 }
-test <- unlist(test)
-hist(test)
-mean(test)
-1.96 * sd(test)
+
+n <- length(test[[1]]) + length(test[[2]]) + length(test[[3]]) + length(test[[4]]) + length(test[[5]])
+# Per-document log likelihood
+nc_heldout_lik <- unlist(test) %>% data.frame(
+  K = rep(seq(5, 60, by = 5), each = n),
+  lik = .
+)
+write.csv(nc_heldout_lik, file = "results/nc_ctm_heldout_lik.csv", row.names = FALSE)
 ```
+
+```{r}
+nc_heldout_lik %>% filter(K > 5) %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+  ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+  labs(y = "mean per-document holdout likelihood", x = "") + scale_x_continuous(breaks = seq(10, 60, by = 10))
+```
+
+Maximum likelihood at $K$ = 25.

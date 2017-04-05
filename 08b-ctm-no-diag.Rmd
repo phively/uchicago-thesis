@@ -21,7 +21,7 @@ library(doParallel)
 Set up parallel runs
 
 ```{r}
-registerDoParallel(12)
+registerDoParallel(5)
 getDoParWorkers()
 ```
 
@@ -196,16 +196,17 @@ xval %>% ggplot(aes(x = K, y = heldout)) + geom_point()
 
 ```{r}
 # Create holdout sets
+N <- length(sparse$documents)
 holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 83319)
+  N = N/5, proportion = 1, seed = 83319)
 holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 5052)
+  N = N/5, proportion = 1, seed = 5052)
 holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 54551)
+  N = N/5, proportion = 1, seed = 54551)
 holdout4 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 19245)
+  N = N/5, proportion = 1, seed = 19245)
 holdout5 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 56423)
+  N = N/5, proportion = 1, seed = 56423)
 
 holdout <- list(holdout1, holdout2, holdout3, holdout4, holdout5)
 ```

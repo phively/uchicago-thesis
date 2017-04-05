@@ -140,16 +140,17 @@ save(ctm5, ctm10, ctm15, ctm20, ctm25, ctm30, ctm35, ctm40, ctm45, ctm50, nc_ctm
 
 ```{r}
 # Create holdout sets
+N <- length(sparse$documents)
 holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 83319)
+  N = N/5, proportion = 1, seed = 83319)
 holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 5052)
+  N = N/5, proportion = 1, seed = 5052)
 holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 54551)
+  N = N/5, proportion = 1, seed = 54551)
 holdout4 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 19245)
+  N = N/5, proportion = 1, seed = 19245)
 holdout5 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = 200, proportion = 1, seed = 56423)
+  N = N/5, proportion = 1, seed = 56423)
 
 holdout <- list(holdout1, holdout2, holdout3, holdout4, holdout5)
 ```
@@ -188,4 +189,28 @@ ctm_45_60 <- foreach(k = seq(45, 60, by = 5)) %:% # Loop through the K
   }
 
 save(ctm_45_60, file = "results/ctm_45_60.zip", compress = "xz", compression_level = 1)
+```
+
+```{r}
+test <- list()
+for(i in 1:5) {
+  test[[i]] <- eval.heldout(ctm_05_20[[1]][[i]], holdout[[i]]$missing)$doc.heldout
+  test[[5+i]] <- eval.heldout(ctm_05_20[[2]][[i]], holdout[[i]]$missing)$doc.heldout
+  test[[10+i]] <- eval.heldout(ctm_05_20[[3]][[i]], holdout[[i]]$missing)$doc.heldout
+  test[[15+i]] <- eval.heldout(ctm_05_20[[4]][[i]], holdout[[i]]$missing)$doc.heldout
+}
+
+n <- length(test[[1]]) + length(test[[2]]) + length(test[[3]]) + length(test[[4]]) + length(test[[5]])
+# Per-document log likelihood
+ctm_heldout_lik <- unlist(test) %>% data.frame(
+  K = rep(seq(5, 20, by = 5), each = n),
+  lik = .
+)
+write.csv(nc_heldout_lik, file = "results/ctm_heldout_lik.csv", row.names = FALSE)
+```
+
+```{r}
+ctm_heldout_lik %>% filter(K > 5) %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+  ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+  labs(y = "mean per-document holdout likelihood", x = "") + scale_x_continuous(breaks = seq(10, 60, by = 10))
 ```

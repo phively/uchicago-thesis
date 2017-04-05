@@ -17,13 +17,6 @@ library(foreach)
 library(doParallel)
 ```
 
-Set up parallel runs
-
-```{r}
-registerDoParallel(20)
-getDoParWorkers()
-```
-
 # Load the final data
 
 See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
@@ -142,54 +135,88 @@ save(ctm5, ctm10, ctm15, ctm20, ctm25, ctm30, ctm35, ctm40, ctm45, ctm50, nc_ctm
 # Create holdout sets
 N <- length(sparse$documents)
 holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/5, proportion = 1, seed = 83319)
+  N = N/5, proportion = .5, seed = 63321)
 holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/5, proportion = 1, seed = 5052)
+  N = N/5, proportion = .5, seed = 13434)
 holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/5, proportion = 1, seed = 54551)
-holdout4 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/5, proportion = 1, seed = 19245)
-holdout5 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/5, proportion = 1, seed = 56423)
+  N = N/5, proportion = .5, seed = 81249)
 
-holdout <- list(holdout1, holdout2, holdout3, holdout4, holdout5)
+holdout <- list(holdout1, holdout2, holdout3)
 ```
 
-## K = 5 through 20
+## K = 5 through 25
 
 ```{r}
-ctm_05_20 <- foreach(k = seq(5, 20, by = 5)) %:% # Loop through the K
-  foreach(i = 1:5) %dopar% { # Loop through the holdout groups
-    stm(holdout[[i]]$documents, holdout[[i]]$vocab, K = k, init.type = "Spectral", ngroups = 5,
-      control = list(maxV = length(holdout[[i]]$vocab)))
-  }
+# 5
+ctm_05 <- stm(holdout1$documents, holdout1$vocab, K = 5, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_05, file = "results/ctm_05.zip", compress = "xz", compression_level = 1)
 
-save(ctm_05_20, file = "results/ctm_05_20.zip", compress = "xz", compression_level = 1)
+# 10
+ctm_10 <- stm(holdout1$documents, holdout1$vocab, K = 10, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_10, file = "results/ctm_10.zip", compress = "xz", compression_level = 1)
+
+# 15
+ctm_15 <- stm(holdout1$documents, holdout1$vocab, K = 15, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_15, file = "results/ctm_15.zip", compress = "xz", compression_level = 1)
+
+# 20
+ctm_20 <- stm(holdout1$documents, holdout1$vocab, K = 20, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_20, file = "results/ctm_20.zip", compress = "xz", compression_level = 1)
+
+# 25
+ctm_25 <- stm(holdout1$documents, holdout1$vocab, K = 25, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_25, file = "results/ctm_25.zip", compress = "xz", compression_level = 1)
 ```
 
-## K = 25 through 40
+## K = 30 through 100
 
 ```{r}
-ctm_25_40 <- foreach(k = seq(25, 40, by = 5)) %:% # Loop through the K
-  foreach(i = 1:5) %dopar% { # Loop through the holdout groups
-    stm(holdout[[i]]$documents, holdout[[i]]$vocab, K = k, init.type = "Spectral", ngroups = 5,
-      control = list(maxV = length(holdout[[i]]$vocab)))
-  }
+# 30
+ctm_30 <- stm(holdout1$documents, holdout1$vocab, K = 30, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_30, file = "results/ctm_30.zip", compress = "xz", compression_level = 1)
 
-save(ctm_25_40, file = "results/ctm_25_40.zip", compress = "xz", compression_level = 1)
+# 40
+ctm_40 <- stm(holdout1$documents, holdout1$vocab, K = 40, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_40, file = "results/ctm_40.zip", compress = "xz", compression_level = 1)
+
+# 50
+ctm_50 <- stm(holdout1$documents, holdout1$vocab, K = 50, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_50, file = "results/ctm_50.zip", compress = "xz", compression_level = 1)
+
+# 60
+ctm_60 <- stm(holdout1$documents, holdout1$vocab, K = 60, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_60, file = "results/ctm_60.zip", compress = "xz", compression_level = 1)
+
+# 70
+ctm_70 <- stm(holdout1$documents, holdout1$vocab, K = 70, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_70, file = "results/ctm_70.zip", compress = "xz", compression_level = 1)
+
+# 80
+ctm_80 <- stm(holdout1$documents, holdout1$vocab, K = 80, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_80, file = "results/ctm_80.zip", compress = "xz", compression_level = 1)
+
+# 90
+ctm_90 <- stm(holdout1$documents, holdout1$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_90, file = "results/ctm_90.zip", compress = "xz", compression_level = 1)
+
+# 100
+ctm_100 <- stm(holdout1$documents, holdout1$vocab, K = 100, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_100, file = "results/ctm_100.zip", compress = "xz", compression_level = 1)
 ```
 
-## K = 45 through 60
-
-```{r}
-ctm_45_60 <- foreach(k = seq(45, 60, by = 5)) %:% # Loop through the K
-  foreach(i = 1:5) %dopar% { # Loop through the holdout groups
-    stm(holdout[[i]]$documents, holdout[[i]]$vocab, K = k, init.type = "Spectral", ngroups = 5,
-      control = list(maxV = length(holdout[[i]]$vocab)))
-  }
-
-save(ctm_45_60, file = "results/ctm_45_60.zip", compress = "xz", compression_level = 1)
-```
 
 ```{r}
 test <- list()

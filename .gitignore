@@ -37,3 +37,4 @@ vignettes/*.pdf
 
 # Large results files
 results/*.zip
+results/retired/*.*

@@ -215,29 +215,60 @@ save(ctm_90, file = "results/ctm_90.zip", compress = "xz", compression_level = 1
 ctm_100 <- stm(holdout1$documents, holdout1$vocab, K = 100, init.type = "Spectral", ngroups = 5,
       control = list(maxV = length(holdout1$vocab)))
 save(ctm_100, file = "results/ctm_100.zip", compress = "xz", compression_level = 1)
+
+# 125
+ctm_125 <- stm(holdout1$documents, holdout1$vocab, K = 125, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_125, file = "results/ctm_125.zip", compress = "xz", compression_level = 1)
+
+# 150
+ctm_150 <- stm(holdout1$documents, holdout1$vocab, K = 150, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_150, file = "results/ctm_150.zip", compress = "xz", compression_level = 1)
+
+# 175
+ctm_175 <- stm(holdout1$documents, holdout1$vocab, K = 175, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_175, file = "results/ctm_175.zip", compress = "xz", compression_level = 1)
+
+# 200
+ctm_200 <- stm(holdout1$documents, holdout1$vocab, K = 200, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_200, file = "results/ctm_200.zip", compress = "xz", compression_level = 1)
 ```
 
+# Check results
 
 ```{r}
-test <- list()
-for(i in 1:5) {
-  test[[i]] <- eval.heldout(ctm_05_20[[1]][[i]], holdout[[i]]$missing)$doc.heldout
-  test[[5+i]] <- eval.heldout(ctm_05_20[[2]][[i]], holdout[[i]]$missing)$doc.heldout
-  test[[10+i]] <- eval.heldout(ctm_05_20[[3]][[i]], holdout[[i]]$missing)$doc.heldout
-  test[[15+i]] <- eval.heldout(ctm_05_20[[4]][[i]], holdout[[i]]$missing)$doc.heldout
-}
+test <- c(
+  eval.heldout(ctm_05, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_10, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_15, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_20, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_25, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_30, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_40, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_50, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_60, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_70, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_80, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_90, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_100, holdout1$missing)$doc.heldout
+)
 
-n <- length(test[[1]]) + length(test[[2]]) + length(test[[3]]) + length(test[[4]]) + length(test[[5]])
+n <- length(holdout1$missing$index)
 # Per-document log likelihood
-ctm_heldout_lik <- unlist(test) %>% data.frame(
-  K = rep(seq(5, 20, by = 5), each = n),
+ctm_heldout_lik <- test %>% data.frame(
+  K = rep(seq(5, 25, by = 5), each = n) %>% c(rep(seq(30, 100, by = 10), each = n)) ,
   lik = .
 )
-write.csv(nc_heldout_lik, file = "results/ctm_heldout_lik.csv", row.names = FALSE)
+write.csv(ctm_heldout_lik, file = "results/ctm_heldout_lik.csv", row.names = FALSE)
 ```
 
 ```{r}
-ctm_heldout_lik %>% filter(K > 5) %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+ctm_heldout_lik %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
   ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
-  labs(y = "mean per-document holdout likelihood", x = "") + scale_x_continuous(breaks = seq(10, 60, by = 10))
+  labs(y = "mean per-document holdout log likelihood", x = "")
+
+ctm_heldout_lik %>% ggplot(aes(x = K, y = lik, group = K)) + geom_boxplot(alpha = .25)
 ```

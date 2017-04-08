@@ -235,6 +235,30 @@ save(ctm_175, file = "results/ctm_175.zip", compress = "xz", compression_level =
 ctm_200 <- stm(holdout1$documents, holdout1$vocab, K = 200, init.type = "Spectral", ngroups = 5,
       control = list(maxV = length(holdout1$vocab)))
 save(ctm_200, file = "results/ctm_200.zip", compress = "xz", compression_level = 1)
+
+# 250
+ctm_250 <- stm(holdout1$documents, holdout1$vocab, K = 250, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_250, file = "results/ctm_250.zip", compress = "xz", compression_level = 1)
+```
+
+## Higher K
+
+```{r}
+# 500
+ctm_500 <- stm(holdout1$documents, holdout1$vocab, K = 500, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_500, file = "results/ctm_500.zip", compress = "xz", compression_level = 1)
+
+# 750
+ctm_750 <- stm(holdout1$documents, holdout1$vocab, K = 750, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_750, file = "results/ctm_750.zip", compress = "xz", compression_level = 1)
+
+# 1000
+ctm_1000 <- stm(holdout1$documents, holdout1$vocab, K = 1000, init.type = "Spectral", ngroups = 5,
+      control = list(maxV = length(holdout1$vocab)))
+save(ctm_1000, file = "results/ctm_1000.zip", compress = "xz", compression_level = 1)
 ```
 
 # Check results
@@ -253,15 +277,28 @@ test <- c(
   eval.heldout(ctm_70, holdout1$missing)$doc.heldout,
   eval.heldout(ctm_80, holdout1$missing)$doc.heldout,
   eval.heldout(ctm_90, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_100, holdout1$missing)$doc.heldout
+  eval.heldout(ctm_100, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_125, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_150, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_175, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_200, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_250, holdout1$missing)$doc.heldout
 )
 
 n <- length(holdout1$missing$index)
 # Per-document log likelihood
 ctm_heldout_lik <- test %>% data.frame(
-  K = rep(seq(5, 25, by = 5), each = n) %>% c(rep(seq(30, 100, by = 10), each = n)) ,
+  K = rep(seq(5, 25, by = 5), each = n) %>%
+    c(rep(seq(30, 100, by = 10), each = n), rep(c(125, 150, 175, 200, 250), each = n)),
   lik = .
 )
+```
+
+```{r}
+# Additional heldout samples
+
+
+# Save results
 write.csv(ctm_heldout_lik, file = "results/ctm_heldout_lik.csv", row.names = FALSE)
 ```
 

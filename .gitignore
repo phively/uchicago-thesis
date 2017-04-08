@@ -38,3 +38,7 @@ vignettes/*.pdf
 # Large results files
 results/*.zip
 results/retired/*.*
+
+# Other temporary or interim files
+*.tmp
+*.docx

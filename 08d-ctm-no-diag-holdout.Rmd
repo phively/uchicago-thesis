@@ -1,0 +1,158 @@
+---
+title: "Correlated topic model with diagonal covariance v2"
+output: html_notebook
+---
+
+# Goal
+
+  * Use the `stm` package to fit CTMs with diagonal $\Sigma$
+  * Have a baseline for comparing structural topic models
+
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(tidyverse)
+library(slam)
+library(stm)
+library(foreach)
+library(doParallel)
+```
+
+# Load the final data
+
+See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
+
+```{r, message=F}
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+sparse <- readCorpus(sparse, type = "slam")
+```
+
+# Holdout set
+
+```{r}
+# Create holdout sets
+N <- length(sparse$documents)
+holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .90, seed = 77354)
+holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .90, seed = 72902)
+holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .90, seed = 50188)
+holdout4 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .90, seed = 61987)
+holdout5 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .90, seed = 59704)
+```
+
+# Modeling
+
+```{r}
+# 25
+gc()
+nc_25 <- stm(holdout1$documents, holdout1$vocab, K = 25, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_25, file = "results/nc_25.zip", compress = "xz", compression_level = 1)
+
+# 30
+gc()
+nc_30 <- stm(holdout1$documents, holdout1$vocab, K = 30, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_30, file = "results/nc_30.zip", compress = "xz", compression_level = 1)
+
+# 40
+gc()
+nc_40 <- stm(holdout1$documents, holdout1$vocab, K = 40, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_40, file = "results/nc_40.zip", compress = "xz", compression_level = 1)
+
+# 50
+gc()
+nc_50 <- stm(holdout1$documents, holdout1$vocab, K = 50, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_50, file = "results/nc_50.zip", compress = "xz", compression_level = 1)
+
+# 60
+gc()
+nc_60 <- stm(holdout1$documents, holdout1$vocab, K = 60, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_60, file = "results/nc_60.zip", compress = "xz", compression_level = 1)
+
+# 70
+gc()
+nc_70 <- stm(holdout1$documents, holdout1$vocab, K = 70, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_70, file = "results/nc_70.zip", compress = "xz", compression_level = 1)
+
+# 75
+gc()
+nc_75 <- stm(holdout1$documents, holdout1$vocab, K = 75, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_75, file = "results/nc_75.zip", compress = "xz", compression_level = 1)
+
+# 80
+gc()
+nc_80 <- stm(holdout1$documents, holdout1$vocab, K = 80, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_80, file = "results/nc_80.zip", compress = "xz", compression_level = 1)
+
+# 85
+gc()
+nc_85 <- stm(holdout1$documents, holdout1$vocab, K = 85, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_85, file = "results/nc_85.zip", compress = "xz", compression_level = 1)
+
+# 90
+gc()
+nc_90 <- stm(holdout1$documents, holdout1$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_90, file = "results/nc_90.zip", compress = "xz", compression_level = 1)
+
+# 95
+gc()
+nc_95 <- stm(holdout1$documents, holdout1$vocab, K = 95, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_95, file = "results/nc_95.zip", compress = "xz", compression_level = 1)
+
+# 100
+gc()
+nc_100 <- stm(holdout1$documents, holdout1$vocab, K = 100, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), sigma.prior = 1)
+save(nc_100, file = "results/nc_100.zip", compress = "xz", compression_level = 1)
+```
+
+# Evaluate holdout samples
+
+```{r}
+test <- c(
+  eval.heldout(nc_25, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_30, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_40, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_50, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_60, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_70, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_75, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_80, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_85, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_90, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_95, holdout1$missing)$doc.heldout,
+  eval.heldout(nc_100, holdout1$missing)$doc.heldout
+)
+
+n <- length(holdout1$missing$index)
+# Per-document log likelihood
+nc_heldout_lik <- test %>% data.frame(
+  K = rep(c(25, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100), each = n),
+  lik = .
+)
+
+write.csv(nc_heldout_lik, file = "results/nc_heldout_lik.csv", row.names = FALSE)
+```
+
+```{r}
+nc_heldout_lik %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+  ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+  labs(y = "mean per-document holdout log likelihood", x = "")
+
+nc_heldout_lik %>% ggplot(aes(x = K, y = lik, group = K)) + geom_boxplot(alpha = .25)
+```

@@ -1,16 +1,164 @@
 ---
-title: "R Notebook"
+title: "Correlated topic model v2"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+# Goal
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+  * Use the `stm` package to fit CTMs
+  * Have a baseline for comparing structural topic models
 
-```{r}
-plot(cars)
+# Libraries used
+
+```{r, warning=F, message=F, error=F, comment=F}
+library(tidyverse)
+library(slam)
+library(stm)
+library(foreach)
+library(doParallel)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+# Load the final data
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+See [06-dataset-comparison.Rmd](https://github.com/phively/uchicago-thesis/blob/master/06-dataset-comparison.Rmd) for details on how the sparse matrix was generated.
+
+```{r, message=F}
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+sparse <- readCorpus(sparse, type = "slam")
+```
+
+# Holdout set
+
+```{r}
+# Create holdout sets
+N <- length(sparse$documents)
+holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .95, seed = 77354)
+holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .95, seed = 72902)
+holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .95, seed = 50188)
+holdout4 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .95, seed = 61987)
+holdout5 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/10, proportion = .95, seed = 59704)
+```
+
+# Modeling
+
+```{r}
+# 25
+# gc()
+# ctm_25 <- stm(holdout1$documents, holdout1$vocab, K = 25, init.type = "Spectral", ngroups = 5,
+#   control = list(maxV = length(holdout1$vocab)))
+# save(ctm_25, file = "results/ctm_25.zip", compress = "xz", compression_level = 1)
+
+# 30
+gc()
+ctm_30 <- stm(holdout1$documents, holdout1$vocab, K = 30, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_30, file = "results/ctm_30.zip", compress = "xz", compression_level = 1)
+
+# 40
+gc()
+ctm_40 <- stm(holdout1$documents, holdout1$vocab, K = 40, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_40, file = "results/ctm_40.zip", compress = "xz", compression_level = 1)
+
+# 50
+gc()
+ctm_50 <- stm(holdout1$documents, holdout1$vocab, K = 50, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_50, file = "results/ctm_50.zip", compress = "xz", compression_level = 1)
+
+# 60
+gc()
+ctm_60 <- stm(holdout1$documents, holdout1$vocab, K = 60, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_60, file = "results/ctm_60.zip", compress = "xz", compression_level = 1)
+
+# 70
+gc()
+ctm_70 <- stm(holdout1$documents, holdout1$vocab, K = 70, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_70, file = "results/ctm_70.zip", compress = "xz", compression_level = 1)
+
+# 75
+# gc()
+# ctm_75 <- stm(holdout1$documents, holdout1$vocab, K = 75, init.type = "Spectral", ngroups = 5,
+#   control = list(maxV = length(holdout1$vocab)))
+# save(ctm_75, file = "results/ctm_75.zip", compress = "xz", compression_level = 1)
+
+# 80
+gc()
+ctm_80 <- stm(holdout1$documents, holdout1$vocab, K = 80, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_80, file = "results/ctm_80.zip", compress = "xz", compression_level = 1)
+
+# 85
+# gc()
+# ctm_85 <- stm(holdout1$documents, holdout1$vocab, K = 85, init.type = "Spectral", ngroups = 5,
+#   control = list(maxV = length(holdout1$vocab)))
+# save(ctm_85, file = "results/ctm_85.zip", compress = "xz", compression_level = 1)
+
+# 90
+gc()
+ctm_90 <- stm(holdout1$documents, holdout1$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_90, file = "results/ctm_90.zip", compress = "xz", compression_level = 1)
+
+# 95
+# gc()
+# ctm_95 <- stm(holdout1$documents, holdout1$vocab, K = 95, init.type = "Spectral", ngroups = 5,
+#   control = list(maxV = length(holdout1$vocab)))
+# save(ctm_95, file = "results/ctm_95.zip", compress = "xz", compression_level = 1)
+
+# 100
+gc()
+ctm_100 <- stm(holdout1$documents, holdout1$vocab, K = 100, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_100, file = "results/ctm_100.zip", compress = "xz", compression_level = 1)
+
+# 200
+gc()
+ctm_200 <- stm(holdout1$documents, holdout1$vocab, K = 200, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)))
+save(ctm_200, file = "results/ctm_200.zip", compress = "xz", compression_level = 1)
+```
+
+# Evaluate holdout samples
+
+```{r}
+test <- c(
+  # eval.heldout(ctm_25, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_30, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_40, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_50, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_60, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_70, holdout1$missing)$doc.heldout,
+  # eval.heldout(ctm_75, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_80, holdout1$missing)$doc.heldout,
+  # eval.heldout(ctm_85, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_90, holdout1$missing)$doc.heldout,
+  # eval.heldout(ctm_95, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_100, holdout1$missing)$doc.heldout
+)
+
+n <- length(holdout1$missing$index)
+# Per-document log likelihood
+ctm_heldout_lik <- test %>% data.frame(
+  K = rep(c(30, 40, 50, 60, 70, 80, 90, 100), each = n),
+  lik = .
+)
+
+write.csv(ctm_heldout_lik, file = "results/ctm_heldout_lik.csv", row.names = FALSE)
+```
+
+```{r}
+ctm_heldout_lik %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+  ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+  labs(y = "mean per-document holdout log likelihood", x = "")
+
+ctm_heldout_lik %>% ggplot(aes(x = K, y = lik, group = K)) + geom_boxplot(alpha = .25)
+```

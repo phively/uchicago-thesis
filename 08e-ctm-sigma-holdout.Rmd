@@ -34,123 +34,387 @@ sparse <- readCorpus(sparse, type = "slam")
 # Create holdout sets
 N <- length(sparse$documents)
 holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/10, proportion = .95, seed = 77354)
+  N = N/5, proportion = .95, seed = 77354)
 holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/10, proportion = .95, seed = 72902)
+  N = N/5, proportion = .95, seed = 72902)
 holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/10, proportion = .95, seed = 50188)
-holdout4 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/10, proportion = .95, seed = 61987)
-holdout5 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
-  N = N/10, proportion = .95, seed = 59704)
+  N = N/5, proportion = .95, seed = 72902)
 ```
 
 # Modeling
 
 ```{r}
-# 25
-# gc()
-# ctm_25 <- stm(holdout1$documents, holdout1$vocab, K = 25, init.type = "Spectral", ngroups = 5,
-#   control = list(maxV = length(holdout1$vocab)))
-# save(ctm_25, file = "results/ctm_25.zip", compress = "xz", compression_level = 1)
+# 20
+gc()
+ctm_20 <- stm(holdout1$documents, holdout1$vocab, K = 20, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
+save(ctm_20, file = "results/ctm_20.zip", compress = "xz", compression_level = 1)
 
 # 30
 gc()
 ctm_30 <- stm(holdout1$documents, holdout1$vocab, K = 30, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_30, file = "results/ctm_30.zip", compress = "xz", compression_level = 1)
 
 # 40
 gc()
 ctm_40 <- stm(holdout1$documents, holdout1$vocab, K = 40, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_40, file = "results/ctm_40.zip", compress = "xz", compression_level = 1)
 
 # 50
 gc()
 ctm_50 <- stm(holdout1$documents, holdout1$vocab, K = 50, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_50, file = "results/ctm_50.zip", compress = "xz", compression_level = 1)
 
 # 60
 gc()
 ctm_60 <- stm(holdout1$documents, holdout1$vocab, K = 60, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_60, file = "results/ctm_60.zip", compress = "xz", compression_level = 1)
 
 # 70
 gc()
 ctm_70 <- stm(holdout1$documents, holdout1$vocab, K = 70, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_70, file = "results/ctm_70.zip", compress = "xz", compression_level = 1)
-
-# 75
-# gc()
-# ctm_75 <- stm(holdout1$documents, holdout1$vocab, K = 75, init.type = "Spectral", ngroups = 5,
-#   control = list(maxV = length(holdout1$vocab)))
-# save(ctm_75, file = "results/ctm_75.zip", compress = "xz", compression_level = 1)
 
 # 80
 gc()
 ctm_80 <- stm(holdout1$documents, holdout1$vocab, K = 80, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_80, file = "results/ctm_80.zip", compress = "xz", compression_level = 1)
-
-# 85
-# gc()
-# ctm_85 <- stm(holdout1$documents, holdout1$vocab, K = 85, init.type = "Spectral", ngroups = 5,
-#   control = list(maxV = length(holdout1$vocab)))
-# save(ctm_85, file = "results/ctm_85.zip", compress = "xz", compression_level = 1)
 
 # 90
 gc()
 ctm_90 <- stm(holdout1$documents, holdout1$vocab, K = 90, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_90, file = "results/ctm_90.zip", compress = "xz", compression_level = 1)
-
-# 95
-# gc()
-# ctm_95 <- stm(holdout1$documents, holdout1$vocab, K = 95, init.type = "Spectral", ngroups = 5,
-#   control = list(maxV = length(holdout1$vocab)))
-# save(ctm_95, file = "results/ctm_95.zip", compress = "xz", compression_level = 1)
 
 # 100
 gc()
 ctm_100 <- stm(holdout1$documents, holdout1$vocab, K = 100, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
 save(ctm_100, file = "results/ctm_100.zip", compress = "xz", compression_level = 1)
 
-# 200
+# 110
 gc()
-ctm_200 <- stm(holdout1$documents, holdout1$vocab, K = 200, init.type = "Spectral", ngroups = 5,
-  control = list(maxV = length(holdout1$vocab)))
-save(ctm_200, file = "results/ctm_200.zip", compress = "xz", compression_level = 1)
+ctm_110 <- stm(holdout1$documents, holdout1$vocab, K = 110, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
+save(ctm_110, file = "results/ctm_110.zip", compress = "xz", compression_level = 1)
+
+# 120
+gc()
+ctm_120 <- stm(holdout1$documents, holdout1$vocab, K = 120, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
+save(ctm_120, file = "results/ctm_120.zip", compress = "xz", compression_level = 1)
+
+# 130
+gc()
+ctm_130 <- stm(holdout1$documents, holdout1$vocab, K = 130, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
+save(ctm_130, file = "results/ctm_130.zip", compress = "xz", compression_level = 1)
+
+# 140
+gc()
+ctm_140 <- stm(holdout1$documents, holdout1$vocab, K = 140, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
+save(ctm_140, file = "results/ctm_140.zip", compress = "xz", compression_level = 1)
+
+# 150
+gc()
+ctm_150 <- stm(holdout1$documents, holdout1$vocab, K = 150, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-3)
+save(ctm_150, file = "results/ctm_150.zip", compress = "xz", compression_level = 1)
+```
+
+## Stricter convergence
+
+```{r}
+# Stricter convergence criteria for the weird-looking models
+
+# 20
+gc()
+ctm_20t4 <- stm(holdout1$documents, holdout1$vocab, K = 20, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_20)
+save(ctm_20t4, file = "results/ctm_20t4.zip", compress = "xz", compression_level = 1)
+
+# 30
+gc()
+ctm_30t4 <- stm(holdout1$documents, holdout1$vocab, K = 30, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_30)
+save(ctm_30t4, file = "results/ctm_30t4.zip", compress = "xz", compression_level = 1)
+
+# 40
+gc()
+ctm_40t4 <- stm(holdout1$documents, holdout1$vocab, K = 40, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_40)
+save(ctm_40t4, file = "results/ctm_40t4.zip", compress = "xz", compression_level = 1)
+
+# 50
+gc()
+ctm_50t4 <- stm(holdout1$documents, holdout1$vocab, K = 50, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_50)
+save(ctm_50t4, file = "results/ctm_50t4.zip", compress = "xz", compression_level = 1)
+
+# 60
+gc()
+ctm_60t4 <- stm(holdout1$documents, holdout1$vocab, K = 60, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_60)
+save(ctm_60t4, file = "results/ctm_60t4.zip", compress = "xz", compression_level = 1)
+
+# 70
+gc()
+ctm_70t4 <- stm(holdout1$documents, holdout1$vocab, K = 70, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_70)
+save(ctm_70t4, file = "results/ctm_70t4.zip", compress = "xz", compression_level = 1)
+
+# 80
+gc()
+ctm_80t4 <- stm(holdout1$documents, holdout1$vocab, K = 80, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_80)
+save(ctm_80t4, file = "results/ctm_80t4.zip", compress = "xz", compression_level = 1)
+
+# 90
+gc()
+ctm_90t4 <- stm(holdout1$documents, holdout1$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_90)
+save(ctm_90t4, file = "results/ctm_90t4.zip", compress = "xz", compression_level = 1)
+
+# 100
+gc()
+ctm_100t4 <- stm(holdout1$documents, holdout1$vocab, K = 100, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_100)
+save(ctm_100t4, file = "results/ctm_100t4.zip", compress = "xz", compression_level = 1)
+
+# 110
+gc()
+ctm_110t4 <- stm(holdout1$documents, holdout1$vocab, K = 110, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_110)
+save(ctm_110t4, file = "results/ctm_110t4.zip", compress = "xz", compression_level = 1)
+
+# 120
+gc()
+ctm_120t4 <- stm(holdout1$documents, holdout1$vocab, K = 120, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout1$vocab)), emtol = 1E-4, model = ctm_120)
+save(ctm_120t4, file = "results/ctm_120t4.zip", compress = "xz", compression_level = 1)
+```
+
+## Second holdout set
+
+```{r}
+# 20
+gc()
+ctm_20h2 <- stm(holdout2$documents, holdout2$vocab, K = 20, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_20h2, file = "results/ctm_20h2.zip", compress = "xz", compression_level = 1)
+
+# 30
+gc()
+ctm_30h2 <- stm(holdout2$documents, holdout2$vocab, K = 30, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_30h2, file = "results/ctm_30h2.zip", compress = "xz", compression_level = 1)
+
+# 40
+gc()
+ctm_40h2 <- stm(holdout2$documents, holdout2$vocab, K = 40, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_40h2, file = "results/ctm_40h2.zip", compress = "xz", compression_level = 1)
+
+# 50
+gc()
+ctm_50h2 <- stm(holdout2$documents, holdout2$vocab, K = 50, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_50h2, file = "results/ctm_50h2.zip", compress = "xz", compression_level = 1)
+
+# 60
+gc()
+ctm_60h2 <- stm(holdout2$documents, holdout2$vocab, K = 60, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_60h2, file = "results/ctm_60h2.zip", compress = "xz", compression_level = 1)
+
+# 70
+gc()
+ctm_70h2 <- stm(holdout2$documents, holdout2$vocab, K = 70, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_70h2, file = "results/ctm_70h2.zip", compress = "xz", compression_level = 1)
+
+# 80
+gc()
+ctm_80h2 <- stm(holdout2$documents, holdout2$vocab, K = 80, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_80h2, file = "results/ctm_80h2.zip", compress = "xz", compression_level = 1)
+
+# 90
+gc()
+ctm_90h2 <- stm(holdout2$documents, holdout2$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_90h2, file = "results/ctm_90h2.zip", compress = "xz", compression_level = 1)
+
+# 100
+gc()
+ctm_100h2 <- stm(holdout2$documents, holdout2$vocab, K = 100, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_100h2, file = "results/ctm_100h2.zip", compress = "xz", compression_level = 1)
+
+# 110
+gc()
+ctm_110h2 <- stm(holdout2$documents, holdout2$vocab, K = 110, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_110h2, file = "results/ctm_110h2.zip", compress = "xz", compression_level = 1)
+
+# 120
+gc()
+ctm_120h2 <- stm(holdout2$documents, holdout2$vocab, K = 120, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout2$vocab)), emtol = 1E-4)
+save(ctm_120h2, file = "results/ctm_120h2.zip", compress = "xz", compression_level = 1)
+```
+
+## Final holdout set
+
+```{r}
+# 20
+gc()
+ctm_20h3 <- stm(holdout3$documents, holdout3$vocab, K = 20, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_20h3, file = "results/ctm_20h3.zip", compress = "xz", compression_level = 1)
+
+# 30
+gc()
+ctm_30h3 <- stm(holdout3$documents, holdout3$vocab, K = 30, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_30h3, file = "results/ctm_30h3.zip", compress = "xz", compression_level = 1)
+
+# 40
+gc()
+ctm_40h3 <- stm(holdout3$documents, holdout3$vocab, K = 40, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_40h3, file = "results/ctm_40h3.zip", compress = "xz", compression_level = 1)
+
+# 50
+gc()
+ctm_50h3 <- stm(holdout3$documents, holdout3$vocab, K = 50, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_50h3, file = "results/ctm_50h3.zip", compress = "xz", compression_level = 1)
+
+# 60
+gc()
+ctm_60h3 <- stm(holdout3$documents, holdout3$vocab, K = 60, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_60h3, file = "results/ctm_60h3.zip", compress = "xz", compression_level = 1)
+
+# 70
+gc()
+ctm_70h3 <- stm(holdout3$documents, holdout3$vocab, K = 70, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_70h3, file = "results/ctm_70h3.zip", compress = "xz", compression_level = 1)
+
+# 80
+gc()
+ctm_80h3 <- stm(holdout3$documents, holdout3$vocab, K = 80, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_80h3, file = "results/ctm_80h3.zip", compress = "xz", compression_level = 1)
+
+# 90
+gc()
+ctm_90h3 <- stm(holdout3$documents, holdout3$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_90h3, file = "results/ctm_90h3.zip", compress = "xz", compression_level = 1)
+
+# 100
+gc()
+ctm_100h3 <- stm(holdout3$documents, holdout3$vocab, K = 100, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_100h3, file = "results/ctm_100h3.zip", compress = "xz", compression_level = 1)
+
+# 110
+gc()
+ctm_110h3 <- stm(holdout3$documents, holdout3$vocab, K = 110, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_110h3, file = "results/ctm_110h3.zip", compress = "xz", compression_level = 1)
+
+# 120
+gc()
+ctm_120h3 <- stm(holdout3$documents, holdout3$vocab, K = 120, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4)
+save(ctm_120h3, file = "results/ctm_120h3.zip", compress = "xz", compression_level = 1)
 ```
 
 # Evaluate holdout samples
 
 ```{r}
+# Holdout set 1
 test <- c(
-  # eval.heldout(ctm_25, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_30, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_40, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_50, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_60, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_70, holdout1$missing)$doc.heldout,
-  # eval.heldout(ctm_75, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_80, holdout1$missing)$doc.heldout,
-  # eval.heldout(ctm_85, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_90, holdout1$missing)$doc.heldout,
-  # eval.heldout(ctm_95, holdout1$missing)$doc.heldout,
-  eval.heldout(ctm_100, holdout1$missing)$doc.heldout
+  eval.heldout(ctm_20t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_30t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_40t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_50t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_60t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_70t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_80t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_90t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_100t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_110t4, holdout1$missing)$doc.heldout,
+  eval.heldout(ctm_120t4, holdout1$missing)$doc.heldout
 )
 
 n <- length(holdout1$missing$index)
 # Per-document log likelihood
-ctm_heldout_lik <- test %>% data.frame(
-  K = rep(c(30, 40, 50, 60, 70, 80, 90, 100), each = n),
+no1 <- test %>% data.frame(
+  K = rep(c(20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120), each = n),
+  holdout = 1,
   lik = .
+) %>% na.omit()
+
+# Holdout set 2
+test2 <- c(
+  eval.heldout(ctm_20h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_30h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_40h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_50h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_60h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_70h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_80h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_90h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_100h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_110h2, holdout2$missing)$doc.heldout,
+  eval.heldout(ctm_120h2, holdout2$missing)$doc.heldout
 )
+
+n <- length(holdout2$missing$index)
+# Per-document log likelihood
+no2 <- test2 %>% data.frame(
+  K = rep(c(20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120), each = n),
+  holdout = 2,
+  lik = .
+) %>% na.omit()
+
+# Holdout set 3
+test3 <- c(
+  eval.heldout(ctm_20h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_30h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_40h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_50h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_60h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_70h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_80h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_90h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_100h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_110h3, holdout3$missing)$doc.heldout,
+  eval.heldout(ctm_120h3, holdout3$missing)$doc.heldout
+)
+
+n <- length(holdout3$missing$index)
+# Per-document log likelihood
+no3 <- test3 %>% data.frame(
+  K = rep(c(20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120), each = n),
+  holdout = 1,
+  lik = .
+) %>% na.omit()
+
+# Combine results
+ctm_heldout_lik <- rbind(no1, no2, no3)
 
 write.csv(ctm_heldout_lik, file = "results/ctm_heldout_lik.csv", row.names = FALSE)
 ```
@@ -159,6 +423,24 @@ write.csv(ctm_heldout_lik, file = "results/ctm_heldout_lik.csv", row.names = FAL
 ctm_heldout_lik %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
   ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
   labs(y = "mean per-document holdout log likelihood", x = "")
+```
+
+```{r}
+no1 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+  ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+  labs(y = "mean per-document holdout log likelihood", x = "")
 
 ctm_heldout_lik %>% ggplot(aes(x = K, y = lik, group = K)) + geom_boxplot(alpha = .25)
+```
+
+```{r}
+no2 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+    ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+    labs(y = "mean per-document holdout log likelihood", x = "")
+```
+
+```{r}
+no3 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+    ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+    labs(y = "mean per-document holdout log likelihood", x = "")
 ```

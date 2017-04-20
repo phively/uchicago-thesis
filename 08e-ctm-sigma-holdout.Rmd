@@ -483,3 +483,12 @@ no3 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n
     ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
     labs(y = "mean per-document holdout log likelihood", x = "")
 ```
+
+# Final CTM, K = 110
+
+```{r}
+gc()
+ctm_final_110 <- stm(sparse$documents, sparse$vocab, K = 110, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-5)
+save(ctm_final_110, file = "results/ctm_final_110.zip", compress = "xz", compression_level = 1)
+```

@@ -55,6 +55,24 @@ metadata <- metadata %>% mutate(
 )
 ```
 
+Add a "number of months since beginning of dataset" counter
+
+```{r}
+start_dt <- metadata$CreationDate %>% min() %>% floor_date(unit = "month")
+metadata <- metadata %>% mutate(
+  Months_Since_Feb_09 = (start_dt %--% metadata$CreationDate)/months(1)
+)
+```
+
+Identify questions tagged as homework, `<self-study>`, or coding in R, `<r>`.
+
+```{r}
+metadata <- metadata %>% mutate(
+  R_Tag = Tags %>% str_detect('<r>') %>% as.numeric(),
+  HW_Tag = Tags %>% str_detect('<self-study>') %>% as.numeric()
+)
+```
+
 Save the cleaned metadata.
 
 ```{r}
@@ -71,7 +89,7 @@ load(file = "data/sparse_test_smaller.zip")
 
 # Metadata
 small_meta <- metadata %>% head(1000) %>% mutate(
-  floor_dt = floor_date(CreationDate, unit = "month") %>% as.numeric()
+  floor_dt = floor_date(CreationDate, unit = "month")
 )
 
 # Put in stm format

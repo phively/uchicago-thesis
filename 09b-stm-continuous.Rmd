@@ -1,0 +1,47 @@
+---
+title: "STM continuous covariates"
+output: html_notebook
+---
+
+# Goal
+
+  * Try fitting STM dependent on the two continuous covariates I had identified
+  * Best cross-validated model
+  
+# Libraries
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(stm)
+```
+
+# Load posts and metadata
+
+```{r}
+# Load sparse matrix with no tex
+load(file = "data/sparse_matrix_no_tex.zip")
+sparse <- readCorpus(sparse, type = "slam")
+
+# Load metadata saved in (09a)
+load("data/posts_metadata.zip")
+```
+
+# Holdout set
+
+```{r}
+# Create holdout sets
+N <- length(sparse$documents)
+holdout1 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/5, proportion = .95, seed = 77354)
+holdout2 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/5, proportion = .95, seed = 72902)
+holdout3 <- make.heldout(documents = sparse$documents, vocab = sparse$vocab,
+  N = N/5, proportion = .95, seed = 95180)
+```
+
+# STM cross-validation with metadata
+
+```{r}
+
+```

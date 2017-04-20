@@ -17,3 +17,5 @@ University of Chicago Master's Thesis.
 [07a-lda-kfold-xval.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/07a-lda-kfold-xval.nb.html)
 
 [07b-lda-kfold-parallel.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/07b-lda-kfold-parallel.nb.html)
+
+[08e-ctm-sigma-holdout.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/08e-ctm-sigma-holdout.nb.html)

@@ -102,7 +102,7 @@ extra_sparse <- readCorpus(extra_sparse, type = "slam")
 # s() is a B-spline
 test_stm10 <- small_meta %>% stm(
   documents = extra_sparse$documents, vocab = extra_sparse$vocab, K = 10,
-  init.type = "Spectral", ngroups = 5,
+  init.type = "Spectral", ngroups = 5, emtol = 1E-4,
   prevalence = ~ s(Score) + s(floor_dt), data = .
 )
 ```

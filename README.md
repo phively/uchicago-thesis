@@ -1,5 +1,7 @@
 University of Chicago Master's Thesis.
 
+Data taken from the Dec 15, 2016 [Stack Exchange Data Dump](https://archive.org/details/stackexchange) and licensed under [Creative Commons Share Alike 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
 [01-exploration-and-parsing.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/01-exploration-and-parsing.nb.html)
 
 [02-vocabulary-experimentation.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/02-vocabulary-experimentation.nb.html)

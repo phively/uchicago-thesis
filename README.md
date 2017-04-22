@@ -19,3 +19,5 @@ University of Chicago Master's Thesis.
 [07b-lda-kfold-parallel.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/07b-lda-kfold-parallel.nb.html)
 
 [08e-ctm-sigma-holdout.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/08e-ctm-sigma-holdout.nb.html)
+
+[09a-stm-metadata-creation.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/09a-stm-metadata-creation.nb.html)

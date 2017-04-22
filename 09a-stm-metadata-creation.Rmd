@@ -7,6 +7,7 @@ output: html_notebook
 
   * Create metadata to be used for structural topic models
   * Familiarise myself with model specifications used by the `stm` package
+  * Experiment with STM visualization techniques
   
 # Libraries
 
@@ -89,7 +90,7 @@ load(file = "data/sparse_test_smaller.zip")
 
 # Metadata
 small_meta <- metadata %>% head(1000) %>% mutate(
-  floor_dt = floor_date(CreationDate, unit = "month")
+  HW_Tag = factor(HW_Tag, labels = c("no_HW", "HW"))
 )
 
 # Put in stm format
@@ -102,13 +103,13 @@ extra_sparse <- readCorpus(extra_sparse, type = "slam")
 # s() is a B-spline
 test_stm10 <- small_meta %>% stm(
   documents = extra_sparse$documents, vocab = extra_sparse$vocab, K = 10,
-  init.type = "Spectral", ngroups = 5, emtol = 1E-4,
-  prevalence = ~ s(Score) + s(floor_dt), data = .
+  init.type = "Spectral", emtol = 1E-3,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag, content = ~ HW_Tag, data = .
 )
 ```
 
 ```{r}
-# Time in minutes
+# Time in seconds
 test_stm10$time/60
 ```
 
@@ -126,24 +127,23 @@ findThoughts(model = test_stm10, texts = small_meta$CleanBody, n = 2, topics = 8
 
 ```{r}
 # Topic labels
-topic_label <- apply(cbind(1:10, labelTopics(test_stm10, n = 3)$prob), MARGIN = 1, FUN = paste, collapse = ", ")
+topic_label <- apply(cbind(1:10, labelTopics(test_stm10, n = 3)$topics), MARGIN = 1, FUN = paste, collapse = ", ")
 
 # See how the Score covariate affects results
-cov_effects <- small_meta %>%
-  estimateEffect(1:10 ~ s(Score) + s(floor_dt), test_stm10, metadata = ., documents = extra_sparse$documents)
+cov_effects <- estimateEffect(~ s(Score) + s(Months_Since_Feb_09) + HW_Tag, test_stm10, metadata = small_meta)
 ```
 
-```{r, fig.height = 6, warning=F, error=F, message=F}
+```{r, fig.width = 10, fig.height = 6, warning=F, error=F, message=F}
 # Mean topic score comparisons
-plot(cov_effects, covariate = "floor_dt", method = "difference", cov.value1 = 0, cov.value2 = 20,
+plot(cov_effects, covariate = "Score", method = "difference", cov.value1 = 0, cov.value2 = 5,
      topic = 1:10, labeltype = "custom", custom.labels = topic_label,
-     xlab = "Lower score ... Higher score", xlim = c(-4, 4))
+     xlab = "Lower score ... Higher score", xlim = c(-.2, .2))
 ```
 
 ```{r}
 # Date against proportion
 invisible(pdf(file = NULL))
-q <- plot(cov_effects, covariate = "floor_dt", topics = 8, method = "continuous")
+q <- plot(cov_effects, covariate = "Months_Since_Feb_09", topics = 8, method = "continuous")
 invisible(dev.off())
 q <- data.frame(date = as_datetime(q$x), proportion = q$means[[1]], lci = q$ci[[1]][1, ], uci = q$ci[[1]][2, ])
 q %>% ggplot(aes(x = date, y = proportion)) + geom_line() + geom_line(aes(y = lci), linetype = "dotted") +
@@ -161,12 +161,23 @@ q %>% ggplot(aes(x = score, y = proportion)) + geom_line() + geom_line(aes(y = l
 small_meta$CleanBody[which(small_meta$Score == max(small_meta$Score))] %>% substr(0, 500)
 ```
 
+## Covariate effect
+
+```{r}
+plot(cov_effects, covariate = "Score", model = test_stm10, method = "continuous",
+     moderator = "HW_Tag", moderator.value = "HW", linecol = "red", printlegend = FALSE)
+plot(cov_effects, covariate = "Score", model = test_stm10, method = "continuous",
+     moderator = "HW_Tag", moderator.value = "no_HW", linecol = "blue", printlegend = FALSE, add = TRUE)
+```
+
+No visible difference between homework and non-homework for this small subset.
+
 ## Comparing topics
 
 ```{r, fig.width=10}
 set.seed(123)
-plot(test_stm10, type = "perspectives", topics = c(8, 10), topic.names = topic_label,
-     main = paste(topic_label[8], topic_label[10], sep = ";  "))
+plot(test_stm10, type = "perspectives", topics = c(8, 8), topic.names = topic_label,
+     main = paste(topic_label[8], topic_label[8], sep = ";  "))
 ```
 
 ```{r, fig.width=6, fig.height=6}

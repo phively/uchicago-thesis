@@ -179,6 +179,73 @@ stm_120h2 <- metadata %>% stm(holdout2$documents, holdout2$vocab, K = 120, init.
 save(stm_120h2, file = "results/stm_120h2.zip", compress = "xz", compression_level = 1)
 ```
 
+## Third holdout set
+
+```{r}
+# 60
+gc()
+stm_60h3 <- metadata %>% stm(holdout3$documents, holdout3$vocab, K = 60, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_60h3, file = "results/stm_60h3.zip", compress = "xz", compression_level = 1)
+
+# 70
+gc()
+stm_70h3 <- metadata %>% stm(holdout3$documents, holdout3$vocab, K = 70, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_70h3, file = "results/stm_70h3.zip", compress = "xz", compression_level = 1)
+
+# 80
+gc()
+stm_80h3 <- metadata %>% stm(holdout3$documents, holdout3$vocab, K = 80, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_80h3, file = "results/stm_80h3.zip", compress = "xz", compression_level = 1)
+
+# 90
+gc()
+stm_90h3 <- metadata %>% stm(holdout3$documents, holdout3$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_90h3, file = "results/stm_90h3.zip", compress = "xz", compression_level = 1)
+
+# 100
+gc()
+stm_100h3 <- metadata %>% stm(holdout3$documents, holdout3$vocab, K = 100, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_100h3, file = "results/stm_100h3.zip", compress = "xz", compression_level = 1)
+
+# 110
+gc()
+stm_110h3 <- metadata %>% stm(holdout3$documents, holdout3$vocab, K = 110, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_110h3, file = "results/stm_110h3.zip", compress = "xz", compression_level = 1)
+
+# 120
+gc()
+stm_120h3 <- metadata %>% stm(holdout3$documents, holdout3$vocab, K = 120, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(holdout3$vocab)), emtol = 1E-4,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_120h3, file = "results/stm_120h3.zip", compress = "xz", compression_level = 1)
+```
+
 # Evaluation
 
 ```{r}
@@ -200,8 +267,44 @@ no1 <- test1 %>% data.frame(
   lik = .
 ) %>% na.omit()
 
+# Holdout set 2
+test2 <- c(
+  eval.heldout(stm_60h2, holdout2$missing)$doc.heldout,
+  eval.heldout(stm_70h2, holdout2$missing)$doc.heldout,
+  eval.heldout(stm_80h2, holdout2$missing)$doc.heldout,
+  eval.heldout(stm_90h2, holdout2$missing)$doc.heldout,
+  eval.heldout(stm_100h2, holdout2$missing)$doc.heldout,
+  eval.heldout(stm_110h2, holdout2$missing)$doc.heldout,
+  eval.heldout(stm_120h2, holdout2$missing)$doc.heldout
+)
+n <- length(holdout2$missing$index)
+# Per-document log likelihood
+no2 <- test2 %>% data.frame(
+  K = rep(c(60, 70, 80, 90, 100, 110, 120), each = n),
+  holdout = 2,
+  lik = .
+) %>% na.omit()
+
+# Holdout set 3
+test3 <- c(
+  eval.heldout(stm_60h3, holdout3$missing)$doc.heldout,
+  eval.heldout(stm_70h3, holdout3$missing)$doc.heldout,
+  eval.heldout(stm_80h3, holdout3$missing)$doc.heldout,
+  eval.heldout(stm_90h3, holdout3$missing)$doc.heldout,
+  eval.heldout(stm_100h3, holdout3$missing)$doc.heldout,
+  eval.heldout(stm_110h3, holdout3$missing)$doc.heldout,
+  eval.heldout(stm_120h3, holdout3$missing)$doc.heldout
+)
+n <- length(holdout3$missing$index)
+# Per-document log likelihood
+no3 <- test3 %>% data.frame(
+  K = rep(c(60, 70, 80, 90, 100, 110, 120), each = n),
+  holdout = 2,
+  lik = .
+) %>% na.omit()
+
 # Combine results
-stm_heldout_lik <- rbind(no1)
+stm_heldout_lik <- rbind(no1, no2, no3)
 
 # Save results
 write.csv(stm_heldout_lik, file = "results/stm_heldout_lik.csv", row.names = FALSE)
@@ -217,6 +320,18 @@ stm_heldout_lik %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd
 
 ```{r}
 no1 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+  ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+  labs(y = "mean per-document holdout log likelihood", x = "")
+```
+
+```{r}
+no2 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
+  ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
+  labs(y = "mean per-document holdout log likelihood", x = "")
+```
+
+```{r}
+no3 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
   ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
   labs(y = "mean per-document holdout log likelihood", x = "")
 ```

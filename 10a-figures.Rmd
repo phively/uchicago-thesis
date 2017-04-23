@@ -9,6 +9,7 @@ output: html_notebook
 library(tidyverse)
 library(lubridate)
 library(stringr)
+library(e1071)
 library(ReporteRs)
 library(slam)
 library(tm)
@@ -78,6 +79,8 @@ wc <- row_sums(sparse) %>% as.numeric()
 # Stats
 log10(wc) %>% mean()
 log10(wc) %>% sd()
+log10(wc) %>% skewness()
+log10(wc) %>% kurtosis(type = 2) + 3
 
 # Plot
 myplot <- wc %>% data.frame(wordcount = .) %>%
@@ -87,7 +90,7 @@ myplot <- wc %>% data.frame(wordcount = .) %>%
     fun = function(x) {(dnorm(log10(x), mean(log10(wc)), sd(log10(wc)))) * length(wc) * .06},
     color = "blue", size = 1, alpha = .3
   ) +
-  scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000)) +
+  scale_x_log10(breaks = c(0, 1, 10, 100, 1000, 10000)) + scale_y_continuous(expand = c(0, 0)) +
   labs(x = "Word count", y = "Document count") +
   theme_sparse
 
@@ -105,21 +108,26 @@ writeDoc(mydoc, file = "results/fig/1-word-doc-dist.docx")
 lda_results <- read.csv("results/lda_k_perp.csv")
 ```
 
-## FIG. LDA runtime, perplexity, etc.
+```{r}
+# Average convergence
+lda_results %>% group_by(model) %>% summarise(mean(time))
+```
+
+## FIG. LDA runtime and perplexity
 
 ```{r}
 # LDA runtime
-lda1 <- lda_results %>% filter(model >= 10) %>% group_by(model) %>% summarise(time = mean(time)) %>%
+lda1 <- lda_results %>% filter(model >= 10 & model %% 5 == 0) %>% group_by(model) %>% summarise(time = mean(time)) %>%
   ggplot(aes(x = model, y = time)) + geom_smooth(method = "lm", alpha = .5, fullrange = TRUE) +
-  geom_point() + xlim(c(5, 55)) +
+  geom_point() + xlim(c(9, 51)) + scale_y_continuous(breaks = seq(0, 12, by = 2), expand = c(.005, 0)) +
   labs(x = expression(paste(italic("K"))), y = "Time elapsed (hours)") + theme_sparse
 plot(lda1)
 
 # LDA perplexity
-lda2 <- lda_results %>% filter(model >= 10 & model %% 5 == 0) %>% group_by(model) %>% mutate(in_avg = mean(in_sample), out_avg =mean(out_sample)) %>%
+lda2 <- lda_results %>% filter(model >= 10) %>% group_by(model) %>% mutate(in_avg = mean(in_sample), out_avg =mean(out_sample)) %>%
   ggplot(aes(x = model)) +
-  geom_point(aes(y = in_sample, color = "In-sample")) + geom_line(aes(y = in_avg, color = "In-sample"), size = 1, alpha = .5) +
-  geom_point(aes(y = out_sample, color = "Out-sample")) + geom_line(aes(y = out_avg, color = "Out-sample"), size = 1, alpha = .5) +
+  geom_point(aes(y = in_sample, color = "In-sample"), alpha = .5) + geom_line(aes(y = in_avg, color = "In-sample"), size = 1, alpha = .5) +
+  geom_point(aes(y = out_sample, color = "Out-sample"), alpha = .5) + geom_line(aes(y = out_avg, color = "Out-sample"), size = 1, alpha = .5) +
   labs(x = expression(paste(italic("K"))), y = "Perplexity", color = "") + theme_sparse 
 plot(lda2)  
 ```
@@ -131,3 +139,51 @@ mydoc <- addPlot(mydoc, function() print(lda1), width = 5, height = 3, vector.gr
 mydoc <- addPlot(mydoc, function() print(lda2), width = 5, height = 3, vector.graphic = TRUE)
 writeDoc(mydoc, file = "results/fig/2-LDA.docx")
 ```
+
+# Best LDA model
+
+```{r}
+# Load model
+load("results/lda_final_40.zip")
+```
+
+```{r}
+# How frequently do each of the topics show up?
+lda_z_counts <- models40f@wordassignments$v %>% factor() %>% summary() %>% data.frame(topic = 1:40, count = .)
+(lda_z_counts <- lda_z_counts %>%
+    mutate(pct = count / sum(count)) %>% arrange(desc(count)) %>% mutate(cumpct = cumsum(pct))
+)
+```
+
+```{r}
+# Most likely documents
+lda_likely <- which(models40f@loglikelihood >= tail(sort(models40f@loglikelihood))[1])
+{posts %>% select(Id, Title, CleanBody)}[lda_likely, ]
+```
+
+## FIG. topic frequency
+
+```{r}
+lda3 <- lda_z_counts %>% mutate(topic = factor(topic)) %>%
+  ggplot(aes(x = reorder(topic, count, function(x) {-x}), y = pct)) +
+  geom_bar(stat = "identity", fill = "lightgray", position = "dodge") +
+  labs(x = "Topic number", y = "Topic proportions") + theme_sparse +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, .11), breaks = seq(0, .12, by = .02), labels = scales::percent)
+
+plot(lda3)
+
+# Top 10 terms for the topics
+(lda_popular <- terms(models40f, k = 15)[, lda_z_counts$topic] %>% data.frame())
+
+# Save results
+write(lda_popular %>% knitr::kable(), file = "results/lda_final_40_top_terms.md")
+names(lda_popular) <- names(lda_popular) %>% str_replace(pattern = "Topic.", replacement = "")
+mydoc <- docx()
+mydoc <- addPlot(mydoc, function() print(lda3), width = 6, height = 3, vector.graphic = TRUE)
+mydoc <- addFlexTable(mydoc, flextable = FlexTable(lda_popular[, 1:9]))
+writeDoc(mydoc, file = "results/fig/3-LDA-topics.docx")
+```
+
+# CTM
+
+

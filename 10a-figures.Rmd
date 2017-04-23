@@ -20,7 +20,7 @@ library(stm)
 
 ```{r}
 theme_sparse <- theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-panel.background = element_blank(), axis.line = element_line(colour = "black"))
+  panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.key = element_blank())
 ```
 
 # Data exploration
@@ -100,6 +100,34 @@ writeDoc(mydoc, file = "results/fig/1-word-doc-dist.docx")
 
 # LDA
 
+```{r}
+# Load precomputed model perplexities
+lda_results <- read.csv("results/lda_k_perp.csv")
+```
 
+## FIG. LDA runtime, perplexity, etc.
 
+```{r}
+# LDA runtime
+lda1 <- lda_results %>% filter(model >= 10) %>% group_by(model) %>% summarise(time = mean(time)) %>%
+  ggplot(aes(x = model, y = time)) + geom_smooth(method = "lm", alpha = .5, fullrange = TRUE) +
+  geom_point() + xlim(c(5, 55)) +
+  labs(x = expression(paste(italic("K"))), y = "Time elapsed (hours)") + theme_sparse
+plot(lda1)
 
+# LDA perplexity
+lda2 <- lda_results %>% filter(model >= 10 & model %% 5 == 0) %>% group_by(model) %>% mutate(in_avg = mean(in_sample), out_avg =mean(out_sample)) %>%
+  ggplot(aes(x = model)) +
+  geom_point(aes(y = in_sample, color = "In-sample")) + geom_line(aes(y = in_avg, color = "In-sample"), size = 1, alpha = .5) +
+  geom_point(aes(y = out_sample, color = "Out-sample")) + geom_line(aes(y = out_avg, color = "Out-sample"), size = 1, alpha = .5) +
+  labs(x = expression(paste(italic("K"))), y = "Perplexity", color = "") + theme_sparse 
+plot(lda2)  
+```
+
+```{r}
+# Write plots
+mydoc <- docx()
+mydoc <- addPlot(mydoc, function() print(lda1), width = 5, height = 3, vector.graphic = TRUE)
+mydoc <- addPlot(mydoc, function() print(lda2), width = 5, height = 3, vector.graphic = TRUE)
+writeDoc(mydoc, file = "results/fig/2-LDA.docx")
+```

@@ -149,11 +149,15 @@ load("results/lda_final_40.zip")
 ```
 
 ```{r}
-# How frequently do each of the topics show up?
-lda_z_counts <- models40f@wordassignments$v %>% factor() %>% summary() %>% data.frame(topic = 1:40, count = .)
-(lda_z_counts <- lda_z_counts %>%
+# How frequently are the topics expected to show up?
+lda_z_counts <- models40f@gamma %>% colSums() %>% data.frame(topic = 1:40, count = .) %>% mutate(pct = count/sum(count))
+(lda_z_counts <- lda_z_counts %>% arrange(desc(pct)) %>% mutate(cumpct = cumsum(pct)))
+```
+
+```{r}
+# How frequently do each of the topics actually show up?
+models40f@wordassignments$v %>% factor() %>% summary() %>% data.frame(topic = 1:40, count = .) %>%
     mutate(pct = count / sum(count)) %>% arrange(desc(count)) %>% mutate(cumpct = cumsum(pct))
-)
 ```
 
 ```{r}
@@ -168,8 +172,8 @@ lda_likely <- which(models40f@loglikelihood >= tail(sort(models40f@loglikelihood
 lda3 <- lda_z_counts %>% mutate(topic = factor(topic)) %>%
   ggplot(aes(x = reorder(topic, count, function(x) {-x}), y = pct)) +
   geom_bar(stat = "identity", fill = "lightgray", position = "dodge") +
-  labs(x = "Topic number", y = "Topic proportions") + theme_sparse +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, .11), breaks = seq(0, .12, by = .02), labels = scales::percent)
+  labs(x = "Topic number", y = "Expected topic proportions") + theme_sparse +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, .06), breaks = seq(0, .06, by = .01), labels = scales::percent)
 
 plot(lda3)
 
@@ -180,7 +184,7 @@ plot(lda3)
 write(lda_popular %>% knitr::kable(), file = "results/lda_final_40_top_terms.md")
 names(lda_popular) <- names(lda_popular) %>% str_replace(pattern = "Topic.", replacement = "")
 mydoc <- docx()
-mydoc <- addPlot(mydoc, function() print(lda3), width = 6, height = 3, vector.graphic = TRUE)
+mydoc <- addPlot(mydoc, function() print(lda3), width = 7, height = 3, vector.graphic = TRUE)
 mydoc <- addFlexTable(mydoc, flextable = FlexTable(lda_popular[, 1:9]))
 writeDoc(mydoc, file = "results/fig/3-LDA-topics.docx")
 ```
@@ -220,7 +224,7 @@ ctm_heldout_lik <- read.csv("results/ctm_heldout_lik.csv")
 ctm_times %>% group_by(K) %>% summarise(mean_converge = mean(converge))
 ```
 
-## FIG CTM timing and likelihood
+## FIG. CTM timing and likelihood
 
 ```{r}
 # Timing plots
@@ -248,5 +252,54 @@ mydoc <- addPlot(mydoc, function() print(ctm2), width = 5, height = 2.5, vector.
 writeDoc(mydoc, file = "results/fig/4-CTM-K.docx")
 ```
 
+# Best CTM model
 
+```{r}
+load("results/ctm_final_110.zip")
+```
+
+```{r, fig.height = 20}
+# How frequently do each of the topics show up?
+ctm_t_counts <- ctm_final_110$theta %>% colSums() %>% data.frame(topic = 1:110, n = .)
+(ctm_t_counts <- ctm_t_counts %>% mutate(pct = n/sum(n)) %>% arrange(desc(n)) %>% mutate(cum_pct = cumsum(pct)))
+```
+
+## FIG. CTM topics
+
+```{r}
+# Topic correlation
+ctm_corrs <- topicCorr(ctm_final_110, method = "huge")
+```
+
+```{r}
+# Topic probabilities
+ctm3 <- ctm_t_counts %>% filter(topic %in% head(ctm_t_counts$topic, 40)) %>% mutate(topic = factor(topic)) %>%
+  ggplot(aes(x = reorder(topic, n, function(x) {-x}), y = pct)) +
+  geom_bar(stat = "identity", fill = "lightgray", position = "dodge") +
+  labs(x = "Topic number", y = "Expected topic proportions") + theme_sparse +
+  scale_y_continuous(expand = c(0, 0), labels = scales::percent)
+
+plot(ctm3)
+
+# Topic correlations
+ctm_labels <- apply(cbind(1:110, labelTopics(ctm_final_110, n = 2)$frex), MARGIN = 1, FUN = paste, collapse = "\n")
+ctm_top_topics <- ctm_t_counts$topic %>% head(40)
+
+# Top 10 terms for the topics
+(ctm_popular <- {labelTopics(ctm_final_110, n = 15)$frex %>% t() %>% data.frame(stringsAsFactors = FALSE)}[, ctm_t_counts$topic])
+
+# Save results
+names(ctm_popular) <- names(ctm_popular) %>% str_replace(pattern = "X", replacement = "Topic.")
+write(ctm_popular %>% knitr::kable(), file = "results/ctm_final_110_top_terms.md")
+names(ctm_popular) <- names(ctm_popular) %>% str_replace(pattern = "Topic.", replacement = "")
+mydoc <- docx()
+mydoc <- addPlot(mydoc, function() print(ctm3), width = 7, height = 3, vector.graphic = TRUE)
+mydoc <- addFlexTable(mydoc, flextable = FlexTable(ctm_popular[, 1:9]))
+set.seed(123)
+mydoc <- addPlot(mydoc, function() {
+  plot(ctm_corrs, topics = ctm_top_topics, vlabels = ctm_labels[ctm_top_topics],
+       vertex.color = "white", vertex.frame.color = "gray", edge.color="gray")
+1}, width = 8, height = 8, vector.graphic = TRUE)
+writeDoc(mydoc, file = "results/fig/5-CTM-topics.docx")
+```
 

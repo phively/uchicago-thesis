@@ -310,6 +310,8 @@ stm_heldout_lik <- rbind(no1, no2, no3)
 write.csv(stm_heldout_lik, file = "results/stm_heldout_lik.csv", row.names = FALSE)
 ```
 
+
+
 # Plots
 
 ```{r}
@@ -334,4 +336,17 @@ no2 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n
 no3 %>% group_by(K) %>% summarise(mean.lik = mean(lik), sem.lik = sd(lik)/sqrt(n), lci = mean.lik - sem.lik, uci = mean.lik + sem.lik) %>%
   ggplot(aes(x = K, y = mean.lik)) + geom_ribbon(aes(ymin = lci, ymax = uci), alpha = .2) + geom_line(color = "blue") +
   labs(y = "mean per-document holdout log likelihood", x = "")
+```
+
+# Final model
+
+```{r}
+# 90 full data model
+gc()
+stm_final_90 <- metadata %>% stm(sparse$documents, sparse$vocab, K = 90, init.type = "Spectral", ngroups = 5,
+  control = list(maxV = length(sparse$vocab)), emtol = 1E-5,
+  prevalence = ~ s(Score) + s(Months_Since_Feb_09) + HW_Tag,
+  content = metadata$HW_Tag,
+  data = .)
+save(stm_final_90, file = "results/stm_final_90.zip", compress = "xz", compression_level = 1)
 ```

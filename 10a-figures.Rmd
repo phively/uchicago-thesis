@@ -171,9 +171,10 @@ lda_likely <- which(models40f@loglikelihood >= tail(sort(models40f@loglikelihood
 ```{r}
 lda3 <- lda_z_counts %>% mutate(topic = factor(topic)) %>%
   ggplot(aes(x = reorder(topic, count, function(x) {-x}), y = pct)) +
-  geom_bar(stat = "identity", fill = "lightgray", position = "dodge") +
+  geom_bar(stat = "identity", fill = "lightgray", width = .75) +
   labs(x = "Topic number", y = "Expected topic proportions") + theme_sparse +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, .06), breaks = seq(0, .06, by = .01), labels = scales::percent)
+  scale_y_continuous(expand = c(0, 0), limits = c(0, .06), breaks = seq(0, .06, by = .01), labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .75))
 
 plot(lda3)
 
@@ -268,16 +269,17 @@ ctm_t_counts <- ctm_final_110$theta %>% colSums() %>% data.frame(topic = 1:110, 
 
 ```{r}
 # Topic correlation
-ctm_corrs <- topicCorr(ctm_final_110, method = "huge")
+ctm_corrs <- topicCorr(ctm_final_110, cutoff = .05)
 ```
 
 ```{r}
 # Topic probabilities
 ctm3 <- ctm_t_counts %>% filter(topic %in% head(ctm_t_counts$topic, 40)) %>% mutate(topic = factor(topic)) %>%
   ggplot(aes(x = reorder(topic, n, function(x) {-x}), y = pct)) +
-  geom_bar(stat = "identity", fill = "lightgray", position = "dodge") +
+  geom_bar(stat = "identity", fill = "lightgray", width = .75) +
   labs(x = "Topic number", y = "Expected topic proportions") + theme_sparse +
-  scale_y_continuous(expand = c(0, 0), labels = scales::percent)
+  scale_y_continuous(expand = c(0, 0), labels = scales::percent, limits = c(0, .03)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .75))
 
 plot(ctm3)
 
@@ -287,7 +289,9 @@ ctm_top_topics <- ctm_t_counts$topic %>% head(40)
 
 # Top 10 terms for the topics
 (ctm_popular <- {labelTopics(ctm_final_110, n = 15)$frex %>% t() %>% data.frame(stringsAsFactors = FALSE)}[, ctm_t_counts$topic])
+```
 
+```{r}
 # Save results
 names(ctm_popular) <- names(ctm_popular) %>% str_replace(pattern = "X", replacement = "Topic.")
 write(ctm_popular %>% knitr::kable(), file = "results/ctm_final_110_top_terms.md")
@@ -301,5 +305,45 @@ mydoc <- addPlot(mydoc, function() {
        vertex.color = "white", vertex.frame.color = "gray", edge.color="gray")
 1}, width = 8, height = 8, vector.graphic = TRUE)
 writeDoc(mydoc, file = "results/fig/5-CTM-topics.docx")
+```
+
+# Metadata info
+
+```{r}
+# Load metadata
+load("data/posts_metadata.zip")
+```
+
+```{r}
+summary(metadata)
+sum(metadata$HW_Tag)
+```
+
+```{r}
+# Summary stats table
+summary_stats <- function(x) {
+  data.frame(Minimum = min(x), Q1 = quantile(x, .25), Median = median(x),
+  Mean = mean(x), Q3 = quantile(x, .75), Maximum = max(x))
+}
+
+sum_stats <- data.frame(
+  c("Minimum", "First Quartile", "Median", "Mean", "Third Quartile", "Maximum"),
+  summary_stats(metadata$CreationDate %>% floor_date(unit = "days")) %>% t(),
+  summary_stats(metadata$LastActivityDate %>% floor_date(unit = "days")) %>% t(),
+  summary_stats(metadata$ViewCount) %>% t(),
+  summary_stats(metadata$AnswerCount) %>% t(),
+  summary_stats(metadata$Score) %>% t(),
+  stringsAsFactors = FALSE
+)
+names(sum_stats) <- c("Statistic", "CreationDate", "LastActivityDate", "ViewCount", "AnswerCount", "Score")
+sum_stats
+```
+
+## FIG. Metadata stats
+
+```{r}
+mydoc <- docx()
+mydoc <- addFlexTable(mydoc, flextable = FlexTable(sum_stats))
+writeDoc(mydoc, file = "results/fig/6-metadata.docx")
 ```
 

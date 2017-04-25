@@ -310,7 +310,25 @@ stm_heldout_lik <- rbind(no1, no2, no3)
 write.csv(stm_heldout_lik, file = "results/stm_heldout_lik.csv", row.names = FALSE)
 ```
 
+## Timings
 
+```{r}
+# Model timing
+stm_times <- data.frame(K = rep(seq(60, 120, by = 10), times = 3), heldout = rep(1:3, each = 7),
+  time = c(
+    stm_60h1$time, stm_70h1$time, stm_80h1$time, stm_90h1$time, stm_100h1$time, stm_110h1$time, stm_120h1$time,
+    stm_60h2$time, stm_70h2$time, stm_80h2$time, stm_90h2$time, stm_100h2$time, stm_110h2$time, stm_120h2$time,
+    stm_60h3$time, stm_70h3$time, stm_80h3$time, stm_90h3$time, stm_100h3$time, stm_110h3$time, stm_120h3$time
+  )/60,
+  converge = c(
+    stm_60h1$convergence$its, stm_70h1$convergence$its, stm_80h1$convergence$its, stm_90h1$convergence$its, stm_100h1$convergence$its, stm_110h1$convergence$its, stm_120h1$convergence$its,
+    stm_60h2$convergence$its, stm_70h2$convergence$its, stm_80h2$convergence$its, stm_90h2$convergence$its, stm_100h2$convergence$its, stm_110h2$convergence$its, stm_120h2$convergence$its,
+    stm_60h3$convergence$its, stm_70h3$convergence$its, stm_80h3$convergence$its, stm_90h3$convergence$its, stm_100h3$convergence$its, stm_110h3$convergence$its, stm_120h3$convergence$its
+  )
+)
+
+write.csv(stm_times, "results/stm_times.csv", row.names = FALSE)
+```
 
 # Plots
 

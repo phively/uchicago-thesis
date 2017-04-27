@@ -494,12 +494,12 @@ plot(stmm1)
 # Topics changing over time
 pdf(NULL)
 stmm2 <- plot(stm_effects, covariate = "Months_Since_Feb_09", method = "continuous", printlegend = FALSE,
-     topics = c(9, 63, 69), labeltype = "custom", custom.labels = stm_labels[c(9, 63, 69)])
+     topics = c(9, 10, 69), labeltype = "custom", custom.labels = stm_labels[c(9, 10, 69)])
 dev.off()
 
 meta_time <- data.frame(
   x = rep(stmm2$x, times = 3),
-  topic = stm_labels[c(9, 63, 69)] %>% str_replace_all(pattern = "\n", replacement = " ") %>% rep(each = 100),
+  topic = stm_labels[c(9, 10, 69)] %>% str_replace_all(pattern = "\n", replacement = " ") %>% rep(each = 100),
   mean = stmm2$means %>% unlist() %>% matrix(),
   stmm2$ci %>% unlist() %>% matrix(nrow = 2) %>% t()
 ) %>% mutate(lci = X1, uci = X2, X1 = NULL, X2 = NULL, date = ymd("20090201") + days(round(x * 30.416)))
@@ -534,16 +534,42 @@ stmm3 <- meta_homework %>%
   ggplot(aes(x = date, y = mean)) + geom_line(aes(color = hw), alpha = .5) + 
   geom_ribbon(aes(ymin = lci, ymax = uci, fill = hw), alpha = .1) + theme_sparse +
   geom_hline(yintercept = 0, linetype = "dotted") +
-  labs(color = NULL, fill = NULL, x = "Year", y = "Expected topic proportion") +
+  labs(color = NULL, fill = NULL, x = "Year", y = "Expected topic 9 proportion") +
   scale_y_continuous(breaks = seq(-.08, .08, by = .02)) +
   scale_x_date(date_breaks = "1 year", labels = year)
 
+# Topic 10 by HW_Tag
+pdf(NULL)
+a <- plot(stm_effects, covariate = "Months_Since_Feb_09", method = "continuous",
+     topics = 10, moderator = "HW_Tag", moderator.value = "no_HW", linecol = "blue", printlegend = FALSE)
+b <- plot(stm_effects, covariate = "Months_Since_Feb_09", method = "continuous",
+     topics = 10, moderator = "HW_Tag", moderator.value = "HW", linecol = "red", add = TRUE, printlegend = FALSE)
+dev.off()
+
+meta_homework2 <- data.frame(
+  x = c(a$x, b$x),
+  hw = c("No HW", "HW") %>% rep(each = 100) %>% factor(),
+  topic = stm_labels[9] %>% str_replace_all(pattern = "\n", replacement = " ") %>% rep(200),
+  mean = {a$means %>% unlist()} %>% c(b$means %>% unlist()),
+  {a$ci %>% unlist() %>% matrix(nrow = 2) %>% t()} %>% rbind(b$ci %>% unlist() %>% matrix(nrow = 2) %>% t())
+) %>% mutate(lci = X1, uci = X2, X1 = NULL, X2 = NULL, date = ymd("20090201") + days(round(x * 30.416)))
+
+stmm4 <- meta_homework2 %>%
+  ggplot(aes(x = date, y = mean)) + geom_line(aes(color = hw), alpha = .5) + 
+  geom_ribbon(aes(ymin = lci, ymax = uci, fill = hw), alpha = .1) + theme_sparse +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  labs(color = NULL, fill = NULL, x = "Year", y = "Expected topic 10 proportion") +
+  scale_y_continuous(breaks = seq(-.08, .08, by = .02)) +
+  scale_x_date(date_breaks = "1 year", labels = year)
+
+plot(stmm4)
+
+# Topic 9 perspectives
 plot(stmm3)
 
 set.seed(1)
 plot(stm_final_90, type = "perspectives", topics = 9)
 ```
-
 
 ```{r}
 # Save results
@@ -551,9 +577,16 @@ mydoc <- docx()
 mydoc <- addPlot(mydoc, function() print(stmm1), width = 7, height = 3, vector.graphic = TRUE)
 mydoc <- addPlot(mydoc, function() print(stmm2), width = 7, height = 3, vector.graphic = TRUE)
 mydoc <- addPlot(mydoc, function() print(stmm3), width = 7, height = 3, vector.graphic = TRUE)
+mydoc <- addPlot(mydoc, function() print(stmm4), width = 7, height = 3, vector.graphic = TRUE)
 mydoc <- addPlot(mydoc, function() {
   set.seed(1)
   print(plot(stm_final_90, type = "perspectives", topics = 9))
   }, width = 6, height = 6, vector.graphic = TRUE)
 writeDoc(mydoc, file = "results/fig/9-STM-meta.docx")
+```
+
+```{r}
+# Interaction effects
+stm_hw_effects <- estimateEffect(~ s(Score) * HW_Tag + s(Months_Since_Feb_09), stm_final_90, metadata = metadata)
+save(stm_hw_effects, file = "results/stm_hw_effect.zip", compress = "xz", compression_level = 1)
 ```

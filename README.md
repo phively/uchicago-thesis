@@ -2,6 +2,10 @@ University of Chicago Master's Thesis.
 
 Data taken from the Dec 15, 2016 [Stack Exchange Data Dump](https://archive.org/details/stackexchange) and licensed under [Creative Commons Share Alike 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
+  * [LDA topic results, K = 40](https://github.com/phively/uchicago-thesis/blob/master/results/lda_final_40_top_terms.md)
+  * [CTM topic results, K = 110](https://github.com/phively/uchicago-thesis/blob/master/results/ctm_final_110_top_terms.md)
+  * [STM topic results, K = 90](https://github.com/phively/uchicago-thesis/blob/master/results/stm_final_90_top_terms.md)
+
 [01-exploration-and-parsing.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/01-exploration-and-parsing.nb.html)
 
 [02-vocabulary-experimentation.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/02-vocabulary-experimentation.nb.html)
@@ -23,3 +27,7 @@ Data taken from the Dec 15, 2016 [Stack Exchange Data Dump](https://archive.org/
 [08e-ctm-sigma-holdout.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/08e-ctm-sigma-holdout.nb.html)
 
 [09a-stm-metadata-creation.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/09a-stm-metadata-creation.nb.html)
+
+[09b-stm-continuous.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/09b-stm-continuous.nb.html)
+
+[10a-figures.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/10a-figures.nb.html)

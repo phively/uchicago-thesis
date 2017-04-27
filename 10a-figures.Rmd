@@ -96,7 +96,9 @@ myplot <- wc %>% data.frame(wordcount = .) %>%
   theme_sparse
 
 plot(myplot)
-
+```
+```{r}
+# Write output
 mydoc <- docx()
 mydoc <- addPlot(mydoc, function() print(myplot), width = 5, height = 3, vector.graphic = TRUE)
 writeDoc(mydoc, file = "results/fig/1-word-doc-dist.docx")
@@ -109,7 +111,7 @@ writeDoc(mydoc, file = "results/fig/1-word-doc-dist.docx")
 lda_results <- read.csv("results/lda_k_perp.csv")
 ```
 
-```{r}
+```{r, rows.print = 15}
 # Average convergence
 lda_results %>% group_by(model) %>% summarise(mean(time))
 ```
@@ -168,7 +170,7 @@ lda_likely <- which(models40f@loglikelihood >= tail(sort(models40f@loglikelihood
 
 ## FIG. topic frequency
 
-```{r}
+```{r, rows.print = 15}
 lda3 <- lda_z_counts %>% mutate(topic = factor(topic)) %>%
   ggplot(aes(x = reorder(topic, count, function(x) {-x}), y = pct)) +
   geom_bar(stat = "identity", fill = "lightgray", width = .75) +
@@ -180,7 +182,8 @@ plot(lda3)
 
 # Top 10 terms for the topics
 (lda_popular <- terms(models40f, k = 15)[, lda_z_counts$topic] %>% data.frame())
-
+```
+```{r}
 # Save results
 write(lda_popular %>% knitr::kable(), file = "results/lda_final_40_top_terms.md")
 names(lda_popular) <- names(lda_popular) %>% str_replace(pattern = "Topic.", replacement = "")
@@ -216,7 +219,7 @@ ctm_times <- data.frame(K = rep(seq(20, 120, by = 10), times = 3), heldout = rep
 write.csv(ctm_times, "results/ctm_times.csv", row.names = FALSE)
 ```
 
-```{r}
+```{r, rows.print = 11}
 # Load ctm data
 ctm_times <- read.csv("results/ctm_times.csv")
 ctm_heldout_lik <- read.csv("results/ctm_heldout_lik.csv")
@@ -245,7 +248,8 @@ ctm2 <- ctm_heldout_lik %>% group_by(K, holdout) %>% summarise(mean.lik = mean(l
   labs(color = "Holdout group", x = expression(paste(italic("K"))), y = "Mean per-token holdout log likelihood")
 
 plot(ctm2)
-
+```
+```{r}
 # Save results
 mydoc <- docx()
 mydoc <- addPlot(mydoc, function() print(ctm1), width = 5, height = 3, vector.graphic = TRUE)
@@ -272,7 +276,7 @@ ctm_t_counts <- ctm_final_110$theta %>% colSums() %>% data.frame(topic = 1:110, 
 ctm_corrs <- topicCorr(ctm_final_110, cutoff = .05)
 ```
 
-```{r}
+```{r, fig.width = 6, fig.height = 6, rows.print = 15}
 # Topic probabilities
 ctm3 <- ctm_t_counts %>% filter(topic %in% head(ctm_t_counts$topic, 40)) %>% mutate(topic = factor(topic)) %>%
   ggplot(aes(x = reorder(topic, n, function(x) {-x}), y = pct)) +
@@ -286,6 +290,10 @@ plot(ctm3)
 # Topic correlations
 ctm_labels <- apply(cbind(1:110, labelTopics(ctm_final_110, n = 2)$frex), MARGIN = 1, FUN = paste, collapse = "\n")
 ctm_top_topics <- ctm_t_counts$topic %>% head(40)
+
+set.seed(123)
+plot(ctm_corrs, topics = ctm_top_topics, vlabels = ctm_labels[ctm_top_topics],
+       vertex.color = "white", vertex.frame.color = "gray", edge.color="gray")
 
 # Top 10 terms for the topics
 (ctm_popular <- {labelTopics(ctm_final_110, n = 15)$frex %>% t() %>% data.frame(stringsAsFactors = FALSE)}[, ctm_t_counts$topic])
@@ -345,5 +353,105 @@ sum_stats
 mydoc <- docx()
 mydoc <- addFlexTable(mydoc, flextable = FlexTable(sum_stats))
 writeDoc(mydoc, file = "results/fig/6-metadata.docx")
+```
+
+# STM
+
+```{r}
+# Load data
+stm_times <- read.csv("results/stm_times.csv")
+stm_heldout_lik <- read.csv("results/stm_heldout_lik.csv")
+```
+
+## FIG. STM timing, likelihood
+
+```{r}
+# Model runtime
+stm1 <- stm_times %>% group_by(K) %>% summarise(time = mean(time)/60) %>%
+  ggplot(aes(x = K, y = time)) + geom_smooth(method = "lm", alpha = .5, fullrange = TRUE) + geom_point() +
+  theme_sparse + scale_x_continuous(limits = c(53, 123), breaks = seq(60, 130, by = 10)) +
+  scale_y_continuous(breaks = seq(0, 7, by = 1), expand = c(0.001, 0), limits = c(0, 8)) +
+  labs(x = expression(paste(italic("K"))), y = "Time elapsed (hours)")
+
+plot(stm1)
+
+# Maximum likelihood results
+
+stm2 <- stm_heldout_lik %>% group_by(K, holdout) %>% summarise(mean.lik = mean(lik)) %>%
+  left_join(stm_heldout_lik %>% group_by(K) %>% summarise(gmean.lik = mean(lik)), by = c("K" = "K")) %>%
+  ggplot(aes(x = K, y = mean.lik, color = as.factor(holdout))) + geom_point(alpha = .5) +
+  scale_x_continuous(breaks = seq(60, 130, by = 10), limits = c(53, 123), expand = c(0.03, 0)) +
+  ylim(c(-7.36, -7.30)) +
+  geom_line(aes(y = gmean.lik), color = "blue", alpha = .5, size = 1) + theme_sparse +
+  labs(color = "Holdout group", x = expression(paste(italic("K"))), y = "Mean per-token holdout log likelihood")
+
+plot(stm2)
+```
+```{r}
+mydoc <- docx()
+mydoc <- addPlot(mydoc, function() print(stm1), width = 5, height = 3, vector.graphic = TRUE)
+mydoc <- addPlot(mydoc, function() print(stm2), width = 5, height = 3, vector.graphic = TRUE)
+writeDoc(mydoc, file = "results/fig/7-STM-K.docx")
+```
+
+# Best STM
+
+```{r}
+# Load data
+load("results/stm_final_90.zip")
+```
+
+```{r}
+# Topic frequencies
+stm_t_counts <- stm_final_90$theta %>% colSums() %>% data.frame(topic = 1:90, n = .)
+(stm_t_counts <- stm_t_counts %>% mutate(pct = n/sum(n)) %>% arrange(desc(n)) %>% mutate(cum_pct = cumsum(pct)))
+```
+
+# FIG. STM topics and correlation
+
+```{r}
+# Correlations
+stm_corrs <- topicCorr(stm_final_90, cutoff = .05)
+```
+
+# FIG. STM metadata exploration
+
+```{r, fig.width = 9, fig.height = 6, rows.print = 15}
+# Topic probabilities
+stm3 <- stm_t_counts %>% filter(topic %in% head(stm_t_counts$topic, 40)) %>% mutate(topic = factor(topic)) %>%
+  ggplot(aes(x = reorder(topic, n, function(x) {-x}), y = pct)) +
+  geom_bar(stat = "identity", fill = "lightgray", width = .75) +
+  labs(x = "Topic number", y = "Expected topic proportions") + theme_sparse +
+  scale_y_continuous(expand = c(0, 0), labels = scales::percent, limits = c(0, .032)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = .75))
+
+plot(stm3)
+
+# Topic correlations
+stm_labels <- apply(cbind(1:90, sageLabels(stm_final_90, n = 2)$marginal$frex), MARGIN = 1, FUN = paste, collapse = "\n")
+stm_top_topics <- stm_t_counts$topic %>% head(40)
+
+set.seed(111)
+plot(stm_corrs, topics = stm_top_topics, vlabels = stm_labels[stm_top_topics],
+       vertex.color = "white", vertex.frame.color = "gray", edge.color="gray")
+
+# Top 10 terms for the topics
+(stm_popular <- {sageLabels(stm_final_90, n = 15)$marginal$frex %>% t() %>% data.frame(stringsAsFactors = FALSE)}[, stm_t_counts$topic])
+```
+
+```{r}
+# Save results
+names(stm_popular) <- names(stm_popular) %>% str_replace(pattern = "X", replacement = "Topic.")
+write(stm_popular %>% knitr::kable(), file = "results/stm_final_90_top_terms.md")
+names(stm_popular) <- names(stm_popular) %>% str_replace(pattern = "Topic.", replacement = "")
+mydoc <- docx()
+mydoc <- addPlot(mydoc, function() print(stm3), width = 7, height = 3, vector.graphic = TRUE)
+mydoc <- addFlexTable(mydoc, flextable = FlexTable(stm_popular[, 1:9]))
+set.seed(111)
+mydoc <- addPlot(mydoc, function() {
+  plot(stm_corrs, topics = stm_top_topics, vlabels = stm_labels[stm_top_topics],
+       vertex.color = "white", vertex.frame.color = "gray", edge.color="gray")
+1}, width = 8, height = 8, vector.graphic = TRUE)
+writeDoc(mydoc, file = "results/fig/8-STM-topics.docx")
 ```
 

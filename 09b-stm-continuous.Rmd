@@ -299,7 +299,7 @@ n <- length(holdout3$missing$index)
 # Per-document log likelihood
 no3 <- test3 %>% data.frame(
   K = rep(c(60, 70, 80, 90, 100, 110, 120), each = n),
-  holdout = 2,
+  holdout = 3,
   lik = .
 ) %>% na.omit()
 

@@ -23,6 +23,7 @@ library(stm)
 theme_sparse <- theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
   panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.key = element_blank())
 ```
+
 # Load models and data
 
 ```{r}
@@ -193,7 +194,7 @@ lda_dist <- data.frame(
   Title = metadata$Title
 ) %>% arrange(hellinger)
 
-{lda_dist %>% head()}[-1, ]  %>% select(hellinger, Id, Title)
+knitr::kable({lda_dist %>% select(-rown) %>% head()}[-1, ])
 ```
 
 ## CTM
@@ -206,7 +207,7 @@ ctm_dist <- data.frame(
   Title = metadata$Title
 ) %>% arrange (hellinger)
 
-{ctm_dist %>% head()}[-1, ]  %>% select(hellinger, Id, Title)
+knitr::kable({ctm_dist %>% select(-rown) %>% head()}[-1])
 ```
 
 ## STM
@@ -219,11 +220,11 @@ stm_dist <- data.frame(
   Title = metadata$Title
 ) %>% arrange (hellinger)
 
-{stm_dist %>% head()}[-1, ]  %>% select(hellinger, Id, Title)
+knitr::kable({stm_dist %>% select(-rown) %>% head()}[-1])
 ```
 
 ## How long until one of the CTM/STM posts shows up in LDA?
 
 ```{r, rows.print = 20}
-{lda_dist %>% select(hellinger, Id, Title)}[2:20, ]
+knitr::kable({lda_dist %>% select(-rown) %>% head(20)}[-1, ])
 ```

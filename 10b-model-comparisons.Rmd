@@ -1,0 +1,229 @@
+---
+title: "Model comparisons"
+output: html_notebook
+---
+
+# Libraries
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(stringr)
+library(e1071)
+library(ReporteRs)
+library(slam)
+library(tm)
+library(topicmodels)
+library(stm)
+```
+
+# Constants
+
+```{r}
+theme_sparse <- theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.key = element_blank())
+```
+# Load models and data
+
+```{r}
+# Data
+load(file = "data/sparse_matrix_no_tex.zip")
+sparse <- readCorpus(sparse, type = "slam")
+# Metadata
+load("data/posts_metadata.zip")
+metadata$HW_Tag <- factor(metadata$HW_Tag, labels = c("No HW", "HW"))
+# CTM
+load("results/lda_final_40.zip")
+load("results/ctm_final_110.zip")
+load("results/stm_final_90.zip")
+```
+
+# Least popular homework topics
+
+```{r}
+metadata %>% filter(HW_Tag == "HW") %>% arrange(Score) %>% select(Id, Score, Title) %>% head()
+```
+
+# Shared topic labels
+
+```{r}
+# LDA: data = 10, model selection = 34
+lda_gamma <- models40f@gamma %>% data.frame(i = 1:nrow(metadata))
+lda_gamma <- data.frame(
+  lda_gamma %>% arrange(desc(X10)) %>% select(T10 = i) %>% head(5),
+  lda_gamma %>% arrange(desc(X34)) %>% select(T34 = i) %>% head(5)
+)
+print("LDA")
+print("Topic 10:")
+apply(metadata[lda_gamma$T10, c("Id", "Title")], MARGIN = 1, FUN = paste, collapse = " ")
+print("Topic 34:")
+apply(metadata[lda_gamma$T34, c("Id", "Title")], MARGIN = 1, FUN = paste, collapse = " ")
+# CTM: data = 20, model selection = 46
+print("CTM")
+findThoughts(ctm_final_110, texts = trimws(paste(metadata$Id, metadata$Title)), topics = c(20, 46), n = 5)
+# STM: data = 20, model selection = 46
+print("")
+print("STM")
+findThoughts(stm_final_90, texts = trimws(paste(metadata$Id, metadata$Title)), topics = c(20, 46), n = 5)
+```
+
+# Most upvoted post
+
+```{r}
+metadata %>% arrange(desc(Score)) %>% select(Id, Score, ViewCount, Title) %>% head(1)
+# Which row is it in?
+pop_idx <- which(metadata$Id == 2691)
+```
+
+# Topic proportions
+
+```{r}
+# Label the top top_n topics
+top_n <- 3
+
+# LDA
+lda_popular <- data.frame(
+  topic = 1:40,
+  theta_d = models40f@gamma[pop_idx, ]
+)
+lda_popular$top <- lda_popular$topic %in% (lda_popular %>% arrange(theta_d) %>% select(topic) %>% tail(top_n) %>% unlist())
+lda_popular <- lda_popular %>% mutate(
+  terms = ifelse(!top,
+    "",
+    apply(topic %>% rbind(get_terms(models40f, k = 3)), MARGIN = 2, FUN = paste, collapse = "\n")
+  )
+)
+
+# CTM
+ctm_popular <- data.frame(
+  topic = 1:110,
+  theta_d = ctm_final_110$theta[pop_idx, ]
+)
+ctm_popular$top <- ctm_popular$topic %in% (ctm_popular %>% arrange(theta_d) %>% select(topic) %>% tail(top_n) %>% unlist())
+ctm_popular <- ctm_popular %>% mutate(
+  terms = ifelse(!top,
+    "",
+    apply(topic %>% cbind(sageLabels(ctm_final_110, n = 3)$marginal$frex), MARGIN = 1, FUN = paste, collapse = "\n")
+  )
+)
+
+# STM
+stm_popular <- data.frame(
+  topic = 1:90,
+  theta_d = stm_final_90$theta[pop_idx, ]
+)
+stm_popular$top <- stm_popular$topic %in% (stm_popular %>% arrange(theta_d) %>% select(topic) %>% tail(top_n) %>% unlist())
+stm_popular <- stm_popular %>% mutate(
+  terms = ifelse(!top,
+    "",
+    apply(topic %>% cbind(sageLabels(stm_final_90, n = 3)$marginal$frex), MARGIN = 1, FUN = paste, collapse = "\n")
+  )
+)
+```
+
+```{r}
+# View top topics
+lda_popular %>% filter(top) %>% arrange(desc(theta_d))
+ctm_popular %>% filter(top) %>% arrange(desc(theta_d))
+stm_popular %>% filter(top) %>% arrange(desc(theta_d))
+```
+
+```{r, fig.width = 7, fig.height = 2.5}
+# LDA results
+lda1 <- lda_popular %>%
+  ggplot(aes(x = topic, y = theta_d)) +
+  geom_bar(stat = "identity", fill = "lightgray", width = .75) +
+  scale_y_continuous(expand = c(0, 0), labels = scales::percent, limits = c(0, .7), breaks = seq(0, 1, by = .1)) +
+  theme_sparse +
+  labs(x = "LDA topic number", y = "LDA topic proportions \\theta_d") +
+  geom_text(aes(label = terms, y = theta_d + .12), size = 3)
+
+plot(lda1)
+
+# CTM results
+ctm1 <- ctm_popular %>%
+  ggplot(aes(x = topic, y = theta_d)) +
+  geom_bar(stat = "identity", fill = "lightgray", width = .75) +
+  scale_y_continuous(expand = c(0, 0), labels = scales::percent, limits = c(0, .6), breaks = seq(0, 1, by = .1)) +
+  theme_sparse +
+  labs(x = "CTM topic number", y = "CTM topic proportions \\theta_d") +
+  geom_text(aes(label = terms, y = theta_d + .1), size = 3)
+
+plot(ctm1)
+
+# STM results
+stm1 <- stm_popular %>%
+  ggplot(aes(x = topic, y = theta_d)) +
+  geom_bar(stat = "identity", fill = "lightgray", width = .75) +
+  scale_y_continuous(expand = c(0, 0), labels = scales::percent, limits = c(0, .6), breaks = seq(0, 1, by = .1)) +
+  theme_sparse +
+  labs(x = "STM topic number", y = "STM topic proportions \\theta_d") +
+  geom_text(aes(label = terms, y = theta_d + .1), size = 3)
+
+plot(stm1)
+```
+
+```{r}
+# Save results
+mydoc <- docx()
+mydoc <- addPlot(mydoc, function() print(lda1), width = 7, height = 2.5, vector.graphic = TRUE)
+mydoc <- addPlot(mydoc, function() print(ctm1), width = 7, height = 2.5, vector.graphic = TRUE)
+mydoc <- addPlot(mydoc, function() print(stm1), width = 7, height = 2.5, vector.graphic = TRUE)
+writeDoc(mydoc, file = "results/fig/10-comparison-popular.docx")
+```
+
+# Similar documents
+
+```{r}
+# Hellinger distance function
+hellinger <- function(target, doc_thetas) {
+  n <- nrow(doc_thetas)
+  target <- matrix(rep(target, each = n), nrow = n)
+  2 - 2 * rowSums(sqrt(target) * sqrt(doc_thetas))
+}
+```
+
+## LDA
+
+```{r}
+lda_dist <- data.frame(
+  rown = 1:nrow(models40f@gamma),
+  hellinger = hellinger(models40f@gamma[pop_idx, ], models40f@gamma),
+  Id = metadata$Id,
+  Title = metadata$Title
+) %>% arrange(hellinger)
+
+{lda_dist %>% head()}[-1, ]  %>% select(hellinger, Id, Title)
+```
+
+## CTM
+
+```{r}
+ctm_dist <- data.frame(
+  rown = 1:nrow(ctm_final_110$theta),
+  hellinger = hellinger(ctm_final_110$theta[pop_idx, ], ctm_final_110$theta),
+  Id = metadata$Id,
+  Title = metadata$Title
+) %>% arrange (hellinger)
+
+{ctm_dist %>% head()}[-1, ]  %>% select(hellinger, Id, Title)
+```
+
+## STM
+
+```{r}
+stm_dist <- data.frame(
+  rown = 1:nrow(stm_final_90$theta),
+  hellinger = hellinger(stm_final_90$theta[pop_idx, ], stm_final_90$theta),
+  Id = metadata$Id,
+  Title = metadata$Title
+) %>% arrange (hellinger)
+
+{stm_dist %>% head()}[-1, ]  %>% select(hellinger, Id, Title)
+```
+
+## How long until one of the CTM/STM posts shows up in LDA?
+
+```{r, rows.print = 20}
+{lda_dist %>% select(hellinger, Id, Title)}[2:20, ]
+```

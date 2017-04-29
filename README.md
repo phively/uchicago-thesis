@@ -1,5 +1,9 @@
 University of Chicago Master's Thesis.
 
+**Crowdsourced Statistics Advice: Topic Modeling stats.stackexchange.com**
+
+*Topic models* are hierarchical Bayesian models used to discover latent semantic structure within collections of documents, allowing them to be reduced from millions of words to a few dozen interpretable topics. This paper presents three closely related methods: latent Dirichlet allocation, correlated topic models, and structural topic models. I discuss the estimation challenges associated with topic modeling and compare the three methods by analyzing a collection of 182,308 posts contributed by the general public to the statistics and machine learning community website stats.stackexchange.com.
+
 Data taken from the Dec 15, 2016 [Stack Exchange Data Dump](https://archive.org/details/stackexchange) and licensed under [Creative Commons Share Alike 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
   * [LDA topic results, K = 40](https://github.com/phively/uchicago-thesis/blob/master/results/lda_final_40_top_terms.md)
@@ -31,3 +35,5 @@ Data taken from the Dec 15, 2016 [Stack Exchange Data Dump](https://archive.org/
 [09b-stm-continuous.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/09b-stm-continuous.nb.html)
 
 [10a-figures.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/10a-figures.nb.html)
+
+[10b-model-comparisons.nb.html](http://htmlpreview.github.io/?https://github.com/phively/uchicago-thesis/blob/master/10b-model-comparisons.nb.html)

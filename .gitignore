@@ -39,9 +39,13 @@ vignettes/*.pdf
 results/*.zip
 results/retired/*.*
 
+# Duplicative data files
+data/Posts.Rdata
+
 # Other temporary or interim files
 *.tmp
 *.filepart
 msSampleFormat-pubWord.docx
 Hively_2017_Topic_Models.docx
 ~$pic Models.docx
+*.pptx

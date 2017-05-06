@@ -1,0 +1,48 @@
+---
+title: "Presentation charts"
+output: html_notebook
+---
+
+Additional plots for my slides.
+
+# Libraries
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(stringr)
+library(e1071)
+library(ReporteRs)
+library(slam)
+library(tm)
+library(topicmodels)
+library(stm)
+```
+
+# Constants
+
+```{r}
+theme_sparse <- theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.key = element_blank())
+```
+
+# Load data
+
+```{r}
+load("data/posts_metadata.zip")
+posts <- load("data/Posts.zip")
+```
+
+# Data stats
+
+```{r, fig.width = 7, fig.height = 4}
+posts_per_week <- posts %>% group_by(Name, CreationDate = round_date(CreationDate, unit = "week")) %>% summarise(Posts = length(Name)) %>% filter(year(CreationDate) == 2016 & Name %in% c("Question", "Answer")) %>%
+  ggplot(aes(x = CreationDate, y = Posts, color = Name)) + geom_line() + labs(title = "New questions and answers per week through December 11, 2016") + labs(color = NULL, x = "Date") + theme_sparse +
+  scale_y_continuous(breaks = seq(0, 1000, by = 100), limits = c(0, 800))
+
+plot(posts_per_week)
+
+mydoc <- docx()
+mydoc <- addPlot(mydoc, function() print(posts_per_week), width = 7, height = 4, vector.graphic = TRUE)
+writeDoc(mydoc, file = "results/fig/11-slides.docx")
+```
